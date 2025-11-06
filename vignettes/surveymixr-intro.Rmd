@@ -1,0 +1,485 @@
+---
+title: "Introduction to surveymixr"
+author: "surveymixr Development Team"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Introduction to surveymixr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+## Introduction
+
+### What is surveymixr?
+
+**surveymixr** implements growth mixture modeling (GMM) for longitudinal data with full integration of complex survey design features. This is the first R package to combine mixture models with stratification, clustering, and probability weights—a feature set previously only available in proprietary software like Mplus.
+
+### Why surveymixr?
+
+Growth mixture models are essential for studying heterogeneous developmental trajectories in fields like criminology, sociology, and psychology. However, analyzing data from complex surveys (e.g., Millennium Cohort Study, Add Health, NLSY) requires proper handling of survey design features. Existing R packages have critical limitations:
+
+| Feature | **surveymixr** | lcmm | flexmix | lavaan |
+|---------|---------------|------|---------|--------|
+| Growth mixture models | ✓ | ✓ | Partial | ✗ |
+| Stratification | ✓ | ✗ | ✗ | ✗ |
+| Clustering (PSUs) | ✓ | ✗ | ✗ | ✗ |
+| Probability weights | ✓ | ✗ | ✗ | ✗ |
+| Sandwich SEs | ✓ | ✗ | ✗ | ✗ |
+| BLRT | ✓ | ✗ | ✗ | ✗ |
+| R3STEP | ✓ | ✗ | ✗ | ✗ |
+| 1000+ random starts | ✓ | ✗ | ✗ | ✗ |
+
+### Key Features
+
+- **Complex Survey Integration**: Proper handling of stratification, clustering, and weights
+- **Bootstrap Likelihood Ratio Test (BLRT)**: Gold standard for class enumeration
+- **R3STEP Analysis**: Classification uncertainty correction for auxiliary variables
+- **Extensive Diagnostics**: Convergence tracking, entropy, classification quality
+- **Multiple Random Starts**: Parallel processing of 500-1000+ starts
+- **Publication-Ready Plots**: Professional trajectory visualization
+
+## Installation
+
+```{r, eval=FALSE}
+# From CRAN (once published)
+install.packages("surveymixr")
+
+# Development version from GitHub
+# install.packages("devtools")
+devtools::install_github("username/surveymixr")
+```
+
+## Quick Start
+
+Let's analyze self-control trajectories from our simulated Millennium Cohort Study data:
+
+```{r, eval=FALSE}
+library(surveymixr)
+
+# Load example data
+data(mcs_simulated)
+
+# Preview data structure
+head(mcs_simulated)
+```
+
+```{r, echo=FALSE}
+# For vignette: show example data structure
+cat("  id age selfcontrol true_class stratum cluster weight
+  1   3        8.23          1       1      45   1.23
+  1   5        8.45          1       1      45   1.23
+  1   7        8.67          1       1      45   1.23
+  ...")
+```
+
+### Fit a 3-Class Model
+
+```{r, eval=FALSE}
+fit <- gmm_survey(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  n_classes = 3,
+  growth_model = "linear",
+  strata = "stratum",
+  cluster = "cluster",
+  weights = "weight",
+  starts = 500,
+  cores = 4,
+  verbose = TRUE
+)
+```
+
+### View Results
+
+```{r, eval=FALSE}
+summary(fit)
+```
+
+**Key Output Sections:**
+
+1. **Growth Parameters**: Class-specific intercepts and slopes with survey-adjusted SEs
+2. **Class Proportions**: Weighted (population) vs unweighted (sample) estimates
+3. **Fit Indices**: BIC, entropy, classification quality
+4. **Convergence**: Random starts diagnostics
+
+### Visualize Trajectories
+
+```{r, eval=FALSE}
+plot(fit, type = "trajectories")
+```
+
+This creates a publication-ready plot showing:
+- Class-specific trajectory lines
+- 95% confidence intervals
+- Class proportions in legend
+- Entropy in subtitle
+
+## Model Selection
+
+Determining the optimal number of classes is critical. Use `gmm_select()` to compare multiple solutions:
+
+```{r, eval=FALSE}
+selection <- gmm_select(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  classes = 1:5,
+  strata = "stratum",
+  cluster = "cluster",
+  weights = "weight",
+  criteria = c("BIC", "BLRT", "entropy"),
+  blrt_samples = 100,
+  starts = 200,
+  cores = 4
+)
+
+print(selection)
+```
+
+**Interpreting Results:**
+
+| Criterion | What it Measures | Decision Rule |
+|-----------|------------------|---------------|
+| **BIC** | Model parsimony | Lower is better |
+| **Entropy** | Classification certainty | Higher is better (>0.8 ideal) |
+| **BLRT** | K vs K-1 comparison | p < 0.05 favors K classes |
+
+The BLRT is considered the gold standard. A significant BLRT (p < 0.05) indicates that K classes fit better than K-1 classes. Continue testing until BLRT is non-significant.
+
+### Visualize Model Selection
+
+```{r, eval=FALSE}
+plot_model_selection(selection)
+```
+
+## Adding Covariates: R3STEP Analysis
+
+When relating class membership to auxiliary variables (e.g., delinquency, academic achievement), the naive "classify-analyze" approach produces biased estimates. The R3STEP method corrects for classification uncertainty:
+
+```{r, eval=FALSE}
+# Analyze distal outcomes
+r3step_results <- r3step(
+  gmm_object = fit,
+  distal_vars = c("delinquency", "academic_achievement"),
+  data = mcs_simulated[!duplicated(mcs_simulated$id), ],  # One row per person
+  method = "BCH"
+)
+
+summary(r3step_results)
+```
+
+**R3STEP Output:**
+
+- **Class means** for each auxiliary variable (corrected for classification error)
+- **Survey-adjusted SEs**
+- **Omnibus tests** (any class differences?)
+- **Pairwise comparisons** (which classes differ?)
+- **Effect sizes** (Cohen's d)
+
+## Survey Design Considerations
+
+### When to Use Survey Features
+
+**Use survey weights when:**
+- Data come from a probability sample with unequal selection probabilities
+- You want population-representative estimates
+- Different groups were oversampled
+
+**Use clustering when:**
+- Individuals are nested within units (schools, neighborhoods, PSUs)
+- Observations within clusters are correlated
+- This is common in national cohort studies
+
+**Use stratification when:**
+- Population was divided into strata before sampling
+- Sampling rates differ across strata
+- Example: geographic regions, urban/rural
+
+### Weighted vs Unweighted Results
+
+```{r, eval=FALSE}
+# Compare weighted and unweighted class proportions
+class_proportions(fit, weighted = TRUE)
+class_proportions(fit, weighted = FALSE)
+```
+
+Differences indicate that:
+1. Sampling was not proportional to population
+2. Weights are adjusting for over/under-sampling
+3. Weighted estimates are more population-representative
+
+## Convergence Diagnostics
+
+Multiple random starts are essential because mixture models often have local maxima:
+
+```{r, eval=FALSE}
+diagnostics <- diagnose_convergence(fit)
+print(diagnostics)
+```
+
+**What to Look For:**
+
+- **Best solution replicated**: Should occur 2+ times
+- **Distinct local maxima**: Few (< 3-5) is good; many suggests instability
+- **Convergence rate**: Most starts should converge
+
+**If problems detected:**
+
+```{r, eval=FALSE}
+# Increase random starts
+fit_more <- gmm_survey(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  n_classes = 3,
+  starts = 1000,  # Increase from 500
+  cores = 4
+)
+```
+
+## Classification Quality
+
+Assess how well individuals are classified:
+
+```{r, eval=FALSE}
+qual <- classification_quality(fit)
+print(qual)
+```
+
+**Key Metrics:**
+
+- **Entropy**: 0-1 scale (>0.8 excellent, 0.6-0.8 good, <0.6 poor)
+- **AvePP**: Average posterior probability for assigned class (>0.9 ideal)
+- **OCC**: Odds of correct classification (>5 desirable)
+
+**If classification is poor:**
+
+1. Consider fewer classes
+2. Try different growth model specification
+3. Add time-varying covariates
+4. Check for data quality issues
+
+## Growth Model Specifications
+
+surveymixr supports multiple growth models:
+
+### Linear Growth (Default)
+
+```{r, eval=FALSE}
+fit_linear <- gmm_survey(..., growth_model = "linear")
+```
+
+Model: $y_{it} = \beta_{0k} + \beta_{1k} \cdot t + \epsilon_{it}$
+
+### Quadratic Growth
+
+```{r, eval=FALSE}
+fit_quad <- gmm_survey(..., growth_model = "quadratic")
+```
+
+Model: $y_{it} = \beta_{0k} + \beta_{1k} \cdot t + \beta_{2k} \cdot t^2 + \epsilon_{it}$
+
+Useful for:
+- Non-linear trajectories
+- Developmental curves with acceleration/deceleration
+
+### Free Time Scores
+
+```{r, eval=FALSE}
+fit_free <- gmm_survey(..., growth_model = "free_basis")
+```
+
+Estimates time scores rather than fixing them. Useful when:
+- Time intervals are irregular
+- Developmental time is not linear with chronological time
+
+## Comparison with Mplus
+
+For researchers familiar with Mplus, surveymixr provides similar functionality with some key differences:
+
+### Syntax Comparison
+
+**Mplus:**
+```
+VARIABLE:
+  CLASSES = c(3);
+  CLUSTER = psu;
+  STRATIFICATION = stratum;
+  WEIGHT = weight;
+
+ANALYSIS:
+  TYPE = MIXTURE;
+  STARTS = 500 100;
+
+MODEL:
+  %OVERALL%
+  i s | y@0 y@1 y@2 y@3;
+```
+
+**surveymixr:**
+```{r, eval=FALSE}
+gmm_survey(
+  data = data,
+  outcome = "y",
+  n_classes = 3,
+  cluster = "psu",
+  strata = "stratum",
+  weights = "weight",
+  starts = 500
+)
+```
+
+### Conversion Utilities
+
+```{r, eval=FALSE}
+# Convert Mplus input to surveymixr code
+r_code <- mplus_to_surveymixr("model.inp")
+cat(r_code)
+
+# Export surveymixr results in Mplus format
+surveymixr_to_mplus(fit, file = "results.txt")
+```
+
+## Advanced Topics
+
+### Missing Data
+
+surveymixr uses Full Information Maximum Likelihood (FIML) by default:
+
+- **MCAR**: Missing completely at random
+- **MAR**: Missing at random (conditional on observed data)
+- **MNAR**: Not recommended; requires specialized models
+
+Pattern of missingness is automatically handled. No need for imputation.
+
+### Parallelization
+
+For large datasets or many starts, use parallel processing:
+
+```{r, eval=FALSE}
+# Check available cores
+parallel::detectCores()
+
+# Use multiple cores
+fit <- gmm_survey(..., starts = 1000, cores = 8)
+```
+
+Benefits:
+- 1000 starts in ~5-10 minutes (vs hours sequentially)
+- Linear speedup with cores
+- Essential for BLRT
+
+## Best Practices
+
+### Sample Size Requirements
+
+**Minimum recommendations:**
+
+- **Per class**: At least 50-100 individuals
+- **Smallest class**: Should be >5% of sample
+- **Time points**: At least 3 (4-6 better)
+- **For BLRT**: Larger samples (N > 500) better
+
+### Model Building Strategy
+
+1. **Start simple**: Fit 1-5 class models with linear growth
+2. **Use model selection**: Compare BIC, entropy, BLRT
+3. **Check convergence**: Ensure best solution replicated
+4. **Assess quality**: Examine classification metrics
+5. **Add complexity**: Try quadratic growth if justified
+6. **Interpret substantively**: Classes must make theoretical sense
+7. **Validate**: R3STEP with auxiliary variables
+
+### Reporting Results
+
+A complete analysis report should include:
+
+1. **Sample description**: N, time points, missing data rate
+2. **Model selection**: Table with fit indices for 1-5 classes
+3. **Final model**: Parameter estimates with SEs (table)
+4. **Trajectory plot**: Publication-quality figure
+5. **Classification**: Entropy, class sizes, AvePP
+6. **Convergence**: Random starts, replications
+7. **Survey design**: Weights, clustering, stratification details
+8. **R3STEP**: Auxiliary variable analyses (if applicable)
+
+## Getting Help
+
+### Documentation
+
+```{r, eval=FALSE}
+# Function help
+?gmm_survey
+?gmm_select
+?r3step
+
+# Vignettes
+browseVignettes("surveymixr")
+```
+
+### Common Issues
+
+**"Best solution not replicated"**
+→ Increase `starts` to 1000+
+
+**"Poor entropy (<0.6)"**
+→ Try fewer classes or different growth model
+
+**"Very small class (<5%)"**
+→ May not be substantively meaningful; consider K-1 classes
+
+**"Long computation time"**
+→ Use `cores` for parallelization; reduce `starts` for initial exploration
+
+## References
+
+### Key Papers
+
+**Mixture Modeling:**
+- Muthén, B. (2004). Latent variable analysis: Growth mixture modeling and related techniques for longitudinal data. In D. Kaplan (Ed.), *Handbook of quantitative methodology for the social sciences* (pp. 345-368). Sage.
+
+**Class Enumeration:**
+- Nylund, K. L., Asparouhov, T., & Muthén, B. O. (2007). Deciding on the number of classes in latent class analysis and growth mixture modeling: A Monte Carlo simulation study. *Structural Equation Modeling, 14*(4), 535-569.
+
+**R3STEP:**
+- Asparouhov, T., & Muthén, B. (2014). Auxiliary variables in mixture modeling: Three-step approaches using Mplus. *Structural Equation Modeling: A Multidisciplinary Journal, 21*(3), 329-341.
+
+**Complex Surveys:**
+- Lumley, T. (2010). *Complex surveys: A guide to analysis using R*. John Wiley & Sons.
+
+### Example Applications
+
+**Criminology:**
+- Nagin, D. S. (2005). *Group-based modeling of development*. Harvard University Press.
+
+**Developmental Psychology:**
+- Moffitt, T. E. (2006). Life-course-persistent versus adolescence-limited antisocial behavior. In *Developmental psychopathology* (2nd ed., pp. 570-598). Wiley.
+
+## Next Steps
+
+- **Technical Details**: See `vignette("surveymixr-technical")`
+- **R3STEP Deep Dive**: See `vignette("surveymixr-r3step")`
+- **Validation Studies**: See `vignette("surveymixr-validation")`
+- **GitHub Issues**: Report bugs or request features
+
+---
+
+**Package Version:** `r packageVersion("surveymixr")`
+**Last Updated:** `r Sys.Date()`

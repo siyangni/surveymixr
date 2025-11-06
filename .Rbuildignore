@@ -1,0 +1,15 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.git$
+^\.github$
+^data-raw$
+^paper$
+^docs$
+^pkgdown$
+^README\.Rmd$
+^LICENSE\.md$
+^\.travis\.yml$
+^codecov\.yml$
+^_pkgdown\.yml$
+^doc$
+^Meta$
