@@ -64,7 +64,7 @@
 #' plot(fit)
 #' }
 #'
-#' @author Your Name \email{your.email@@example.com}
+#' @author Siyang Ni \email{your.email@@example.com}
 #'
 #' @references
 #' Muthén, B. (2004). Latent variable analysis: Growth mixture modeling and
@@ -84,7 +84,7 @@
 #' @name surveymixr-package
 #' @aliases surveymixr
 #' @keywords package
-#' @importFrom stats as.formula kmeans p.adjust pf pt rbinom reshape rnorm runif weighted.mean dnorm
+#' @importFrom stats as.formula kmeans p.adjust pf pt rbinom reshape rnorm runif weighted.mean dnorm qnorm quantile sd var
 "_PACKAGE"
 
 # Suppress R CMD check notes about ggplot2 NSE variables

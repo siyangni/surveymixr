@@ -3,6 +3,12 @@
 #' @description
 #' Standard methods for objects returned by surveymixr functions.
 #'
+#' @param object A \code{SurveyMixr} object
+#' @param x A \code{SurveyMixr} object
+#' @param y Not used (required for S4 plot signature)
+#' @param k Integer specifying class number (for class-specific methods)
+#' @param ... Additional arguments passed to plotting or summary functions
+#'
 #' @name surveymixr-methods
 #' @rdname surveymixr-methods
 NULL
