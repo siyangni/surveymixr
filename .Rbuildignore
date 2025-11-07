@@ -7,9 +7,14 @@
 ^docs$
 ^pkgdown$
 ^README\.Rmd$
+^LICENSE$
 ^LICENSE\.md$
 ^\.travis\.yml$
 ^codecov\.yml$
 ^_pkgdown\.yml$
 ^doc$
 ^Meta$
+^TESTING\.md$
+^example-usage\.R$
+^test-package\.R$
+^test_trajectory_plot\.png$
