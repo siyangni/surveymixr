@@ -333,13 +333,39 @@ gmm_survey <- function(data,
     x$converged
   })
 
+  # Check if any valid results exist
+  if (!any(is.finite(logliks))) {
+    # Collect error messages
+    errors <- sapply(results_all, function(x) {
+      if (!is.null(x$error)) return(x$error) else return(NA)
+    })
+    unique_errors <- unique(errors[!is.na(errors)])
+
+    error_msg <- "All random starts failed to produce valid results.\n"
+    if (length(unique_errors) > 0) {
+      error_msg <- paste0(error_msg, "\nErrors encountered:\n")
+      for (i in seq_along(unique_errors)) {
+        error_msg <- paste0(error_msg, sprintf("  %d. %s\n", i, unique_errors[i]))
+      }
+    }
+    error_msg <- paste0(error_msg, "\nThis may indicate:\n",
+                       "  - Data issues (e.g., insufficient variability)\n",
+                       "  - Model specification problems\n",
+                       "  - Too many latent classes for the data\n",
+                       "Check your data and consider:\n",
+                       "  - Reducing n_classes\n",
+                       "  - Checking for missing data patterns\n",
+                       "  - Verifying survey weights are valid")
+    stop(error_msg)
+  }
+
   best_loglik <- max(logliks[is.finite(logliks)])
   best_idx <- which.max(logliks)
   best_result <- results_all[[best_idx]]
 
   # Count replications
   replication_tolerance <- 1e-4
-  n_replications <- sum(abs(logliks - best_loglik) < replication_tolerance)
+  n_replications <- sum(abs(logliks - best_loglik) < replication_tolerance, na.rm = TRUE)
 
   if (verbose) {
     message(sprintf("  Best logLik: %.4f", best_loglik))
