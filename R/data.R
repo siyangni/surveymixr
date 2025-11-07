@@ -111,6 +111,6 @@
 #' summary(r3step_results)
 #' }
 #'
+#' @name mcs_simulated
 #' @keywords datasets
 NULL  # Dataset will be added in future version
-# "mcs_simulated"
