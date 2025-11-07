@@ -39,19 +39,25 @@
 #' Quick example:
 #' \preformatted{
 #' library(surveymixr)
-#' data(mcs_simulated)
+#'
+#' # Simulate data for demonstration
+#' sim_data <- simulate_gmm_survey(
+#'   n_individuals = 500,
+#'   n_times = 4,
+#'   n_classes = 3
+#' )
 #'
 #' # Fit 3-class model
 #' fit <- gmm_survey(
-#'   data = mcs_simulated,
+#'   data = sim_data,
 #'   id = "id",
-#'   time = "age",
-#'   outcome = "selfcontrol",
+#'   time = "time",
+#'   outcome = "outcome",
 #'   n_classes = 3,
 #'   strata = "stratum",
-#'   cluster = "cluster",
+#'   cluster = "psu",
 #'   weights = "weight",
-#'   starts = 500
+#'   starts = 100
 #' )
 #'
 #' summary(fit)
