@@ -474,8 +474,8 @@ determine_optimal_classes <- function(fit_table, criteria, blrt_alpha = 0.05) {
 
   # Entropy: highest value (but only if > 0.6)
   if ("entropy" %in% criteria) {
-    good_entropy <- fit_table$entropy > 0.6
-    if (any(good_entropy)) {
+    good_entropy <- !is.na(fit_table$entropy) & fit_table$entropy > 0.6
+    if (any(good_entropy, na.rm = TRUE)) {
       best_entropy <- which.max(fit_table$entropy * good_entropy)
       votes[best_entropy] <- votes[best_entropy] + 0.5  # Half vote
     }
