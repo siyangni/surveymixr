@@ -87,14 +87,18 @@ em_algorithm_gmm <- function(y_wide,
                                           growth_model)
 
     # Check convergence
-    rel_change <- abs((loglik_new - loglik_old) / (abs(loglik_old) + 1e-10))
+    if (is.finite(loglik_old)) {
+      rel_change <- abs((loglik_new - loglik_old) / (abs(loglik_old) + 1e-10))
+    } else {
+      rel_change <- Inf  # First iteration, no convergence yet
+    }
 
     if (verbose && iter %% 10 == 0) {
       message(sprintf("Iteration %d: LogLik = %.4f, Rel. Change = %.6f",
                      iter, loglik_new, rel_change))
     }
 
-    if (rel_change < tolerance) {
+    if (is.finite(rel_change) && rel_change < tolerance) {
       converged <- TRUE
       if (verbose) {
         message(sprintf("Converged after %d iterations", iter))
