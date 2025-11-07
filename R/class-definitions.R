@@ -40,7 +40,6 @@ setClass("SurveyMixr",
     computation_time = "numeric"
   ),
   prototype = list(
-    call = call("gmm_survey"),
     model_info = list(),
     parameters = list(),
     class_proportions = list(),
