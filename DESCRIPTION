@@ -24,17 +24,11 @@ Depends:
     R (>= 4.0.0)
 Imports:
     stats,
-    graphics,
     methods,
     MASS,
     numDeriv,
-    survey,
-    lavaan,
     ggplot2,
-    data.table,
-    parallel,
-    foreach,
-    doParallel
+    parallel
 Suggests:
     knitr,
     rmarkdown,
