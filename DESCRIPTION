@@ -4,10 +4,10 @@ Title: Growth Mixture Models with Complex Survey Design
 Version: 0.1.0
 Date: 2025-11-06
 Authors@R: c(
-    person("Siyang", "Ni", email = "your.email@example.com",
+    person("Siyang", "Ni", email = "johnni.nj@gmail.com",
            role = c("aut", "cre"))
     )
-Maintainer: Siyang Ni <your.email@example.com>
+Maintainer: Siyang Ni <johnni.nj@gmail.com>
 Description: Implements growth mixture modeling for longitudinal data with
     complex survey features including stratification, clustering, and probability
     weights. Provides model selection tools including the Bootstrap Likelihood
@@ -37,7 +37,7 @@ Suggests:
 VignetteBuilder: knitr
 URL: https://github.com/siyangni/surveymixr
 BugReports: https://github.com/siyangni/surveymixr/issues
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 SystemRequirements: C++11
 NeedsCompilation: no
