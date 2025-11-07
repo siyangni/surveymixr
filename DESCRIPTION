@@ -5,8 +5,7 @@ Version: 0.1.0
 Date: 2025-11-06
 Authors@R: c(
     person("Your", "Name", email = "your.email@example.com",
-           role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0000-0000-0000"))
+           role = c("aut", "cre"))
     )
 Maintainer: Your Name <your.email@example.com>
 Description: Implements growth mixture modeling for longitudinal data with
