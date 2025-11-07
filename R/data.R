@@ -112,4 +112,5 @@
 #' }
 #'
 #' @keywords datasets
-"mcs_simulated"
+NULL  # Dataset will be added in future version
+# "mcs_simulated"
