@@ -1,0 +1,61 @@
+url: https://siyangni.github.io/surveymixr/
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: Introduction to surveymixr
+        href: articles/surveymixr-intro.html
+
+reference:
+- title: Main Functions
+  desc: Core functions for fitting growth mixture models
+  contents:
+  - gmm_survey
+  - gmm_select
+  - r3step
+
+- title: Diagnostic Functions
+  desc: Model diagnostics and quality assessment
+  contents:
+  - diagnose_convergence
+  - classification_quality
+  - class_proportions
+
+- title: Plotting Functions
+  desc: Visualization of results
+  contents:
+  - plot_trajectories
+  - plot_model_selection
+  - plot_convergence
+  - plot_entropy_distribution
+  - plot_class_sizes
+
+- title: Utility Functions
+  desc: Helper functions for data manipulation and simulation
+  contents:
+  - simulate_gmm_survey
+  - wide_to_long
+  - mplus_to_surveymixr
+
+- title: Data
+  desc: Example datasets
+  contents:
+  - mcs_simulated
+
+- title: S4 Classes and Methods
+  desc: Object-oriented infrastructure
+  contents:
+  - SurveyMixr-class
+  - surveymixr-methods
+
+authors:
+  Siyang Ni:
+    href: https://github.com/siyangni
