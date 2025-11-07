@@ -188,6 +188,8 @@ entropy <- function(object, weights = NULL) {
   UseMethod("entropy")
 }
 
+#' @rdname entropy
+#' @method entropy SurveyMixr
 #' @export
 entropy.SurveyMixr <- function(object, weights = NULL) {
   posterior_probs <- object@posterior_probs
@@ -203,6 +205,8 @@ entropy.SurveyMixr <- function(object, weights = NULL) {
   }
 }
 
+#' @rdname entropy
+#' @method entropy matrix
 #' @export
 entropy.matrix <- function(object, weights = NULL) {
   if (!is.null(weights)) {
@@ -212,6 +216,8 @@ entropy.matrix <- function(object, weights = NULL) {
   }
 }
 
+#' @rdname entropy
+#' @method entropy default
 #' @export
 entropy.default <- function(object, weights = NULL) {
   stop("entropy() requires a SurveyMixr object or matrix of posterior probabilities")

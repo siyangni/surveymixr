@@ -78,4 +78,11 @@
 #' @name surveymixr-package
 #' @aliases surveymixr
 #' @keywords package
+#' @importFrom stats as.formula kmeans p.adjust pf pt rbinom reshape rnorm runif weighted.mean dnorm
 "_PACKAGE"
+
+# Suppress R CMD check notes about ggplot2 NSE variables
+utils::globalVariables(c(
+  "value", "percent", "loglik", "converged", "max_pp", "n_classes",
+  "time", "predicted", "lower", "upper"
+))
