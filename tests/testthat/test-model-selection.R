@@ -10,7 +10,7 @@ test_that("gmm_select compares models across different class numbers", {
     n_times = 4,
     n_classes = 3,
     class_proportions = c(0.5, 0.3, 0.2),
-    design = "SRS",
+    design = "srs",
     seed = 301
   )
 
@@ -54,7 +54,7 @@ test_that("gmm_select handles minimum 2 classes", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 302
   )
 
@@ -83,7 +83,7 @@ test_that("BLRT works when enabled", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 303
   )
 
@@ -115,7 +115,7 @@ test_that("Information criteria are calculated correctly", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 304
   )
 
@@ -148,7 +148,7 @@ test_that("Entropy is bounded between 0 and 1", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 3,
-    design = "SRS",
+    design = "srs",
     seed = 305
   )
 
@@ -215,7 +215,7 @@ test_that("Model selection can be plotted", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 307
   )
 
@@ -245,7 +245,7 @@ test_that("Single class model serves as baseline", {
     n_individuals = 150,
     n_times = 4,
     n_classes = 1,  # Homogeneous
-    design = "SRS",
+    design = "srs",
     seed = 308
   )
 
@@ -283,7 +283,7 @@ test_that("Model selection recommendations are sensible", {
       list(intercept = 2, slope = -0.3)
     ),
     residual_sds = c(1, 1, 1),
-    design = "SRS",
+    design = "srs",
     seed = 309
   )
 
@@ -316,7 +316,7 @@ test_that("Parallel processing works in model selection", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 310
   )
 

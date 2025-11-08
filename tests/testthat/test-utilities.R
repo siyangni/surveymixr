@@ -69,7 +69,7 @@ test_that("simulate_gmm_survey handles different survey designs", {
     n_individuals = 100,
     n_times = 3,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 702
   )
   expect_true(!"stratum" %in% colnames(data_srs))
@@ -140,7 +140,7 @@ test_that("surveymixr_to_mplus export works", {
     n_individuals = 100,
     n_times = 3,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 706
   )
 
@@ -169,7 +169,7 @@ test_that("class_proportions extracts correctly", {
     n_times = 4,
     n_classes = 3,
     class_proportions = c(0.5, 0.3, 0.2),
-    design = "SRS",
+    design = "srs",
     seed = 707
   )
 
@@ -204,7 +204,7 @@ test_that("entropy calculation is correct", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 708
   )
 
@@ -236,7 +236,7 @@ test_that("classification_quality provides useful metrics", {
     n_individuals = 250,
     n_times = 4,
     n_classes = 3,
-    design = "SRS",
+    design = "srs",
     seed = 709
   )
 
@@ -272,7 +272,7 @@ test_that("Parameter extraction utilities work", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 710
   )
 
@@ -310,7 +310,7 @@ test_that("Fitted and residual methods work", {
     n_individuals = 150,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 711
   )
 
@@ -342,7 +342,7 @@ test_that("Simulation with covariates works", {
     n_times = 4,
     n_classes = 2,
     covariates = TRUE,
-    design = "SRS",
+    design = "srs",
     seed = 712
   )
 
@@ -365,7 +365,7 @@ test_that("Simulation with custom growth parameters works", {
     n_times = 4,
     n_classes = 2,
     growth_parameters = custom_params,
-    design = "SRS",
+    design = "srs",
     seed = 713
   )
 
@@ -386,7 +386,7 @@ test_that("Summary method produces useful output", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 714
   )
 
@@ -417,7 +417,7 @@ test_that("AIC and BIC methods work correctly", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 715
   )
 

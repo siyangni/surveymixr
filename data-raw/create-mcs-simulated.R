@@ -2,7 +2,8 @@
 # Simulates data similar to the UK Millennium Cohort Study
 # Self-control trajectories from ages 3 to 17
 
-library(surveymixr)
+# Load package from source (works even if not installed)
+devtools::load_all()
 
 set.seed(42)
 

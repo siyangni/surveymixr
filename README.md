@@ -2,8 +2,8 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/siyangni/surveymixr/workflows/R-CMD-check/badge.svg)](https://github.com/siyangni/surveymixr/actions)
-[![CRAN status](https://www.r-pkg.org/badges/version/surveymixr)](https://CRAN.R-project.org/package=surveymixr)
-[![codecov](https://codecov.io/gh/siyangni/surveymixr/branch/main/graph/badge.svg)](https://codecov.io/gh/siyangni/surveymixr)
+<!-- [![CRAN status](https://www.r-pkg.org/badges/version/surveymixr)](https://CRAN.R-project.org/package=surveymixr) -->
+[![codecov](https://codecov.io/gh/siyangni/surveymixr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/siyangni/surveymixr)
 <!-- badges: end -->
 
 ## Overview
@@ -119,10 +119,17 @@ Existing R packages have significant limitations:
 
 ## Documentation
 
-- [Introduction to surveymixr](https://siyangni.github.io/surveymixr/articles/surveymixr-intro.html)
-- [Technical Details and Algorithms](https://siyangni.github.io/surveymixr/articles/surveymixr-technical.html)
-- [R3STEP Analysis](https://siyangni.github.io/surveymixr/articles/surveymixr-r3step.html)
-- [Comparison with Mplus](https://siyangni.github.io/surveymixr/articles/surveymixr-validation.html)
+Four comprehensive vignettes are included:
+
+- Introduction to surveymixr (`vignette("surveymixr-intro")`)
+- Technical Details and Algorithms (`vignette("technical-details")`)
+- R3STEP Auxiliary Variable Analysis (`vignette("r3step-analysis")`)
+- Validation Against Mplus (`vignette("mplus-validation")`)
+
+After package installation, view vignettes with:
+```r
+browseVignettes("surveymixr")
+```
 
 ## Citation
 

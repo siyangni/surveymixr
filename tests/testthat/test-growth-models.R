@@ -14,7 +14,7 @@ test_that("linear growth model works correctly", {
       list(intercept = 5, slope = 0.5),
       list(intercept = 3, slope = -0.2)
     ),
-    design = "SRS",
+    design = "srs",
     seed = 123
   )
 
@@ -59,7 +59,7 @@ test_that("quadratic growth model works correctly", {
       list(intercept = 5, slope = 1.0, quadratic = -0.1),
       list(intercept = 3, slope = 0.2, quadratic = 0.05)
     ),
-    design = "SRS",
+    design = "srs",
     seed = 124
   )
 
@@ -95,7 +95,7 @@ test_that("free basis growth model works correctly", {
     n_individuals = 150,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 125
   )
 
@@ -125,7 +125,7 @@ test_that("nonlinear growth model works correctly", {
     n_individuals = 150,
     n_times = 5,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 126
   )
 
@@ -155,7 +155,7 @@ test_that("growth models with covariates work", {
     n_times = 4,
     n_classes = 2,
     covariates = TRUE,
-    design = "SRS",
+    design = "srs",
     seed = 127
   )
 
@@ -188,7 +188,7 @@ test_that("model comparison across growth types works", {
     n_individuals = 150,
     n_times = 5,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 128
   )
 

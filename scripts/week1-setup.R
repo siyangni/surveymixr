@@ -19,17 +19,19 @@ if (!file.exists("DESCRIPTION")) {
 
 # Load required packages
 cat("Loading required packages...\n")
-required_packages <- c("devtools", "usethis", "testthat", "roxygen2", "urlchecker")
+required_packages <- c("devtools", "usethis", "testthat", "roxygen2", "urlchecker", "spelling")
 
 for (pkg in required_packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     cat(sprintf("Installing %s...\n", pkg))
-    install.packages(pkg)
+    install.packages(pkg, repos = "https://cloud.r-project.org")
   }
 }
 
-library(devtools)
-library(usethis)
+suppressPackageStartupMessages({
+  library(devtools)
+  library(usethis)
+})
 
 # =============================================================================
 # TASK 1: Create Example Dataset

@@ -9,7 +9,7 @@ test_that("Single class model works (no mixture)", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 1,  # No mixture
-    design = "SRS",
+    design = "srs",
     seed = 801
   )
 
@@ -38,7 +38,7 @@ test_that("Very small sample size (n < 100)", {
     n_individuals = 50,  # Very small
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 802
   )
 
@@ -135,7 +135,7 @@ test_that("Very large number of classes (model too complex)", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,  # True model: 2 classes
-    design = "SRS",
+    design = "srs",
     seed = 805
   )
 
@@ -166,7 +166,7 @@ test_that("Only 2 time points (minimal longitudinal)", {
     n_individuals = 300,
     n_times = 2,  # Minimal
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 806
   )
 
@@ -209,7 +209,7 @@ test_that("Extreme values in outcome", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 807
   )
 
@@ -240,7 +240,7 @@ test_that("Constant variance vs class-varying variance", {
     n_times = 4,
     n_classes = 2,
     residual_sds = c(1.0, 3.0),  # Different variances
-    design = "SRS",
+    design = "srs",
     seed = 808
   )
 
@@ -308,7 +308,7 @@ test_that("All missing for one time point", {
     n_individuals = 200,
     n_times = 5,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 810
   )
 
@@ -444,7 +444,7 @@ test_that("Factor variables in covariates work", {
     n_times = 4,
     n_classes = 2,
     covariates = TRUE,
-    design = "SRS",
+    design = "srs",
     seed = 815
   )
 
@@ -481,7 +481,7 @@ test_that("Very high entropy (near-perfect classification)", {
       list(intercept = 2, slope = -0.5)
     ),
     residual_sds = c(0.5, 0.5),  # Low noise
-    design = "SRS",
+    design = "srs",
     seed = 816
   )
 
@@ -515,7 +515,7 @@ test_that("Very low entropy (poor classification)", {
       list(intercept = 4.8, slope = 0.08)
     ),
     residual_sds = c(2, 2, 2),  # High noise
-    design = "SRS",
+    design = "srs",
     seed = 817
   )
 

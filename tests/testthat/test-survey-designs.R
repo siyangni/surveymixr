@@ -9,7 +9,7 @@ test_that("Simple Random Sampling (SRS) works", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 201
   )
 
@@ -294,7 +294,7 @@ test_that("Invalid survey design specifications are caught", {
     n_individuals = 100,
     n_times = 3,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 209
   )
 

@@ -9,7 +9,7 @@ test_that("FIML handles MCAR data correctly", {
     n_individuals = 300,
     n_times = 5,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     missing_rate = 0.15,
     missing_mechanism = "MCAR",
     seed = 501
@@ -41,7 +41,7 @@ test_that("FIML handles MAR data correctly", {
     n_individuals = 300,
     n_times = 5,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     missing_rate = 0.20,
     missing_mechanism = "MAR",
     seed = 502
@@ -76,7 +76,7 @@ test_that("Different missing rates are handled", {
     n_times = 4,
     n_classes = 2,
     missing_rate = 0.05,
-    design = "SRS",
+    design = "srs",
     seed = 503
   )
 
@@ -86,7 +86,7 @@ test_that("Different missing rates are handled", {
     n_times = 4,
     n_classes = 2,
     missing_rate = 0.40,
-    design = "SRS",
+    design = "srs",
     seed = 504
   )
 
@@ -130,7 +130,7 @@ test_that("Missing data patterns are handled correctly", {
     n_individuals = 250,
     n_times = 6,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 505
   )
 
@@ -166,7 +166,7 @@ test_that("Intermittent missing data is handled", {
     n_individuals = 250,
     n_times = 5,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 506
   )
 
@@ -200,7 +200,7 @@ test_that("Complete cases vs FIML produces different results", {
     n_times = 5,
     n_classes = 2,
     missing_rate = 0.25,
-    design = "SRS",
+    design = "srs",
     seed = 507
   )
 
@@ -245,7 +245,7 @@ test_that("All observations missing for some individuals", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 508
   )
 
@@ -277,7 +277,7 @@ test_that("Missing in covariates is handled", {
     n_times = 4,
     n_classes = 2,
     covariates = TRUE,
-    design = "SRS",
+    design = "srs",
     seed = 509
   )
 
@@ -309,7 +309,7 @@ test_that("Missing data diagnostic functions work", {
     n_times = 5,
     n_classes = 2,
     missing_rate = 0.20,
-    design = "SRS",
+    design = "srs",
     seed = 510
   )
 
@@ -338,7 +338,7 @@ test_that("Monotone vs non-monotone missing patterns", {
     n_individuals = 200,
     n_times = 5,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 511
   )
 
@@ -357,7 +357,7 @@ test_that("Monotone vs non-monotone missing patterns", {
     n_times = 5,
     n_classes = 2,
     missing_rate = 0.20,
-    design = "SRS",
+    design = "srs",
     seed = 512
   )
 
@@ -395,7 +395,7 @@ test_that("FIML log-likelihood is calculated correctly with missing data", {
     n_times = 4,
     n_classes = 2,
     missing_rate = 0.15,
-    design = "SRS",
+    design = "srs",
     seed = 513
   )
 
@@ -427,7 +427,7 @@ test_that("Extreme missing rates are handled", {
     n_times = 6,
     n_classes = 2,
     missing_rate = 0.60,
-    design = "SRS",
+    design = "srs",
     seed = 514
   )
 

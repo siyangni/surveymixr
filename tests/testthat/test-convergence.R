@@ -9,7 +9,7 @@ test_that("Multiple random starts find global maximum", {
     n_individuals = 300,
     n_times = 4,
     n_classes = 3,
-    design = "SRS",
+    design = "srs",
     seed = 601
   )
 
@@ -39,7 +39,7 @@ test_that("diagnose_convergence identifies local maxima", {
     n_individuals = 250,
     n_times = 4,
     n_classes = 3,
-    design = "SRS",
+    design = "srs",
     seed = 602
   )
 
@@ -73,7 +73,7 @@ test_that("Few random starts may find local maxima", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 4,  # Complex model
-    design = "SRS",
+    design = "srs",
     seed = 603
   )
 
@@ -111,7 +111,7 @@ test_that("Convergence tolerance affects iterations", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 604
   )
 
@@ -155,7 +155,7 @@ test_that("Maximum iterations limit prevents infinite loops", {
     n_individuals = 150,
     n_times = 4,
     n_classes = 5,  # Very complex
-    design = "SRS",
+    design = "srs",
     seed = 605
   )
 
@@ -189,7 +189,7 @@ test_that("Parallel processing produces same results", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 606
   )
 
@@ -227,7 +227,7 @@ test_that("Convergence diagnostics detect replicated solutions", {
     n_individuals = 300,
     n_times = 4,
     n_classes = 2,  # Simple model, should replicate well
-    design = "SRS",
+    design = "srs",
     seed = 607
   )
 
@@ -258,7 +258,7 @@ test_that("Non-convergence is detected and reported", {
     n_individuals = 100,
     n_times = 3,
     n_classes = 6,  # Too many classes for data
-    design = "SRS",
+    design = "srs",
     seed = 608
   )
 
@@ -291,7 +291,7 @@ test_that("Starting values affect convergence path", {
     n_individuals = 250,
     n_times = 4,
     n_classes = 3,
-    design = "SRS",
+    design = "srs",
     seed = 609
   )
 
@@ -366,7 +366,7 @@ test_that("EM iterations are tracked correctly", {
     n_individuals = 200,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 611
   )
 
@@ -396,7 +396,7 @@ test_that("Boundary solutions are detected", {
     n_times = 4,
     n_classes = 3,
     class_proportions = c(0.7, 0.25, 0.05),  # Very small class
-    design = "SRS",
+    design = "srs",
     seed = 612
   )
 
@@ -428,7 +428,7 @@ test_that("Gradient norms are small at convergence", {
     n_individuals = 250,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 613
   )
 
@@ -457,7 +457,7 @@ test_that("Convergence with different growth models", {
     n_individuals = 250,
     n_times = 5,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 614
   )
 

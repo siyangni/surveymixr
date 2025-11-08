@@ -10,7 +10,7 @@ test_that("r3step BCH method works with continuous distal outcome", {
     n_times = 4,
     n_classes = 3,
     covariates = TRUE,
-    design = "SRS",
+    design = "srs",
     seed = 401
   )
 
@@ -51,7 +51,7 @@ test_that("r3step ML method works", {
     n_times = 4,
     n_classes = 2,
     covariates = TRUE,
-    design = "SRS",
+    design = "srs",
     seed = 402
   )
 
@@ -84,7 +84,7 @@ test_that("r3step manual 3-step method works", {
     n_individuals = 250,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 403
   )
 
@@ -155,7 +155,7 @@ test_that("r3step omnibus test detects differences", {
     n_individuals = 400,
     n_times = 4,
     n_classes = 3,
-    design = "SRS",
+    design = "srs",
     seed = 405
   )
 
@@ -189,7 +189,7 @@ test_that("r3step pairwise comparisons work", {
     n_individuals = 300,
     n_times = 4,
     n_classes = 3,
-    design = "SRS",
+    design = "srs",
     seed = 406
   )
 
@@ -225,7 +225,7 @@ test_that("r3step calculates effect sizes", {
     n_individuals = 300,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 407
   )
 
@@ -257,7 +257,7 @@ test_that("r3step can be plotted", {
     n_individuals = 250,
     n_times = 4,
     n_classes = 3,
-    design = "SRS",
+    design = "srs",
     seed = 408
   )
 
@@ -290,7 +290,7 @@ test_that("r3step handles missing data in distal outcome", {
     n_individuals = 300,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 409
   )
 
@@ -330,7 +330,7 @@ test_that("r3step with binary distal outcome works", {
     n_times = 4,
     n_classes = 2,
     covariates = TRUE,
-    design = "SRS",
+    design = "srs",
     seed = 410
   )
 
@@ -365,7 +365,7 @@ test_that("r3step methods produce similar results", {
     n_individuals = 400,
     n_times = 4,
     n_classes = 2,
-    design = "SRS",
+    design = "srs",
     seed = 411
   )
 
