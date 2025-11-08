@@ -323,14 +323,15 @@ test_that("Fitted and residual methods work", {
     outcome = "outcome",
     n_classes = 2,
     starts = 10,
-    cores = 1
+    cores = 1,
+    keep_data = TRUE  # Required for residuals
   )
 
   # Fitted values
   fitted_vals <- fitted(fit)
   expect_true(length(fitted_vals) > 0)
 
-  # Residuals
+  # Residuals (requires keep_data = TRUE)
   resids <- residuals(fit)
   expect_true(length(resids) > 0)
   expect_equal(length(fitted_vals), length(resids))
@@ -402,9 +403,10 @@ test_that("Summary method produces useful output", {
     cores = 1
   )
 
-  # Summary should work
-  summ <- summary(fit)
-  expect_true(!is.null(summ))
+  # Summary should work (prints output, returns NULL invisibly)
+  expect_output(summary(fit), "Growth Mixture Model")
+  expect_output(summary(fit), "MODEL SPECIFICATION")
+  expect_output(summary(fit), "GROWTH PARAMETERS")
 
   # Print should work and contain key information
   expect_output(print(fit), "Growth Mixture Model")
