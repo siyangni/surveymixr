@@ -1,3 +1,8 @@
+0k
+1e
+1k
+2k
+2p
 aBIC
 AIC
 anova
@@ -32,6 +37,7 @@ geq
 ggplot
 ggplot2
 GitHub
+gmm
 GMM
 GMMs
 Hagenaars
@@ -40,6 +46,7 @@ hyperparameter
 idx
 ij
 ik
+j0
 inp
 inspectability
 inspectable
@@ -79,6 +86,7 @@ pkgdown
 PSU
 PSUs
 psychometrics
+R3STEP
 Ramaswamy
 Rbuildignore
 Rcpp
@@ -97,6 +105,7 @@ testthat
 tidyverse
 Tukey
 USEVAR
+v0
 Vermunt
 vignette
 vignettes

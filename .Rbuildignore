@@ -18,3 +18,10 @@
 ^example-usage\.R$
 ^test-package\.R$
 ^test_trajectory_plot\.png$
+^ACTION-PLAN-PHASE1\.md$
+^BUGFIX-SUMMARY\.md$
+^FEATURE-ADDITIONS\.md$
+^IMPLEMENTATION-SUMMARY\.md$
+^ROADMAP\.md$
+^WEEK1-INSTRUCTIONS\.md$
+^scripts$

@@ -15,10 +15,9 @@ test_that("wide_to_long reshaping works correctly", {
   # Reshape to long
   long_data <- wide_to_long(
     data = wide_data,
-    id = "id",
-    varying = c("y_t1", "y_t2", "y_t3"),
-    timevar = "time",
-    v.names = "outcome"
+    id_var = "id",
+    outcome_vars = c("y_t1", "y_t2", "y_t3"),
+    time_values = c(1, 2, 3)
   )
 
   # Check structure
@@ -64,7 +63,7 @@ test_that("simulate_gmm_survey produces correct structure", {
 test_that("simulate_gmm_survey handles different survey designs", {
   set.seed(702)
 
-  # SRS
+  # SRS - still has design columns but with default values
   data_srs <- simulate_gmm_survey(
     n_individuals = 100,
     n_times = 3,
@@ -72,8 +71,11 @@ test_that("simulate_gmm_survey handles different survey designs", {
     design = "srs",
     seed = 702
   )
-  expect_true(!"stratum" %in% colnames(data_srs))
-  expect_true(!"psu" %in% colnames(data_srs))
+  expect_true("stratum" %in% colnames(data_srs))
+  expect_true("psu" %in% colnames(data_srs))
+  expect_true("weight" %in% colnames(data_srs))
+  # For SRS, all weights should be 1
+  expect_equal(unique(data_srs$weight), 1)
 
   # Stratified
   data_strat <- simulate_gmm_survey(
@@ -404,9 +406,11 @@ test_that("Summary method produces useful output", {
   summ <- summary(fit)
   expect_true(!is.null(summ))
 
-  # Print should work
-  expect_output(print(fit), "SurveyMixr")
-  expect_output(print(fit), "classes")
+  # Print should work and contain key information
+  expect_output(print(fit), "Growth Mixture Model")
+  expect_output(print(fit), "Class")
+  expect_output(print(fit), "Survey Design")
+  expect_output(print(fit), "Convergence")
 })
 
 test_that("AIC and BIC methods work correctly", {
