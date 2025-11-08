@@ -1,0 +1,579 @@
+---
+title: "Analyzing Distal Outcomes with R3STEP"
+author: "Siyang Ni"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Analyzing Distal Outcomes with R3STEP}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+library(surveymixr)
+```
+
+## Introduction
+
+After identifying latent classes using growth mixture modeling, researchers often want to examine how classes differ on **distal outcomes** - variables measured after or separate from the trajectory analysis.
+
+**Examples of distal outcomes**:
+- Delinquency (after self-control trajectories)
+- Academic achievement (after engagement trajectories)
+- Health outcomes (after stress trajectories)
+- Employment status (after skill development trajectories)
+
+**The Problem**: Simply assigning individuals to their most likely class and comparing means is **biased** due to **classification error** [@bakk2013estimating].
+
+**The Solution**: The R3STEP method accounts for classification uncertainty, providing unbiased estimates of class differences on distal outcomes.
+
+## The Three Steps
+
+### Step 1: Fit Unconditional Growth Mixture Model
+
+First, fit a GMM **without** the distal outcome. This ensures class formation isn't influenced by the distal variable.
+
+```{r step1, eval=FALSE}
+# Load example data
+data(mcs_simulated)
+
+# Fit 3-class model of self-control trajectories
+gmm_fit <- gmm_survey(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  n_classes = 3,
+  growth_model = "linear",
+  strata = "stratum",
+  cluster = "cluster",
+  weights = "weight",
+  starts = 500,
+  cores = 4
+)
+
+summary(gmm_fit)
+```
+
+### Step 2: Assign Most Likely Class
+
+Extract posterior probabilities and assign each individual to their most likely class:
+
+```{r step2, eval=FALSE}
+# Get posterior probabilities (stored in fitted model)
+posterior_probs <- gmm_fit@posterior_probs
+
+# Most likely class assignment
+most_likely_class <- apply(posterior_probs, 1, which.max)
+
+table(most_likely_class)
+```
+
+### Step 3: Analyze Distal Outcome
+
+Use the R3STEP method to test for class differences on the distal outcome, accounting for classification error.
+
+```{r step3, eval=FALSE}
+# Analyze delinquency as distal outcome
+r3_result <- r3step(
+  gmm_fit,
+  distal = "delinquency",
+  method = "BCH"  # Recommended method
+)
+
+summary(r3_result)
+```
+
+## Methods Implemented
+
+`surveymixr` implements three R3STEP methods:
+
+### 1. BCH Method (Recommended)
+
+The Bolck-Croon-Hagenaars [@bolck2004estimating] method uses weights to correct for classification error.
+
+**Advantages**:
+- Computationally efficient
+- Works well with survey weights
+- Provides survey-adjusted standard errors
+- Most widely used
+
+**When to use**: Default choice for most applications
+
+```{r bch, eval=FALSE}
+result_bch <- r3step(
+  gmm_fit,
+  distal = "academic_achievement",
+  method = "BCH"
+)
+
+# View class-specific means
+result_bch@class_means
+
+# View omnibus test (do classes differ overall?)
+result_bch@test_results$omnibus_test
+
+# View pairwise comparisons
+result_bch@test_results$pairwise_tests
+```
+
+### 2. ML Method
+
+Maximum likelihood approach jointly models class membership and distal outcome.
+
+**Advantages**:
+- Theoretically optimal
+- Handles complex relationships
+
+**Disadvantages**:
+- More computationally intensive
+- May be unstable with small classes
+
+**When to use**: When BCH assumptions are violated or for publication comparisons
+
+```{r ml, eval=FALSE}
+result_ml <- r3step(
+  gmm_fit,
+  distal = "delinquency",
+  method = "ML",
+  cores = 4  # Can parallelize
+)
+
+summary(result_ml)
+```
+
+### 3. Manual 3-Step
+
+For custom analyses or when you want full control over Step 3.
+
+```{r manual, eval=FALSE}
+result_manual <- r3step(
+  gmm_fit,
+  distal = "academic_achievement",
+  method = "manual"
+)
+
+# Returns data with class assignments and weights
+# Researcher performs own analysis in Step 3
+```
+
+## Interpreting Results
+
+### Class-Specific Means
+
+```{r means, eval=FALSE}
+# Extract class means
+means_table <- result_bch@class_means
+
+print(means_table)
+#   class  mean    se  lower_ci upper_ci   n
+#   1      2.1  0.15     1.8      2.4    550
+#   2      4.3  0.18     3.9      4.7    300
+#   3      7.2  0.22     6.8      7.6    150
+```
+
+**Interpretation**:
+- Class 1 (high self-control): Lowest delinquency (mean = 2.1)
+- Class 2 (moderate): Moderate delinquency (mean = 4.3)
+- Class 3 (low self-control): Highest delinquency (mean = 7.2)
+
+### Omnibus Test
+
+Tests whether classes differ on the distal outcome (overall F-test or Wald test).
+
+```{r omnibus, eval=FALSE}
+omnibus <- result_bch@test_results$omnibus_test
+
+print(omnibus)
+# $statistic: 145.6
+# $df1: 2
+# $df2: 997
+# $p_value: < 0.001
+```
+
+**Interpretation**:
+- p < 0.001: Classes differ significantly on delinquency
+- Reject null hypothesis of equal means
+
+### Pairwise Comparisons
+
+Which specific classes differ from each other?
+
+```{r pairwise, eval=FALSE}
+pairwise <- result_bch@test_results$pairwise_tests
+
+print(pairwise)
+#   comparison  diff    se  statistic  p_value  sig
+#   1 vs 2      -2.2  0.24    -9.2     <.001    ***
+#   1 vs 3      -5.1  0.27   -18.9     <.001    ***
+#   2 vs 3      -2.9  0.29   -10.0     <.001    ***
+```
+
+**Interpretation**: All three classes differ significantly from each other on delinquency.
+
+### Effect Sizes
+
+```{r effect_sizes, eval=FALSE}
+# Cohen's d for pairwise comparisons
+effect_sizes <- result_bch@effect_sizes
+
+print(effect_sizes)
+#   comparison  cohens_d  magnitude
+#   1 vs 2         0.65    medium
+#   1 vs 3         1.42    large
+#   2 vs 3         0.78    medium-large
+```
+
+## Visualizing Results
+
+### Plot Class Means
+
+```{r plot_means, eval=FALSE}
+plot(result_bch, type = "means")
+```
+
+This produces a bar plot with:
+- Class-specific means
+- 95% confidence intervals
+- Significance indicators
+
+### Plot Distributions
+
+```{r plot_distributions, eval=FALSE}
+plot(result_bch, type = "distributions")
+```
+
+Shows density plots or violin plots of the distal outcome by latent class.
+
+## Practical Examples
+
+### Example 1: Continuous Distal Outcome
+
+**Research Question**: Do self-control trajectory classes differ in academic achievement?
+
+```{r example1, eval=FALSE}
+# Step 1: Fit GMM (already done above)
+
+# Step 2+3: Analyze achievement as distal
+achievement_result <- r3step(
+  gmm_fit,
+  distal = "academic_achievement",
+  method = "BCH"
+)
+
+summary(achievement_result)
+
+# Plot results
+plot(achievement_result)
+
+# Export table for publication
+library(gt)
+gt_table <- gt(achievement_result@class_means) %>%
+  tab_header(title = "Academic Achievement by Self-Control Trajectory Class") %>%
+  fmt_number(columns = c(mean, se, lower_ci, upper_ci), decimals = 2)
+
+gtsave(gt_table, "achievement_table.html")
+```
+
+**Results Interpretation**:
+```
+Class 1 (High self-control):    Mean = 105.2 (SE = 1.2)
+Class 2 (Moderate):              Mean = 95.3 (SE = 1.5)
+Class 3 (Low self-control):     Mean = 85.1 (SE = 1.8)
+
+Omnibus test: F(2, 997) = 68.4, p < .001
+All pairwise differences significant (p < .001)
+```
+
+### Example 2: Binary Distal Outcome
+
+```{r example2, eval=FALSE}
+# Create binary indicator: high delinquency (score > 5)
+mcs_simulated$high_delinquency <- ifelse(
+  mcs_simulated$delinquency > 5, 1, 0
+)
+
+# Analyze binary distal
+binary_result <- r3step(
+  gmm_fit,
+  distal = "high_delinquency",
+  distal_type = "binary",  # Specify binary
+  method = "BCH"
+)
+
+# Results show proportions rather than means
+summary(binary_result)
+
+# Class 1: 12% high delinquency
+# Class 2: 35% high delinquency
+# Class 3: 68% high delinquency
+```
+
+### Example 3: Multiple Distal Outcomes
+
+Test multiple outcomes separately (with multiple comparison correction):
+
+```{r example3, eval=FALSE}
+# Analyze multiple outcomes
+outcomes <- c("delinquency", "academic_achievement", "ses")
+
+results_list <- lapply(outcomes, function(outcome) {
+  r3step(gmm_fit, distal = outcome, method = "BCH")
+})
+
+names(results_list) <- outcomes
+
+# Apply Bonferroni correction
+n_tests <- length(outcomes)
+alpha_adjusted <- 0.05 / n_tests  # 0.05 / 3 = 0.0167
+
+# Check which are significant after correction
+for (outcome in outcomes) {
+  p <- results_list[[outcome]]@test_results$omnibus_test$p_value
+  sig <- ifelse(p < alpha_adjusted, "Yes", "No")
+  cat(sprintf("%s: p = %.4f, Significant = %s\n", outcome, p, sig))
+}
+```
+
+## Comparison with Traditional Approaches
+
+### Naive Approach (Biased)
+
+```{r naive, eval=FALSE}
+# DON'T DO THIS - Biased!
+naive_data <- data.frame(
+  id = unique(mcs_simulated$id),
+  class = most_likely_class,
+  delinquency = mcs_simulated$delinquency[
+    match(unique(mcs_simulated$id), mcs_simulated$id)
+  ]
+)
+
+# Naive ANOVA (ignores classification error)
+naive_anova <- aov(delinquency ~ factor(class), data = naive_data)
+summary(naive_anova)
+```
+
+### Why Naive is Biased
+
+1. **Ignores classification uncertainty**: Treats class assignment as perfect
+2. **Attenuates effect sizes**: Misclassification reduces observed differences
+3. **Inflates Type I error**: Incorrect SE estimates
+
+### R3STEP Correction
+
+```{r compare, eval=FALSE}
+# Compare naive vs R3STEP
+naive_means <- tapply(naive_data$delinquency, naive_data$class, mean)
+r3step_means <- result_bch@class_means$mean
+
+comparison <- data.frame(
+  Class = 1:3,
+  Naive = naive_means,
+  R3STEP = r3step_means,
+  Difference = r3step_means - naive_means
+)
+
+print(comparison)
+#   Class  Naive  R3STEP  Difference
+#   1      2.3    2.1      -0.2
+#   2      4.1    4.3       0.2
+#   3      6.8    7.2       0.4
+```
+
+**Key Differences**:
+- R3STEP corrects for classification error
+- Differences may be subtle but statistically important
+- Standard errors are properly adjusted
+
+## Survey Design Considerations
+
+`surveymixr` properly accounts for survey design in R3STEP analysis:
+
+```{r survey, eval=FALSE}
+# R3STEP with full survey design
+result_survey <- r3step(
+  gmm_fit,  # Already includes strata, clusters, weights
+  distal = "delinquency",
+  method = "BCH"
+)
+
+# Standard errors account for:
+# - Classification uncertainty
+# - Survey stratification
+# - Clustering (PSUs)
+# - Probability weights
+
+# Compare to naive (ignoring survey design)
+result_naive <- r3step(
+  gmm_fit_no_survey,  # Fit without survey features
+  distal = "delinquency",
+  method = "BCH"
+)
+
+# Survey-adjusted SEs will be larger (appropriately)
+```
+
+## Reporting Results
+
+### APA Style Example
+
+> **Distal Outcome Analysis**
+>
+> We examined whether the three self-control trajectory classes differed on adolescent delinquency using the BCH method [@bolck2004estimating] to account for classification uncertainty. The overall test indicated significant differences across classes, $\chi^2$(2) = 145.6, *p* < .001.
+>
+> Class 1 (high self-control; 55% of sample) reported the lowest delinquency (*M* = 2.1, *SE* = 0.15), followed by Class 2 (moderate self-control; 30%; *M* = 4.3, *SE* = 0.18), and Class 3 (low self-control; 15%; *M* = 7.2, *SE* = 0.22). All pairwise comparisons were statistically significant (*p*s < .001), with effect sizes ranging from medium to large (Cohen's *d* = 0.65 to 1.42).
+
+### Tabular Presentation
+
+```{r table, eval=FALSE}
+library(knitr)
+library(kableExtra)
+
+table_data <- result_bch@class_means %>%
+  mutate(
+    CI = sprintf("[%.2f, %.2f]", lower_ci, upper_ci),
+    Mean_SE = sprintf("%.2f (%.2f)", mean, se)
+  ) %>%
+  select(Class = class, `Mean (SE)` = Mean_SE, `95% CI` = CI, N = n)
+
+kable(table_data, caption = "Delinquency Scores by Latent Class") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Advanced Topics
+
+### Custom Contrasts
+
+```{r contrasts, eval=FALSE}
+# Compare high vs low (ignoring moderate)
+# Custom contrast: Class 1 vs Class 3
+
+# Extract means and SEs
+means <- result_bch@class_means
+mean_diff <- means$mean[3] - means$mean[1]
+se_diff <- sqrt(means$se[3]^2 + means$se[1]^2)
+
+# Test statistic
+z <- mean_diff / se_diff
+p_value <- 2 * (1 - pnorm(abs(z)))
+
+cat(sprintf("Class 3 vs Class 1: Diff = %.2f, SE = %.2f, z = %.2f, p = %.4f\n",
+            mean_diff, se_diff, z, p_value))
+```
+
+### Sensitivity Analysis
+
+Test robustness to different methods:
+
+```{r sensitivity, eval=FALSE}
+# Compare BCH vs ML
+result_bch <- r3step(gmm_fit, distal = "delinquency", method = "BCH")
+result_ml <- r3step(gmm_fit, distal = "delinquency", method = "ML")
+
+# Extract means
+means_compare <- data.frame(
+  Class = 1:3,
+  BCH = result_bch@class_means$mean,
+  ML = result_ml@class_means$mean,
+  Difference = abs(result_bch@class_means$mean - result_ml@class_means$mean)
+)
+
+print(means_compare)
+
+# If differences are small (<0.1), results are robust
+```
+
+### Moderation Analysis
+
+Test whether class differences on distal outcome vary by another variable:
+
+```{r moderation, eval=FALSE}
+# Split by gender
+result_female <- r3step(
+  gmm_fit_female,
+  distal = "delinquency",
+  method = "BCH"
+)
+
+result_male <- r3step(
+  gmm_fit_male,
+  distal = "delinquency",
+  method = "BCH"
+)
+
+# Compare effect sizes by gender
+# (requires fitting separate models by group)
+```
+
+## Limitations and Cautions
+
+### 1. Temporal Ordering
+
+- Distal outcome should occur **after** or **separate from** trajectory
+- Don't use predictors of class membership as "distal" outcomes
+- Consider timing in longitudinal designs
+
+### 2. Missing Data
+
+- R3STEP assumes distal outcome is MAR (Missing at Random)
+- Examine missing data patterns
+- Consider multiple imputation if needed
+
+```{r missing, eval=FALSE}
+# Check missing on distal
+summary(mcs_simulated$delinquency)
+
+# Proportion missing
+mean(is.na(mcs_simulated$delinquency))
+```
+
+### 3. Sample Size
+
+- Small classes (n < 50) may have unstable estimates
+- Consider collapsing classes if needed
+- Bootstrap CIs for small samples
+
+### 4. Multiple Testing
+
+- Adjust for multiple comparisons if testing many outcomes
+- Use Bonferroni, FDR, or Holm corrections
+
+## Frequently Asked Questions
+
+**Q: Can I include covariates in Step 3?**
+
+A: Yes, the manual 3-step approach allows custom models. However, covariates predicting class membership should be in Step 1.
+
+**Q: What if my distal outcome is count data?**
+
+A: Use appropriate family (Poisson/negative binomial) in ML method or transform for BCH.
+
+**Q: How do I report this in a paper?**
+
+A: Describe the R3STEP procedure, cite @vermunt2010latent, report omnibus test, class-specific means with CIs, and effect sizes.
+
+**Q: Can I use R3STEP with growth factors (intercept/slope) as distal?**
+
+A: Not typically - growth factors are part of the model. Use multi-group GMM instead.
+
+**Q: What about ordinal distal outcomes (e.g., Likert scales)?**
+
+A: Treat as continuous if ~5+ categories, or use proportional odds model in manual 3-step.
+
+## References
+
+<div id="refs"></div>
+
+## Session Info
+
+```{r session-info}
+sessionInfo()
+```

@@ -1,0 +1,28 @@
+bibentry(
+  bibtype  = "Manual",
+  title    = "{surveymixr}: Growth Mixture Models for Complex Survey Data",
+  author   = person("Siyang", "Ni"),
+  year     = 2025,
+  note     = "R package version 0.2.0",
+  url      = "https://github.com/siyangni/surveymixr",
+  textVersion = paste(
+    "Ni, S. (2025).",
+    "surveymixr: Growth Mixture Models for Complex Survey Data.",
+    "R package version 0.2.0.",
+    "https://github.com/siyangni/surveymixr"
+  )
+)
+
+bibentry(
+  bibtype  = "Article",
+  title    = "{surveymixr}: An {R} Package for Growth Mixture Modeling with Complex Survey Data",
+  author   = person("Siyang", "Ni"),
+  journal  = "Journal of Statistical Software",
+  year     = "Forthcoming",
+  note     = "Manuscript submitted for publication",
+  textVersion = paste(
+    "Ni, S. (Forthcoming).",
+    "surveymixr: An R Package for Growth Mixture Modeling with Complex Survey Data.",
+    "Journal of Statistical Software."
+  )
+)
