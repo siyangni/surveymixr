@@ -1,0 +1,549 @@
+---
+title: "Categorical Outcomes in Growth Mixture Models"
+author: "Siyang Ni"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Categorical Outcomes in Growth Mixture Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+## Introduction
+
+While continuous outcomes (e.g., test scores, depression symptoms) are common in growth mixture modeling, many developmental and behavioral outcomes are categorical:
+
+- **Binary**: Smoking (yes/no), high school graduation (yes/no), clinical diagnosis (yes/no)
+- **Ordinal**: Likert scales, severity ratings, frequency categories
+- **Count**: Number of delinquent acts, number of hospitalizations, number of romantic partners
+
+This vignette demonstrates how to use `surveymixr` for growth mixture models with categorical outcomes while properly accounting for complex survey design features.
+
+## Why Categorical Outcomes Matter
+
+Traditional GMM assumes continuous, normally distributed outcomes. For categorical data, this assumption is violated, leading to:
+
+1. **Biased parameter estimates** - Treating ordered categories as continuous can distort growth trajectories
+2. **Incorrect standard errors** - Violates assumptions about residual distributions
+3. **Invalid inferences** - Statistical tests may be anti-conservative
+4. **Poor model fit** - Continuous models don't capture ceiling/floor effects in categorical data
+
+The surveymixr package addresses these issues by implementing appropriate link functions and likelihood computations for each outcome type.
+
+## Binary Outcomes
+
+### Example: Smoking Initiation
+
+Let's examine developmental trajectories of smoking initiation (0 = never smoked, 1 = ever smoked) from ages 12-18.
+
+```{r binary-data, eval=FALSE}
+library(surveymixr)
+
+# Simulate binary outcome data
+set.seed(123)
+smoking_data <- simulate_gmm_survey(
+  n_individuals = 2000,
+  n_times = 7,  # Ages 12-18
+  n_classes = 3,
+  time_scores = 12:18,
+  outcome_type = "binary",
+  class_proportions = c(0.60, 0.25, 0.15),  # Never, Late starters, Early starters
+  design = "stratified_cluster",
+  n_strata = 4,
+  n_clusters = 100,
+  seed = 123
+)
+
+# Rename for clarity
+names(smoking_data)[names(smoking_data) == "outcome"] <- "ever_smoked"
+names(smoking_data)[names(smoking_data) == "time"] <- "age"
+```
+
+### Fitting Binary Outcome GMM
+
+```{r binary-model, eval=FALSE}
+# Fit 3-class model with probit link
+fit_smoking <- gmm_survey_binary(
+  data = smoking_data,
+  id = "id",
+  time = "age",
+  outcome = "ever_smoked",
+  n_classes = 3,
+  growth_model = "linear",
+  link = "probit",  # or "logit"
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight",
+  starts = 200,
+  cores = 4
+)
+
+# View results
+summary(fit_smoking)
+```
+
+### Interpreting Binary Outcome Results
+
+For binary outcomes with a probit link, the growth parameters are on the **latent continuous scale** (the underlying propensity to smoke):
+
+```{r binary-interpretation, eval=FALSE}
+# Extract parameters
+params <- coef(fit_smoking)
+
+# For Class 1 (Never smokers):
+# Intercept at age 12: -2.5 (very low propensity)
+# Slope: 0.05 (minimal increase over time)
+# Probability of smoking at age 12: pnorm(-2.5) ≈ 0.006 (0.6%)
+
+# For Class 3 (Early starters):
+# Intercept at age 12: 0.5 (moderate propensity)
+# Slope: 0.30 (rapid increase)
+# Probability at age 12: pnorm(0.5) ≈ 0.69 (69%)
+# Probability at age 18: pnorm(0.5 + 0.30*6) ≈ pnorm(2.3) ≈ 0.99 (99%)
+```
+
+### Visualizing Binary Trajectories
+
+```{r binary-plot, eval=FALSE}
+# Plot on probability scale
+plot(fit_smoking, scale = "probability")
+
+# Plot on latent scale
+plot(fit_smoking, scale = "latent")
+
+# Class proportions
+class_proportions(fit_smoking)
+#   Class 1 (Never): 62%
+#   Class 2 (Late starters): 24%
+#   Class 3 (Early starters): 14%
+```
+
+### Logit vs Probit Links
+
+```{r link-comparison, eval=FALSE}
+# Probit link (default)
+fit_probit <- gmm_survey_binary(
+  data = smoking_data,
+  id = "id", time = "age", outcome = "ever_smoked",
+  n_classes = 3, link = "probit", starts = 100
+)
+
+# Logit link (easier interpretation via odds ratios)
+fit_logit <- gmm_survey_binary(
+  data = smoking_data,
+  id = "id", time = "age", outcome = "ever_smoked",
+  n_classes = 3, link = "logit", starts = 100
+)
+
+# Compare fit
+compare_models(fit_probit, fit_logit)
+# Results typically very similar; choose based on interpretation preference
+```
+
+**Probit advantages:**
+- Direct connection to normal distribution theory
+- Standard in GMM literature (Mplus uses probit)
+- Easier theoretical justification
+
+**Logit advantages:**
+- Odds ratio interpretation
+- More common in applied research
+- Slightly heavier tails (more robust to outliers)
+
+## Ordinal Outcomes
+
+### Example: Self-Rated Health
+
+Ordinal outcomes have natural ordering but unequal spacing between categories.
+
+```{r ordinal-data, eval=FALSE}
+# Simulate ordinal outcome: self-rated health (1=Poor, 2=Fair, 3=Good, 4=Very Good, 5=Excellent)
+health_data <- simulate_gmm_survey(
+  n_individuals = 1500,
+  n_times = 6,
+  n_classes = 3,
+  outcome_type = "ordinal",
+  n_categories = 5,
+  design = "stratified_cluster",
+  seed = 456
+)
+
+names(health_data)[names(health_data) == "outcome"] <- "health_rating"
+```
+
+### Proportional Odds Model
+
+The proportional odds (PO) model is the standard for ordinal outcomes:
+
+\[
+P(Y_{it} \leq j | \text{Class } k) = \Phi(\tau_j - \eta_{itk})
+\]
+
+where $\tau_1 < \tau_2 < \tau_3 < \tau_4$ are threshold parameters and $\eta_{itk} = \beta_{0k} + \beta_{1k} t$ is the linear predictor.
+
+```{r ordinal-model, eval=FALSE}
+# Fit 3-class ordinal model
+fit_health <- gmm_survey_ordinal(
+  data = health_data,
+  id = "id",
+  time = "time",
+  outcome = "health_rating",
+  n_classes = 3,
+  n_categories = 5,
+  ordinal_model = "proportional_odds",
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight",
+  starts = 200
+)
+
+summary(fit_health)
+```
+
+### Understanding Thresholds
+
+```{r ordinal-thresholds, eval=FALSE}
+# Extract threshold parameters
+thresholds <- extract_thresholds(fit_health)
+
+# For Class 1:
+# τ₁ = -1.5  (Poor vs Fair+)
+# τ₂ = 0.2   (Poor+Fair vs Good+)
+# τ₃ = 1.3   (Poor+Fair+Good vs Very Good+)
+# τ₄ = 2.1   (Poor+Fair+Good+Very Good vs Excellent)
+
+# Probability of "Good" or better at time 0:
+# P(Y ≥ 3) = 1 - Φ(τ₂ - η) = 1 - Φ(0.2 - β₀)
+```
+
+### Checking Proportional Odds Assumption
+
+```{r po-assumption, eval=FALSE}
+# Test proportional odds assumption
+test_po_assumption(fit_health)
+
+# If violated, consider:
+# 1. Adjacent category model
+fit_adjacent <- gmm_survey_ordinal(
+  data = health_data,
+  id = "id", time = "time", outcome = "health_rating",
+  n_classes = 3, n_categories = 5,
+  ordinal_model = "adjacent_category"
+)
+
+# 2. Continuation ratio model (for sequential outcomes)
+```
+
+## Count Outcomes
+
+### Example: Delinquent Acts
+
+Count outcomes are non-negative integers representing frequency of events.
+
+```{r count-data, eval=FALSE}
+# Simulate count outcome: number of delinquent acts per year
+delinquency_data <- simulate_gmm_survey(
+  n_individuals = 2500,
+  n_times = 5,
+  n_classes = 3,
+  outcome_type = "count",
+  design = "cluster",
+  seed = 789
+)
+
+names(delinquency_data)[names(delinquency_data) == "outcome"] <- "num_acts"
+```
+
+### Poisson Model
+
+Basic count model assumes Poisson distribution:
+
+```{r poisson-model, eval=FALSE}
+fit_poisson <- gmm_survey_count(
+  data = delinquency_data,
+  id = "id",
+  time = "time",
+  outcome = "num_acts",
+  n_classes = 3,
+  count_model = "poisson",
+  cluster = "psu",
+  weights = "weight",
+  starts = 200
+)
+
+# Interpretation on log scale:
+# log(λ) = β₀ + β₁ * time
+# λ is the expected count
+
+# Convert to multiplicative effects:
+coef_poisson <- coef(fit_poisson)
+exp(coef_poisson)  # Incidence rate ratios
+```
+
+### Handling Overdispersion
+
+Real count data often exhibit **overdispersion** (variance > mean), violating the Poisson assumption.
+
+```{r check-overdispersion, eval=FALSE}
+# Check for overdispersion
+check_overdispersion(fit_poisson)
+# Dispersion ratio: 3.2 (overdispersed!)
+
+# Use negative binomial model
+fit_nb <- gmm_survey_count(
+  data = delinquency_data,
+  id = "id", time = "time", outcome = "num_acts",
+  n_classes = 3,
+  count_model = "negative_binomial",
+  starts = 200
+)
+
+# Compare fit
+compare_models(fit_poisson, fit_nb)
+# BIC favors negative binomial: 12450 vs 12890
+```
+
+### Zero-Inflated Models
+
+When data contain excess zeros (e.g., many adolescents commit zero delinquent acts):
+
+```{r zero-inflated, eval=FALSE}
+# Check proportion of zeros
+mean(delinquency_data$num_acts == 0)  # 45% zeros
+
+# Fit zero-inflated Poisson
+fit_zip <- gmm_survey_count(
+  data = delinquency_data,
+  id = "id", time = "time", outcome = "num_acts",
+  n_classes = 3,
+  count_model = "zero_inflated",
+  starts = 200
+)
+
+summary(fit_zip)
+
+# Model has two parts:
+# 1. Zero-inflation: P(structural zero)
+# 2. Count process: Poisson(λ) for non-structural zeros
+```
+
+## Model Selection for Categorical Outcomes
+
+### Information Criteria
+
+```{r categorical-selection, eval=FALSE}
+# Compare 1-5 class models
+selection_binary <- gmm_select(
+  data = smoking_data,
+  id = "id", time = "age", outcome = "ever_smoked",
+  classes = 1:5,
+  outcome_type = "binary",
+  criteria = c("AIC", "BIC", "aBIC"),
+  starts = 100
+)
+
+plot(selection_binary)
+
+# For categorical outcomes, BLRT may be computationally intensive
+# Consider using LMR test instead:
+lmr_results <- lmr_sequential(selection_binary$models)
+print(lmr_results)
+```
+
+### Classification Quality
+
+Entropy and classification diagnostics work the same for categorical outcomes:
+
+```{r categorical-diagnostics, eval=FALSE}
+# Classification quality
+classification_quality(fit_smoking)
+#   Entropy: 0.87 (good separation)
+#   AvePP: 0.91, 0.88, 0.84
+#   OCC: 8.2, 12.5, 15.3 (all < 20, acceptable)
+
+# Separation diagnostics
+diagnose_separation(fit_smoking)
+#   No quasi-perfect separation detected
+```
+
+## Survey Design Integration
+
+All categorical outcome functions fully integrate complex survey design:
+
+```{r survey-integration, eval=FALSE}
+# Survey-weighted class proportions
+class_proportions(fit_smoking, weighted = TRUE)
+#   Class 1: 59.3% (SE = 2.1%)
+#   Class 2: 25.8% (SE = 1.8%)
+#   Class 3: 14.9% (SE = 1.3%)
+
+# Standard errors account for clustering and stratification
+vcov(fit_smoking)  # Sandwich covariance matrix
+
+# Design effect
+design_effect <- summary(fit_smoking)$design_effect
+#   Average DEFF: 1.8 (moderate clustering)
+```
+
+## Practical Considerations
+
+### Sample Size Requirements
+
+Categorical outcomes generally require **larger samples** than continuous:
+
+- **Binary**: N ≥ 500 per class for stable estimation
+- **Ordinal (5 categories)**: N ≥ 300 per class
+- **Count**: Depends on mean; higher means need smaller N
+
+### Convergence Issues
+
+Categorical models may be more prone to convergence problems:
+
+```{r convergence-tips, eval=FALSE}
+# Increase random starts
+fit_stable <- gmm_survey_binary(
+  data = smoking_data,
+  id = "id", time = "age", outcome = "ever_smoked",
+  n_classes = 3,
+  starts = 500,  # More starts for stability
+  cores = 4
+)
+
+# Check convergence
+diagnose_convergence(fit_stable)
+
+# If problems persist:
+# 1. Check for separation issues
+diagnose_separation(fit_stable)
+
+# 2. Try different link functions
+# 3. Simplify growth model (linear instead of quadratic)
+# 4. Check for outliers in time variable
+```
+
+### Missing Data
+
+FIML handles missing data well for categorical outcomes:
+
+```{r categorical-missing, eval=FALSE}
+# Missing data patterns
+table(is.na(smoking_data$ever_smoked))
+#   FALSE: 13,245
+#   TRUE: 755 (5.4%)
+
+# Monotone (dropout) patterns work best
+validate_survey_data(
+  data = smoking_data,
+  id = "id", time = "age", outcome = "ever_smoked"
+)$info$missing_pattern
+#   "Monotone (dropout)"
+```
+
+## Comparison with Continuous Outcomes
+
+What happens if you treat categorical data as continuous?
+
+```{r continuous-vs-categorical, eval=FALSE}
+# WRONG: Treat binary as continuous
+fit_wrong <- gmm_survey(
+  data = smoking_data,
+  id = "id", time = "age",
+  outcome = "ever_smoked",  # Binary treated as continuous!
+  n_classes = 3,
+  starts = 100
+)
+
+# CORRECT: Use binary model
+fit_correct <- gmm_survey_binary(
+  data = smoking_data,
+  id = "id", time = "age",
+  outcome = "ever_smoked",
+  n_classes = 3,
+  link = "probit",
+  starts = 100
+)
+
+# Compare:
+# - Class proportions differ
+# - Parameter estimates not comparable
+# - Standard errors underestimated in continuous model
+# - Fit indices favor categorical model
+```
+
+## Advanced Topics
+
+### Including Covariates
+
+```{r categorical-covariates, eval=FALSE}
+# Covariates work the same way
+fit_cov <- gmm_survey_binary(
+  data = smoking_data,
+  id = "id", time = "age", outcome = "ever_smoked",
+  n_classes = 3,
+  covariates = c("sex", "ses", "baseline_risk"),
+  starts = 200
+)
+
+# Covariates predict class membership (multinomial logit)
+# Not the outcome trajectories themselves
+```
+
+### R3STEP with Categorical Outcomes
+
+```{r r3step-categorical, eval=FALSE}
+# Analyze distal outcomes using classification from categorical GMM
+r3step_results <- r3step(
+  gmm_object = fit_smoking,
+  distal_vars = c("adult_health", "income"),
+  data = smoking_data,
+  method = "BCH"
+)
+
+summary(r3step_results)
+```
+
+### Mixed Outcome Types
+
+Currently, surveymixr handles one outcome type per model. For multiple outcomes of different types, consider:
+
+1. **Sequential analysis**: Fit separate GMMs and compare class structure
+2. **Parallel process models** (coming in v0.3.0): Simultaneous modeling
+3. **External software**: Mplus supports mixed outcome types in same model
+
+## Summary
+
+Key points for categorical outcomes in surveymixr:
+
+1. ✅ **Use appropriate functions**: `gmm_survey_binary()`, `gmm_survey_ordinal()`, `gmm_survey_count()`
+2. ✅ **Choose correct link function**: Probit/logit for binary/ordinal, log for counts
+3. ✅ **Check assumptions**: Proportional odds, overdispersion, zero-inflation
+4. ✅ **Interpret carefully**: Parameters are on latent/log scale, not original scale
+5. ✅ **Survey design**: All features (weights, clustering, stratification) work seamlessly
+6. ✅ **Sample size**: Need larger N than continuous outcomes
+7. ✅ **Diagnostics**: Same tools (entropy, classification quality) apply
+
+## References
+
+For more information, see:
+
+- Muthén, B., & Asparouhov, T. (2002). Latent variable analysis with categorical outcomes
+- Agresti, A. (2013). *Categorical Data Analysis*
+- McCullagh, P., & Nelder, J. A. (1989). *Generalized Linear Models*
+- surveymixr technical vignette: `vignette("technical-details", package = "surveymixr")`
+
+```{r, include=FALSE}
+# Clean up
+# (No actual cleanup needed as examples are not evaluated)
+```

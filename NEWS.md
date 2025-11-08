@@ -123,15 +123,56 @@ This release significantly expands surveymixr's capabilities with new outcome ty
 
 * None in this release
 
+### Random Effects Support (Phase 2.1.2)
+
+* **Random Effects in Growth Parameters**
+  - `gmm_survey_re()`: Growth mixture models with random intercepts and/or slopes
+  - Individual-level variance in growth parameters within each class
+  - `get_random_effects()`: Extract predicted random effects (BLUPs)
+  - `variance_components()`: Extract variance-covariance matrices
+  - `calculate_icc()`: Intraclass correlation coefficients
+  - `plot_random_effects()`: Visualize random effects distributions
+  - Full integration with survey weights
+  - S4 class `SurveyMixrRE` for random effects models
+
+### Time-Varying Covariates Enhancement (Phase 2.1.3)
+
+* **Enhanced TVC Support**
+  - `gmm_survey_tvc()`: Comprehensive time-varying covariate modeling
+  - Four effect types: direct, indirect, both (within/between decomposition), interaction
+  - Automatic detection of time-varying vs time-invariant variables
+  - Person-mean centering for within-between effects separation
+  - Lagged effects support (lag 1, 2, ...)
+  - Class-specific TVC effects option
+  - `extract_tvc_effects()`: Extract TVC parameter estimates
+  - `test_tvc_effects()`: Wald tests for TVC significance
+  - `plot_tvc_effects()`: Visualize TVC influences on trajectories
+  - S4 class `SurveyMixrTVC` for TVC models
+
+### New Vignettes
+
+* **Categorical Outcomes Vignette** (`vignettes/categorical-outcomes.Rmd`)
+  - Comprehensive guide to binary, ordinal, and count outcomes
+  - Link function selection and interpretation
+  - Real-world examples (smoking, health ratings, delinquency)
+  - Comparison with continuous outcome approaches
+  - Model selection for categorical data
+
+* **Enhanced Model Selection Vignette** (`vignettes/model-selection-enhanced.Rmd`)
+  - Complete workflow for determining optimal number of classes
+  - LMR test vs BLRT comparison
+  - Cross-validation strategies
+  - Handling disagreement among criteria
+  - Comprehensive reporting guidelines
+
 ### Coming in Version 0.3.0
 
-* Random effects in growth parameters (Phase 2.1.2)
-* Enhanced time-varying covariate support (Phase 2.1.3)
 * Bayes factor approximation for model selection
 * Posterior predictive checks
 * Additional growth model specifications (piecewise, free basis)
 * Performance optimization with Rcpp
 * Parallel process models
+* Complete integration of placeholder implementations
 
 ---
 
