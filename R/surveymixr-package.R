@@ -64,7 +64,7 @@
 #' plot(fit)
 #' }
 #'
-#' @author Siyang Ni \email{your.email@@example.com}
+#' @author Siyang Ni \email{johnni.nj@@gmail.com}
 #'
 #' @references
 #' Muthén, B. (2004). Latent variable analysis: Growth mixture modeling and

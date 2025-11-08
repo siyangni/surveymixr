@@ -51,7 +51,7 @@ This is the first public release of surveymixr, providing growth mixture modelin
 * S4 class system for formal object definitions
 * Sandwich standard errors for complex survey designs
 * FIML for missing data
-* Parallel processing via `parallel` and `foreach` packages
+* Parallel processing via `parallel` package
 * Extensive input validation and error handling
 
 ### Known Limitations
@@ -78,23 +78,23 @@ This is the first public release of surveymixr, providing growth mixture modelin
 install.packages("surveymixr")
 
 # Development version
-devtools::install_github("username/surveymixr")
+devtools::install_github("siyangni/surveymixr")
 ```
 
 ## Getting Help
 
 * Documentation: `help(package = "surveymixr")`
 * Vignettes: `browseVignettes("surveymixr")`
-* Issues: https://github.com/username/surveymixr/issues
+* Issues: https://github.com/siyangni/surveymixr/issues
 
 ## Citation
 
 If you use surveymixr in your research, please cite:
 
-> Author, Y. N. (2025). surveymixr: An Open-Source R Package for Growth
+> Ni, S. (2025). surveymixr: An Open-Source R Package for Growth
 > Mixture Modeling with Complex Survey Design. *Journal of Statistical
 > Software*, XX(X), 1-XX.
 
 ---
 
-For complete documentation and examples, see: https://username.github.io/surveymixr
+For complete documentation and examples, see: https://siyangni.github.io/surveymixr

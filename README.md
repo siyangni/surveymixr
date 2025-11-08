@@ -1,9 +1,9 @@
 # surveymixr: Growth Mixture Models with Complex Survey Design
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/username/surveymixr/workflows/R-CMD-check/badge.svg)](https://github.com/username/surveymixr/actions)
+[![R-CMD-check](https://github.com/siyangni/surveymixr/workflows/R-CMD-check/badge.svg)](https://github.com/siyangni/surveymixr/actions)
 [![CRAN status](https://www.r-pkg.org/badges/version/surveymixr)](https://CRAN.R-project.org/package=surveymixr)
-[![codecov](https://codecov.io/gh/username/surveymixr/branch/main/graph/badge.svg)](https://codecov.io/gh/username/surveymixr)
+[![codecov](https://codecov.io/gh/siyangni/surveymixr/branch/main/graph/badge.svg)](https://codecov.io/gh/siyangni/surveymixr)
 <!-- badges: end -->
 
 ## Overview
@@ -29,7 +29,7 @@ install.packages("surveymixr")
 
 # Or install development version from GitHub
 # install.packages("devtools")
-devtools::install_github("username/surveymixr")
+devtools::install_github("siyangni/surveymixr")
 ```
 
 ## Quick Start
@@ -119,10 +119,10 @@ Existing R packages have significant limitations:
 
 ## Documentation
 
-- [Introduction to surveymixr](https://username.github.io/surveymixr/articles/surveymixr-intro.html)
-- [Technical Details and Algorithms](https://username.github.io/surveymixr/articles/surveymixr-technical.html)
-- [R3STEP Analysis](https://username.github.io/surveymixr/articles/surveymixr-r3step.html)
-- [Comparison with Mplus](https://username.github.io/surveymixr/articles/surveymixr-validation.html)
+- [Introduction to surveymixr](https://siyangni.github.io/surveymixr/articles/surveymixr-intro.html)
+- [Technical Details and Algorithms](https://siyangni.github.io/surveymixr/articles/surveymixr-technical.html)
+- [R3STEP Analysis](https://siyangni.github.io/surveymixr/articles/surveymixr-r3step.html)
+- [Comparison with Mplus](https://siyangni.github.io/surveymixr/articles/surveymixr-validation.html)
 
 ## Citation
 

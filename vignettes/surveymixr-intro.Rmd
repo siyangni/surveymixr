@@ -1,6 +1,6 @@
 ---
 title: "Introduction to surveymixr"
-author: "surveymixr Development Team"
+author: "Siyang Ni"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
@@ -59,7 +59,7 @@ install.packages("surveymixr")
 
 # Development version from GitHub
 # install.packages("devtools")
-devtools::install_github("username/surveymixr")
+devtools::install_github("siyangni/surveymixr")
 ```
 
 ## Quick Start
