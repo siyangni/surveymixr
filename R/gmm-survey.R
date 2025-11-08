@@ -472,6 +472,7 @@ gmm_survey <- function(data,
       has_weights = !is.null(weights),
       has_strata = !is.null(strata),
       has_cluster = !is.null(cluster),
+      nest = nest,
       weights = survey_weights,
       strata = survey_strata,
       cluster = survey_cluster
