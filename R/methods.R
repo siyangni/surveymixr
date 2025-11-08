@@ -95,6 +95,10 @@ setMethod("summary", "SurveyMixr", function(object, ...) {
   if (object@survey_design$has_cluster) {
     cat(sprintf("Clustering: %d PSUs\n",
                length(unique(object@survey_design$cluster))))
+    if (!is.null(object@survey_design$nest) && object@survey_design$has_strata) {
+      cat(sprintf("Nested design: %s\n",
+                 ifelse(object@survey_design$nest, "Yes", "No")))
+    }
   }
 
   # Growth parameters
