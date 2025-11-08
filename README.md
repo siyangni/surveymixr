@@ -130,8 +130,7 @@ If you use surveymixr in your research, please cite:
 
 ```
 Ni, S. (2025). surveymixr: An Open-Source R Package for Growth Mixture
-  Modeling with Complex Survey Design. Journal of Statistical Software, XX(X),
-  1-XX. https://doi.org/XX.XXXX/jss.vXXXX.iXX
+  Modeling with Complex Survey Design. 
 ```
 
 ## License
