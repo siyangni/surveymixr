@@ -27,8 +27,9 @@ test_that("r3step BCH method works with continuous distal outcome", {
 
   # Run R3STEP with BCH method
   r3_result <- r3step(
-    fit,
-    distal = "ses",
+    gmm_object = fit,
+    distal_vars = "ses",
+    data = sim_data,
     method = "BCH"
   )
 
@@ -67,8 +68,9 @@ test_that("r3step ML method works", {
 
   # Run R3STEP with ML method
   r3_result <- r3step(
-    fit,
-    distal = "baseline_risk",
+    gmm_object = fit,
+    distal_vars = "baseline_risk",
+    data = sim_data,
     method = "ML"
   )
 
@@ -100,8 +102,9 @@ test_that("r3step manual 3-step method works", {
 
   # Run manual 3-step
   r3_result <- r3step(
-    fit,
-    distal = "baseline_risk",
+    gmm_object = fit,
+    distal_vars = "baseline_risk",
+    data = sim_data,
     method = "manual"
   )
 
@@ -136,8 +139,9 @@ test_that("r3step handles survey design correctly", {
 
   # R3STEP should account for survey design
   r3_result <- r3step(
-    fit,
-    distal = "ses",
+    gmm_object = fit,
+    distal_vars = "ses",
+    data = sim_data,
     method = "BCH"
   )
 
@@ -170,8 +174,9 @@ test_that("r3step omnibus test detects differences", {
   )
 
   r3_result <- r3step(
-    fit,
-    distal = "ses",
+    gmm_object = fit,
+    distal_vars = "ses",
+    data = sim_data,
     method = "BCH"
   )
 
@@ -204,10 +209,11 @@ test_that("r3step pairwise comparisons work", {
   )
 
   r3_result <- r3step(
-    fit,
-    distal = "baseline_risk",
+    gmm_object = fit,
+    distal_vars = "baseline_risk",
+    data = sim_data,
     method = "BCH",
-    pairwise = TRUE
+    test_pairwise = TRUE
   )
 
   # Should have pairwise comparisons
@@ -240,8 +246,9 @@ test_that("r3step calculates effect sizes", {
   )
 
   r3_result <- r3step(
-    fit,
-    distal = "ses",
+    gmm_object = fit,
+    distal_vars = "ses",
+    data = sim_data,
     method = "BCH"
   )
 
@@ -272,8 +279,9 @@ test_that("r3step can be plotted", {
   )
 
   r3_result <- r3step(
-    fit,
-    distal = "baseline_risk",
+    gmm_object = fit,
+    distal_vars = "baseline_risk",
+    data = sim_data,
     method = "BCH"
   )
 
@@ -310,8 +318,9 @@ test_that("r3step handles missing data in distal outcome", {
   # Should handle missing distal gracefully
   expect_warning(
     r3_result <- r3step(
-      fit,
-      distal = "ses",
+      gmm_object = fit,
+      distal_vars = "ses",
+      data = sim_data,
       method = "BCH"
     ),
     regexp = "missing|NA"
@@ -348,8 +357,9 @@ test_that("r3step with binary distal outcome works", {
   )
 
   r3_result <- r3step(
-    fit,
-    distal = "binary_distal",
+    gmm_object = fit,
+    distal_vars = "binary_distal",
+    data = sim_data,
     distal_type = "binary",
     method = "BCH"
   )
@@ -380,8 +390,8 @@ test_that("r3step methods produce similar results", {
   )
 
   # Compare BCH and ML methods
-  r3_bch <- r3step(fit, distal = "ses", method = "BCH")
-  r3_ml <- r3step(fit, distal = "ses", method = "ML")
+  r3_bch <- r3step(gmm_object = fit, distal_vars = "ses", data = sim_data, method = "BCH")
+  r3_ml <- r3step(gmm_object = fit, distal_vars = "ses", data = sim_data, method = "ML")
 
   # Class means should be similar (within reasonable tolerance)
   expect_true(

@@ -445,7 +445,10 @@ gmm_survey <- function(data,
       outcome_type = outcome_type,
       fixed_variances = fixed_variances,
       fixed_timescores = fixed_timescores,
-      n_parameters = n_params
+      n_parameters = n_params,
+      id_var = id,
+      time_var = time,
+      outcome_var = outcome
     ),
     parameters = best_result$parameters,
     class_proportions = list(
@@ -477,7 +480,7 @@ gmm_survey <- function(data,
       strata = survey_strata,
       cluster = survey_cluster
     ),
-    data = if (keep_data) as.data.frame(y_matrix) else data.frame(),
+    data = data_long,
     computation_time = computation_time
   )
 
