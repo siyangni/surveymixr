@@ -95,8 +95,8 @@ diagnose_influence <- function(object,
   p <- length(params)
 
   # Get weights
-  weights_var <- object@model_info$survey_design$weights
-  if (!is.null(weights_var)) {
+  weights_var <- object@survey_design$weights
+  if (!is.null(weights_var) && nrow(data) > 0) {
     weights <- data[[weights_var]]
   } else {
     weights <- rep(1, n_obs)
