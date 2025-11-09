@@ -22,6 +22,10 @@
 #'   "heterogeneous" (fully heterogeneous within-class variances)
 #' @param correlation_structure Character string for random effects correlation:
 #'   "unstructured" (default), "independent", "compound_symmetry"
+#' @param covariates Character vector of time-varying covariate names (not yet implemented)
+#' @param convergence_threshold Numeric convergence criterion for EM algorithm (default: 1e-6)
+#' @param max_iterations Integer maximum number of EM iterations (default: 1000)
+#' @param seed Integer random seed for reproducibility (optional)
 #'
 #' @details
 #' **Model Specification:**
@@ -87,7 +91,9 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
+#' # Note: Random effects functionality is under development
+#' # These examples will work once implementation is complete
 #' data(mcs_simulated)
 #'
 #' # Random intercepts only

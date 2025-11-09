@@ -74,6 +74,10 @@ get_link_function <- function(outcome_type = "continuous") {
 #'
 #' @inheritParams gmm_survey
 #' @param link Character string specifying link function: "probit" (default) or "logit"
+#' @param covariates Character vector of time-varying covariate names (not yet implemented)
+#' @param convergence_threshold Numeric convergence criterion for EM algorithm (default: 1e-6)
+#' @param max_iterations Integer maximum number of EM iterations (default: 1000)
+#' @param seed Integer random seed for reproducibility (optional)
 #'
 #' @details
 #' This function extends \code{\link{gmm_survey}} to handle binary outcomes
