@@ -271,7 +271,8 @@ gmm_survey_re <- function(data,
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
+#' # Note: Random effects functionality is under development
 #' # Fit model with random effects
 #' fit <- gmm_survey_re(
 #'   data = mcs_simulated,
@@ -326,7 +327,8 @@ get_random_effects <- function(object, class_assignment = c("modal", "weighted",
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
+#' # Note: Random effects functionality is under development
 #' fit <- gmm_survey_re(
 #'   data = mcs_simulated,
 #'   id = "id", time = "age", outcome = "selfcontrol",
@@ -406,7 +408,8 @@ variance_components <- function(object, class = "all",
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
+#' # Note: Random effects functionality is under development
 #' fit <- gmm_survey_re(
 #'   data = mcs_simulated,
 #'   id = "id", time = "age", outcome = "selfcontrol",
@@ -461,7 +464,8 @@ calculate_icc <- function(object, type = c("unconditional", "conditional")) {
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
+#' # Note: Random effects functionality is under development
 #' fit <- gmm_survey_re(
 #'   data = mcs_simulated,
 #'   id = "id", time = "age", outcome = "selfcontrol",
