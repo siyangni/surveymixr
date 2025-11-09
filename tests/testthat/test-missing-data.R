@@ -27,7 +27,7 @@ test_that("FIML handles MCAR data correctly", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # Should use all observations (not listwise deletion)
   expect_true(fit@n_obs > 0)
@@ -59,7 +59,7 @@ test_that("FIML handles MAR data correctly", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # FIML should handle MAR without bias
   expect_true(all(!is.na(coef(fit))))
@@ -111,8 +111,8 @@ test_that("Different missing rates are handled", {
   )
 
   # Both should converge
-  expect_true(fit_low@converged)
-  expect_true(fit_high@converged)
+  expect_true(fit_low@convergence_info$converged)
+  expect_true(fit_high@convergence_info$converged)
 
   # Higher missing should have larger SEs
   se_low <- sqrt(diag(vcov(fit_low)))
@@ -155,7 +155,7 @@ test_that("Missing data patterns are handled correctly", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 })
 
 test_that("Intermittent missing data is handled", {
@@ -185,7 +185,7 @@ test_that("Intermittent missing data is handled", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # Should have used all individuals
   expect_equal(length(unique(sim_data$id)), 250)
@@ -265,7 +265,7 @@ test_that("All observations missing for some individuals", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 })
 
 test_that("Missing in covariates is handled", {
@@ -382,8 +382,8 @@ test_that("Monotone vs non-monotone missing patterns", {
   )
 
   # Both should converge
-  expect_true(fit_monotone@converged)
-  expect_true(fit_nonmonotone@converged)
+  expect_true(fit_monotone@convergence_info$converged)
+  expect_true(fit_nonmonotone@convergence_info$converged)
 })
 
 test_that("FIML log-likelihood is calculated correctly with missing data", {
@@ -477,7 +477,7 @@ test_that("Missing data with survey weights", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # Weighted and unweighted proportions should differ
   props <- class_proportions(fit)

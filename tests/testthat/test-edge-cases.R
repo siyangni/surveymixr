@@ -87,7 +87,7 @@ test_that("Perfect class separation", {
   )
 
   # Should converge easily
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # Entropy should be very high (near 1)
   expect_true(fit@entropy > 0.95)
@@ -183,7 +183,7 @@ test_that("Only 2 time points (minimal longitudinal)", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # Quadratic should not be identifiable
   expect_error(
@@ -297,7 +297,7 @@ test_that("Unbalanced data (different numbers of observations)", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 })
 
 test_that("All missing for one time point", {
@@ -466,7 +466,7 @@ test_that("Factor variables in covariates work", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 })
 
 test_that("Very high entropy (near-perfect classification)", {

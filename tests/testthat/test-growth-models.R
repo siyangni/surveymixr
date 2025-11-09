@@ -39,7 +39,7 @@ test_that("linear growth model works correctly", {
   expect_true(all(!is.na(coef(fit))))
 
   # Check convergence
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # Check fit indices
   expect_true(!is.na(AIC(fit)))
@@ -80,7 +80,7 @@ test_that("quadratic growth model works correctly", {
   expect_equal(fit@growth_model, "quadratic")
 
   # Check convergence
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # Parameters should include quadratic terms
   params <- coef(fit)
@@ -114,7 +114,7 @@ test_that("free basis growth model works correctly", {
   # Check structure
   expect_s4_class(fit, "SurveyMixr")
   expect_equal(fit@growth_model, "free_basis")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 })
 
 test_that("nonlinear growth model works correctly", {
@@ -173,7 +173,7 @@ test_that("growth models with covariates work", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # Check covariate effects are estimated
   params <- coef(fit)

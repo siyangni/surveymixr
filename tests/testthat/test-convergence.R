@@ -25,7 +25,7 @@ test_that("Multiple random starts find global maximum", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # Best log-likelihood should be stored
   expect_true(!is.na(logLik(fit)))
@@ -140,8 +140,8 @@ test_that("Convergence tolerance affects iterations", {
   )
 
   # Both should converge
-  expect_true(fit_loose@converged)
-  expect_true(fit_tight@converged)
+  expect_true(fit_loose@convergence_info$converged)
+  expect_true(fit_tight@convergence_info$converged)
 
   # Tight tolerance may take more iterations
   # (though not guaranteed in all cases)
@@ -175,7 +175,7 @@ test_that("Maximum iterations limit prevents infinite loops", {
   expect_s4_class(fit, "SurveyMixr")
 
   # If not converged, should have warning
-  if (!fit@converged) {
+  if (!fit@convergence_info$converged) {
     expect_true(!is.null(fit@warnings))
   }
 })
@@ -277,8 +277,8 @@ test_that("Non-convergence is detected and reported", {
   )
 
   # Should detect non-convergence
-  if (!fit@converged) {
-    expect_false(fit@converged)
+  if (!fit@convergence_info$converged) {
+    expect_false(fit@convergence_info$converged)
     expect_true(!is.null(fit@warnings))
   }
 })
@@ -351,7 +351,7 @@ test_that("Convergence with survey design is stable", {
     cores = 1
   )
 
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # Diagnose
   diag <- diagnose_convergence(fit)
@@ -486,6 +486,6 @@ test_that("Convergence with different growth models", {
   )
 
   # Both should converge
-  expect_true(fit_linear@converged)
-  expect_true(fit_quad@converged)
+  expect_true(fit_linear@convergence_info$converged)
+  expect_true(fit_quad@convergence_info$converged)
 })

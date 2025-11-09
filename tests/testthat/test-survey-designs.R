@@ -25,7 +25,7 @@ test_that("Simple Random Sampling (SRS) works", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # For SRS, weighted and unweighted proportions should be similar
   props <- class_proportions(fit)
@@ -58,7 +58,7 @@ test_that("Stratified sampling works correctly", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
   expect_true(!is.null(fit@survey_design$strata))
 })
 
@@ -88,7 +88,7 @@ test_that("Cluster sampling works correctly", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
   expect_true(!is.null(fit@survey_design$cluster))
 })
 
@@ -120,7 +120,7 @@ test_that("Stratified cluster sampling works correctly", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
   expect_true(!is.null(fit@survey_design$strata))
   expect_true(!is.null(fit@survey_design$cluster))
 })
@@ -154,7 +154,7 @@ test_that("Nested design works correctly", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
   expect_true(fit@survey_design$nest)
 })
 
@@ -234,7 +234,7 @@ test_that("Survey design with all components works", {
   )
 
   expect_s4_class(fit, "SurveyMixr")
-  expect_true(fit@converged)
+  expect_true(fit@convergence_info$converged)
 
   # Check all survey components are stored
   expect_true(!is.null(fit@survey_design$strata))
