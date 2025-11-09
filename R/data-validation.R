@@ -442,7 +442,7 @@ validate_survey_data <- function(data,
   cat(rep("=", 70), "\n\n", sep = "")
 
   cat("Overall Status:", ifelse(validation@is_valid,
-                               "PASSED ✓", "FAILED ✗"), "\n\n")
+                               "PASSED", "FAILED"), "\n\n")
 
   if (length(validation@errors) > 0) {
     cat("ERRORS (must fix):\n")

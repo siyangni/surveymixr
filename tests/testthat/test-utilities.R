@@ -223,8 +223,8 @@ test_that("entropy calculation is correct", {
   # Entropy via method
   ent1 <- entropy(fit)
 
-  # Entropy from slot
-  ent2 <- fit@entropy
+  # Entropy from fit_indices
+  ent2 <- fit@fit_indices$entropy
 
   expect_equal(ent1, ent2)
   expect_true(ent1 >= 0 && ent1 <= 1)

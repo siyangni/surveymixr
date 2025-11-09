@@ -25,6 +25,10 @@
 #' @param tvc_lag Integer specifying lag for TVCs (0 = contemporaneous, 1 = lagged once, etc.)
 #' @param center_tvc Logical; center time-varying covariates? (default = TRUE)
 #' @param tvc_by_class Logical; allow TVC effects to differ by class? (default = FALSE)
+#' @param covariates Character vector of time-varying covariate names (not yet implemented)
+#' @param convergence_threshold Numeric convergence criterion for EM algorithm (default: 1e-6)
+#' @param max_iterations Integer maximum number of EM iterations (default: 1000)
+#' @param seed Integer random seed for reproducibility (optional)
 #'
 #' @details
 #' **Model Specifications:**

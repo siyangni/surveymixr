@@ -5,8 +5,7 @@ Version: 0.2.0
 Date: 2025-11-08
 Authors@R: c(
     person("Siyang", "Ni", email = "johnni.nj@gmail.com",
-           role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-HERE"))
+           role = c("aut", "cre"))
     )
 Maintainer: Siyang Ni <johnni.nj@gmail.com>
 Description: Implements growth mixture modeling (GMM) for longitudinal data with

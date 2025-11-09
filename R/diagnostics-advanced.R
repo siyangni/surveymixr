@@ -296,8 +296,9 @@ diagnose_separation <- function(object, threshold = 0.99) {
 
   # Calculate metrics
   pct_extreme <- mean(max_prob > threshold, na.rm = TRUE) * 100
-  entropy_val <- entropy(posterior, method = "standard")
-  entropy_relative <- entropy(posterior, method = "relative")
+  entropy_val <- entropy(posterior)
+  # Note: relative entropy not yet implemented, using standard entropy
+  entropy_relative <- entropy_val
 
   # Class sizes
   class_assignment <- apply(posterior, 1, which.max)
@@ -435,6 +436,7 @@ setClass("InfluenceDiagnostics",
 
 #' Print Method for Influence Diagnostics
 #'
+#' @param object An InfluenceDiagnostics object
 #' @export
 setMethod("show", "InfluenceDiagnostics", function(object) {
   cat("\nInfluence Diagnostics for Growth Mixture Model\n")

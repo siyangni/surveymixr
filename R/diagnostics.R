@@ -347,7 +347,7 @@ classification_quality <- function(object) {
     avepp = avepp_by_class,
     occ = occ_by_class,
     mca = mca_by_class,
-    n_assigned = as.numeric(table(class_assignments)),
+    n_assigned = as.numeric(table(factor(class_assignments, levels = 1:n_classes))),
     stringsAsFactors = FALSE
   )
 
