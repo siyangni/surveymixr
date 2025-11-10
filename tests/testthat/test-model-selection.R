@@ -35,13 +35,13 @@ test_that("gmm_select compares models across different class numbers", {
   expect_equal(length(result@fitted_models), 4)
 
   # Check fit indices present
-  expect_true("AIC" %in% colnames(result@comparison_table))
-  expect_true("BIC" %in% colnames(result@comparison_table))
-  expect_true("aBIC" %in% colnames(result@comparison_table))
+  expect_true("aic" %in% colnames(result@comparison_table))
+  expect_true("bic" %in% colnames(result@comparison_table))
+  expect_true("abic" %in% colnames(result@comparison_table))
   expect_true("entropy" %in% colnames(result@comparison_table))
 
   # BIC should decrease then increase (or plateau) as classes increase
-  bic_values <- result@comparison_table$BIC
+  bic_values <- result@comparison_table$bic
   expect_true(length(bic_values) == 4)
 })
 
@@ -62,8 +62,7 @@ test_that("gmm_select handles minimum 2 classes", {
     id = "id",
     time = "time",
     outcome = "outcome",
-    min_classes = 2,
-    max_classes = 3,
+    classes = 2:3,
     starts = 10,
     criteria = c("BIC", "entropy"),
     cores = 1
@@ -91,8 +90,7 @@ test_that("BLRT works when enabled", {
     id = "id",
     time = "time",
     outcome = "outcome",
-    min_classes = 1,
-    max_classes = 3,
+    classes = 1:3,
     starts = 5,
     criteria = c("BIC", "BLRT", "entropy"),
     blrt_samples = 100,  # Reduced for testing
@@ -188,8 +186,7 @@ test_that("Model selection with survey design works", {
     id = "id",
     time = "time",
     outcome = "outcome",
-    min_classes = 1,
-    max_classes = 3,
+    classes = 1:3,
     strata = "stratum",
     weights = "weight",
     starts = 10,
@@ -223,8 +220,7 @@ test_that("Model selection can be plotted", {
     id = "id",
     time = "time",
     outcome = "outcome",
-    min_classes = 1,
-    max_classes = 3,
+    classes = 1:3,
     starts = 10,
     criteria = c("BIC", "entropy"),
     cores = 1
@@ -232,7 +228,7 @@ test_that("Model selection can be plotted", {
 
   # Should be able to plot without error
   expect_silent(plot_model_selection(result))
-  expect_silent(plot_model_selection(result, criterion = "BIC"))
+  expect_silent(plot_model_selection(result, criterion = "bic"))
   expect_silent(plot_model_selection(result, criterion = "entropy"))
 })
 
@@ -291,8 +287,7 @@ test_that("Model selection recommendations are sensible", {
     id = "id",
     time = "time",
     outcome = "outcome",
-    min_classes = 1,
-    max_classes = 5,
+    classes = 1:5,
     starts = 20,
     criteria = c("BIC", "entropy"),
     cores = 1
@@ -300,7 +295,7 @@ test_that("Model selection recommendations are sensible", {
 
   # BIC should favor 3-class model (or close to it)
   # Find minimum BIC
-  best_bic <- which.min(result@comparison_table$BIC)
+  best_bic <- which.min(result@comparison_table$bic)
 
   # Should be within 1 class of true model
   expect_true(abs(best_bic - 3) <= 1)
@@ -325,8 +320,7 @@ test_that("Parallel processing works in model selection", {
     id = "id",
     time = "time",
     outcome = "outcome",
-    min_classes = 1,
-    max_classes = 3,
+    classes = 1:3,
     starts = 10,
     criteria = c("BIC", "entropy"),
     cores = 2
