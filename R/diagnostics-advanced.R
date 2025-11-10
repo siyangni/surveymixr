@@ -103,10 +103,25 @@ diagnose_influence <- function(object,
   n_obs <- nrow(data)
   p <- length(params)
 
-  # Get weights (stored directly in survey_design, not as column name)
-  weights <- object@survey_design$weights
-  if (is.null(weights) || length(weights) == 0) {
+  # Get weights (stored per individual in wide format, need to expand to long format)
+  weights_wide <- object@survey_design$weights
+  if (is.null(weights_wide) || length(weights_wide) == 0) {
     weights <- rep(1, n_obs)
+  } else {
+    # Weights are stored per individual, need to expand to match long data
+    # Create mapping from unique IDs to weights
+    id_var <- object@model_info$id_var
+    unique_ids <- unique(data[[id_var]])
+
+    if (length(weights_wide) != length(unique_ids)) {
+      warning("Number of weights does not match number of unique individuals. Using equal weights.")
+      weights <- rep(1, n_obs)
+    } else {
+      # Match weights to each row in long data
+      id_to_weight <- setNames(weights_wide, unique_ids)
+      weights <- id_to_weight[as.character(data[[id_var]])]
+      weights[is.na(weights)] <- 1  # Default to 1 if any NA
+    }
   }
 
   # Initialize results
