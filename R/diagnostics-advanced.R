@@ -12,7 +12,7 @@
 #' estimates using survey-weighted influence metrics including Cook's
 #' distance, DFBETAS, and leverage.
 #'
-#' @param object Fitted \code{SurveyMixr} object
+#' @param object Fitted \code{SurveyMixr} object (must be fitted with \code{keep_data = TRUE})
 #' @param measure Character string specifying influence measure:
 #'   "cooks" (Cook's distance), "dfbetas" (parameter-specific influence),
 #'   "leverage", or "all"
@@ -20,6 +20,9 @@
 #'   If NULL, uses conventional cutoffs (e.g., 4/n for Cook's D)
 #'
 #' @details
+#' **Note:** This function requires the original data to be stored in the fitted
+#' object. Make sure to fit your model with \code{keep_data = TRUE}.
+#'
 #' **Cook's Distance (Survey-Weighted):**
 #'
 #' Measures the influence of each observation on all parameter estimates
@@ -64,7 +67,8 @@
 #' fit <- gmm_survey(
 #'   data = mcs_simulated,
 #'   id = "id", time = "age", outcome = "selfcontrol",
-#'   n_classes = 3, weights = "weight", starts = 100
+#'   n_classes = 3, weights = "weight", starts = 100,
+#'   keep_data = TRUE
 #' )
 #'
 #' # Detect influential observations
@@ -86,6 +90,11 @@ diagnose_influence <- function(object,
     stop("object must be a SurveyMixr object")
   }
 
+  # Check if data is available
+  if (is.null(object@data) || nrow(object@data) == 0) {
+    stop("diagnose_influence() requires the original data. Please refit the model with keep_data = TRUE")
+  }
+
   measure <- match.arg(measure)
 
   # Extract components
@@ -94,11 +103,9 @@ diagnose_influence <- function(object,
   n_obs <- nrow(data)
   p <- length(params)
 
-  # Get weights
-  weights_var <- object@survey_design$weights
-  if (!is.null(weights_var) && nrow(data) > 0) {
-    weights <- data[[weights_var]]
-  } else {
+  # Get weights (stored directly in survey_design, not as column name)
+  weights <- object@survey_design$weights
+  if (is.null(weights) || length(weights) == 0) {
     weights <- rep(1, n_obs)
   }
 
@@ -304,9 +311,9 @@ diagnose_separation <- function(object, threshold = 0.99) {
   class_assignment <- apply(posterior, 1, which.max)
   unweighted_sizes <- table(class_assignment)
 
-  weights_var <- object@model_info$survey_design$weights
-  if (!is.null(weights_var)) {
-    weights <- object@data[[weights_var]]
+  # Get weights (stored directly in survey_design, not as column name)
+  weights <- object@survey_design$weights
+  if (!is.null(weights) && length(weights) > 0) {
     weighted_sizes <- tapply(weights, class_assignment, sum, na.rm = TRUE)
   } else {
     weighted_sizes <- unweighted_sizes
