@@ -74,7 +74,6 @@
 #' # Detect influential observations
 #' influence <- diagnose_influence(fit, measure = "all")
 #' print(influence)
-#' plot(influence)
 #'
 #' # Get IDs of influential cases
 #' influential_ids <- influence@influential_ids

@@ -21,7 +21,7 @@
 #'   \item{baseline_risk}{Baseline risk score (standardized, continuous)}
 #'   \item{ses}{Socioeconomic status (standardized, continuous)}
 #'   \item{delinquency}{Delinquency score at age 17 (0-10, higher = more delinquent)}
-#'   \item{academic_achievement}{Academic achievement score (IQ-like, mean \~100)}
+#'   \item{academic_achievement}{Academic achievement score (IQ-like, mean ~100)}
 #' }
 #'
 #' @details
@@ -40,7 +40,7 @@
 #'   \item Stratified by region (4 strata)
 #'   \item Clustered within PSUs (200 clusters)
 #'   \item Probability weights to adjust for unequal sampling
-#'   \item \~12\% missing data (MAR mechanism)
+#'   \item ~12\% missing data (MAR mechanism)
 #' }
 #'
 #' \strong{Auxiliary Variables:}
