@@ -118,7 +118,7 @@ diagnose_influence <- function(object,
       weights <- rep(1, n_obs)
     } else {
       # Match weights to each row in long data
-      id_to_weight <- setNames(weights_wide, unique_ids)
+      id_to_weight <- stats::setNames(weights_wide, unique_ids)
       weights <- id_to_weight[as.character(data[[id_var]])]
       weights[is.na(weights)] <- 1  # Default to 1 if any NA
     }
@@ -184,7 +184,7 @@ diagnose_influence <- function(object,
       any,
       na.rm = TRUE
     )
-    influential_ids <- unique(influence_df$id[influence_df$influential_any])
+    influential_ids <- unique(as.character(influence_df$id[influence_df$influential_any]))
   } else {
     influential_ids <- character(0)
   }

@@ -30,9 +30,9 @@
 #'
 #' \strong{Three Latent Classes:}
 #' \itemize{
-#'   \item \strong{Class 1 (55%):} High self-control, stable trajectory
-#'   \item \strong{Class 2 (30%):} Moderate self-control, improving trajectory
-#'   \item \strong{Class 3 (15%):} Low self-control, declining trajectory
+#'   \item \strong{Class 1 (55\%):} High self-control, stable trajectory
+#'   \item \strong{Class 2 (30\%):} Moderate self-control, improving trajectory
+#'   \item \strong{Class 3 (15\%):} Low self-control, declining trajectory
 #' }
 #'
 #' \strong{Survey Design:}
@@ -40,7 +40,7 @@
 #'   \item Stratified by region (4 strata)
 #'   \item Clustered within PSUs (200 clusters)
 #'   \item Probability weights to adjust for unequal sampling
-#'   \item ~12% missing data (MAR mechanism)
+#'   \item ~12\% missing data (MAR mechanism)
 #' }
 #'
 #' \strong{Auxiliary Variables:}
