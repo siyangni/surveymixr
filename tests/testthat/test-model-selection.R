@@ -20,11 +20,10 @@ test_that("gmm_select compares models across different class numbers", {
     id = "id",
     time = "time",
     outcome = "outcome",
-    min_classes = 1,
-    max_classes = 4,
+    classes = 1:4,
     growth_model = "linear",
     starts = 10,
-    run_blrt = FALSE,  # Skip BLRT for speed
+    criteria = c("BIC", "entropy"),  # Skip BLRT for speed
     cores = 1
   )
 
@@ -66,7 +65,7 @@ test_that("gmm_select handles minimum 2 classes", {
     min_classes = 2,
     max_classes = 3,
     starts = 10,
-    run_blrt = FALSE,
+    criteria = c("BIC", "entropy"),
     cores = 1
   )
 
@@ -95,7 +94,7 @@ test_that("BLRT works when enabled", {
     min_classes = 1,
     max_classes = 3,
     starts = 5,
-    run_blrt = TRUE,
+    criteria = c("BIC", "BLRT", "entropy"),
     blrt_samples = 100,  # Reduced for testing
     cores = 1
   )
@@ -132,8 +131,8 @@ test_that("Information criteria are calculated correctly", {
   # Check all fit indices are calculated
   expect_true(!is.na(AIC(fit)))
   expect_true(!is.na(BIC(fit)))
-  expect_true(!is.na(fit@fit_indices$aBIC))
-  expect_true(!is.na(fit@entropy))
+  expect_true(!is.na(fit@fit_indices$abic))  # lowercase abic
+  expect_true(!is.na(fit@fit_indices$entropy))
 
   # AIC < BIC typically for same model
   # (BIC has stronger penalty)
@@ -163,12 +162,12 @@ test_that("Entropy is bounded between 0 and 1", {
   )
 
   # Entropy should be between 0 and 1
-  expect_true(fit@entropy >= 0)
-  expect_true(fit@entropy <= 1)
+  expect_true(fit@fit_indices$entropy >= 0)
+  expect_true(fit@fit_indices$entropy <= 1)
 
   # Can also extract via function
   ent <- entropy(fit)
-  expect_equal(ent, fit@entropy)
+  expect_equal(ent, fit@fit_indices$entropy)
 })
 
 test_that("Model selection with survey design works", {
@@ -194,7 +193,7 @@ test_that("Model selection with survey design works", {
     strata = "stratum",
     weights = "weight",
     starts = 10,
-    run_blrt = FALSE,
+    criteria = c("BIC", "entropy"),
     cores = 1
   )
 
@@ -227,7 +226,7 @@ test_that("Model selection can be plotted", {
     min_classes = 1,
     max_classes = 3,
     starts = 10,
-    run_blrt = FALSE,
+    criteria = c("BIC", "entropy"),
     cores = 1
   )
 
@@ -261,10 +260,10 @@ test_that("Single class model serves as baseline", {
   )
 
   expect_s4_class(fit_1class, "SurveyMixr")
-  expect_equal(fit_1class@n_classes, 1)
+  expect_equal(fit_1class@model_info$n_classes, 1)
 
   # Entropy should be NA or 1 for single class
-  expect_true(is.na(fit_1class@entropy) || fit_1class@entropy == 1)
+  expect_true(is.na(fit_1class@fit_indices$entropy) || fit_1class@fit_indices$entropy == 1)
 })
 
 test_that("Model selection recommendations are sensible", {
@@ -295,7 +294,7 @@ test_that("Model selection recommendations are sensible", {
     min_classes = 1,
     max_classes = 5,
     starts = 20,
-    run_blrt = FALSE,
+    criteria = c("BIC", "entropy"),
     cores = 1
   )
 
@@ -329,7 +328,7 @@ test_that("Parallel processing works in model selection", {
     min_classes = 1,
     max_classes = 3,
     starts = 10,
-    run_blrt = FALSE,
+    criteria = c("BIC", "entropy"),
     cores = 2
   )
 
