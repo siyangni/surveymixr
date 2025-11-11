@@ -149,7 +149,7 @@ plot_interactive <- function(object,
       values = colors,
       name = "Latent Class",
       labels = paste0("Class ", 1:n_classes, " (",
-                     round(object@results$class_proportions$weighted * 100, 1), "%)")
+                     round(object@class_proportions$weighted * 100, 1), "%)")
     ) +
     ggplot2::scale_fill_manual(values = colors, guide = "none") +
     ggplot2::labs(
@@ -175,7 +175,7 @@ plot_interactive <- function(object,
   # Add observed points (optional)
   if (show_points) {
     obs_data <- object@data
-    obs_data$class <- apply(object@results$posterior_probs, 1, which.max)
+    obs_data$class <- apply(object@posterior_probs, 1, which.max)
 
     p <- p + ggplot2::geom_point(
       data = obs_data,
@@ -197,7 +197,7 @@ plot_interactive <- function(object,
 .plot_individual_ggplot <- function(object, n_individuals, color_palette) {
 
   # Sample individuals from each class
-  class_assignment <- apply(object@results$posterior_probs, 1, which.max)
+  class_assignment <- apply(object@posterior_probs, 1, which.max)
   data <- object@data
   data$class <- class_assignment[match(data[[object@model_info$id_var]],
                                        unique(data[[object@model_info$id_var]]))]
@@ -262,7 +262,7 @@ plot_interactive <- function(object,
   plot_data <- object@data[object@data[[object@model_info$id_var]] %in% sampled_ids, ]
 
   # Add class assignment
-  class_assignment <- apply(object@results$posterior_probs, 1, which.max)
+  class_assignment <- apply(object@posterior_probs, 1, which.max)
   plot_data$class <- class_assignment[match(plot_data[[object@model_info$id_var]],
                                             unique(object@data[[object@model_info$id_var]]))]
 
@@ -336,7 +336,7 @@ plot_model_selection_interactive <- function(object,
   }
 
   # Extract fit indices
-  fit_data <- object@results$fit_indices
+  fit_data <- object@fit_indices
 
   # Create separate plots for each criterion
   plots <- list()
@@ -419,7 +419,7 @@ plot_posterior_dist <- function(object, interactive = TRUE) {
   }
 
   # Get posterior probabilities
-  posterior <- object@results$posterior_probs
+  posterior <- object@posterior_probs
   n_classes <- ncol(posterior)
 
   # Reshape to long format
