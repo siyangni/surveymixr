@@ -334,7 +334,7 @@ diagnose_separation <- function(object, threshold = 0.99) {
   }
 
   # Get posterior probabilities
-  posterior <- object@results$posterior_probs
+  posterior <- object@posterior_probs
 
   # Get class assignments
   max_prob <- apply(posterior, 1, max, na.rm = TRUE)
@@ -448,7 +448,7 @@ residual_diagnostics <- function(object,
 
   # By-class diagnostics
   if (by_class) {
-    class_assignment <- apply(object@results$posterior_probs, 1, which.max)
+    class_assignment <- apply(object@posterior_probs, 1, which.max)
     diagnostics$by_class <- lapply(1:object@model_info$n_classes, function(k) {
       resid_k <- residuals[class_assignment == k & !is.na(residuals)]
       list(
