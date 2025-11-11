@@ -98,7 +98,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Simulate data with covariates
 #' set.seed(999)
 #' sim_data <- simulate_gmm_survey(
@@ -364,7 +364,7 @@ gmm_survey_tvc <- function(data,
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Simulate data with covariates
 #' set.seed(789)
 #' sim_data <- simulate_gmm_survey(
