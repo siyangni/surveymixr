@@ -62,12 +62,24 @@
 #'
 #' @examples
 #' \donttest{
-#' data(mcs_simulated)
+#' # Simulate data
+#' set.seed(123)
+#' mcs_simulated <- simulate_gmm_survey(
+#'   n_individuals = 500,
+#'   n_times = 6,
+#'   n_classes = 3,
+#'   time_scores = c(3, 5, 7, 11, 14, 17),
+#'   design = "stratified_cluster",
+#'   n_strata = 4,
+#'   n_clusters = 50,
+#'   missing_rate = 0.12,
+#'   seed = 123
+#' )
 #'
 #' fit <- gmm_survey(
 #'   data = mcs_simulated,
-#'   id = "id", time = "age", outcome = "selfcontrol",
-#'   n_classes = 3, weights = "weight", starts = 100,
+#'   id = "id", time = "time", outcome = "outcome",
+#'   n_classes = 3, weights = "weight", starts = 20,
 #'   keep_data = TRUE
 #' )
 #'
