@@ -306,10 +306,22 @@ diagnose_influence <- function(object,
 #'
 #' @examples
 #' \donttest{
+#' # Simulate data
+#' set.seed(456)
+#' sim_data <- simulate_gmm_survey(
+#'   n_individuals = 300,
+#'   n_times = 4,
+#'   n_classes = 3,
+#'   design = "stratified_cluster",
+#'   n_strata = 3,
+#'   n_clusters = 30,
+#'   seed = 456
+#' )
+#'
 #' fit <- gmm_survey(
-#'   data = mcs_simulated,
-#'   id = "id", time = "age", outcome = "selfcontrol",
-#'   n_classes = 3, starts = 100
+#'   data = sim_data,
+#'   id = "id", time = "time", outcome = "outcome",
+#'   n_classes = 3, starts = 20
 #' )
 #'
 #' sep_check <- diagnose_separation(fit)
