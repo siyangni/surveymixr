@@ -23,7 +23,7 @@ probabilities}
 }
 \value{
 Numeric entropy value between 0 and 1, where values closer to 1
-indicate better class separation
+  indicate better class separation
 }
 \description{
 Extract entropy from a SurveyMixr object or compute from posterior

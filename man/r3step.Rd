@@ -34,10 +34,10 @@ ID variable as used in \code{gmm_object})}
 \value{
 An S4 object of class \code{\linkS4class{R3StepResults}} containing:
 \describe{
-\item{class_means}{Matrix of class-specific means for each distal variable}
-\item{standard_errors}{Matrix of survey-adjusted standard errors}
-\item{test_results}{Data frame with omnibus and pairwise test results}
-\item{effect_sizes}{Matrix of Cohen's d effect sizes (pairwise)}
+  \item{class_means}{Matrix of class-specific means for each distal variable}
+  \item{standard_errors}{Matrix of survey-adjusted standard errors}
+  \item{test_results}{Data frame with omnibus and pairwise test results}
+  \item{effect_sizes}{Matrix of Cohen's d effect sizes (pairwise)}
 }
 }
 \description{
@@ -60,13 +60,13 @@ the analysis.
 \strong{Available Methods:}
 
 \itemize{
-\item \strong{BCH (default)}: Uses weighted regression with weights derived
-from the classification error matrix. Computationally efficient and
-recommended for most applications.
-\item \strong{ML}: Simultaneous estimation of mixture model and auxiliary
-variable relationships. Most accurate but computationally intensive.
-\item \strong{Manual 3-step}: Traditional 3-step approach with manual
-correction for classification error.
+  \item \strong{BCH (default)}: Uses weighted regression with weights derived
+    from the classification error matrix. Computationally efficient and
+    recommended for most applications.
+  \item \strong{ML}: Simultaneous estimation of mixture model and auxiliary
+    variable relationships. Most accurate but computationally intensive.
+  \item \strong{Manual 3-step}: Traditional 3-step approach with manual
+    correction for classification error.
 }
 
 The function automatically accounts for complex survey design features
@@ -77,11 +77,11 @@ test statistics.
 
 The output provides:
 \itemize{
-\item Class-specific means (adjusted for classification error)
-\item Survey-adjusted standard errors
-\item Omnibus tests (overall class differences)
-\item Pairwise comparisons (if requested)
-\item Effect sizes (Cohen's d with survey weights)
+  \item Class-specific means (adjusted for classification error)
+  \item Survey-adjusted standard errors
+  \item Omnibus tests (overall class differences)
+  \item Pairwise comparisons (if requested)
+  \item Effect sizes (Cohen's d with survey weights)
 }
 }
 \examples{

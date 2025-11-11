@@ -15,7 +15,7 @@ diagnose_convergence(gmm_object, tolerance = 1e-04, plot = TRUE)
 }
 \value{
 An S4 object of class \code{\linkS4class{ConvergenceDiagnostics}}
-containing detailed convergence information
+  containing detailed convergence information
 }
 \description{
 Provides detailed convergence diagnostics including log-likelihood
@@ -28,18 +28,18 @@ likelihood surface typically has multiple local maxima. This function helps
 assess whether the best solution is trustworthy by:
 
 \itemize{
-\item Tabulating log-likelihoods from all random starts
-\item Identifying how many times the best solution was replicated
-\item Detecting distinct local maxima
-\item Providing recommendations for improving convergence
+  \item Tabulating log-likelihoods from all random starts
+  \item Identifying how many times the best solution was replicated
+  \item Detecting distinct local maxima
+  \item Providing recommendations for improving convergence
 }
 
 \strong{Guidelines:}
 \itemize{
-\item Best solution should be replicated at least 2-3 times
-\item If not replicated, increase \code{starts} in \code{gmm_survey()}
-\item Multiple distinct local maxima may indicate model instability
-\item Very different log-likelihoods suggest identifiability issues
+  \item Best solution should be replicated at least 2-3 times
+  \item If not replicated, increase \code{starts} in \code{gmm_survey()}
+  \item Multiple distinct local maxima may indicate model instability
+  \item Very different log-likelihoods suggest identifiability issues
 }
 }
 \examples{

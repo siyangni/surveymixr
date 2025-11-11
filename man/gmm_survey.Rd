@@ -88,13 +88,13 @@ membership prediction}
 \value{
 An S4 object of class \code{\linkS4class{SurveyMixr}} containing:
 \describe{
-\item{parameters}{Class-specific growth parameters (means, variances)}
-\item{class_proportions}{Weighted and unweighted class proportions}
-\item{posterior_probs}{Posterior probabilities for each individual}
-\item{standard_errors}{Survey-adjusted standard errors}
-\item{fit_indices}{AIC, BIC, aBIC, entropy, log-likelihood}
-\item{convergence_info}{Convergence diagnostics from random starts}
-\item{survey_design}{Survey design information}
+  \item{parameters}{Class-specific growth parameters (means, variances)}
+  \item{class_proportions}{Weighted and unweighted class proportions}
+  \item{posterior_probs}{Posterior probabilities for each individual}
+  \item{standard_errors}{Survey-adjusted standard errors}
+  \item{fit_indices}{AIC, BIC, aBIC, entropy, log-likelihood}
+  \item{convergence_info}{Convergence diagnostics from random starts}
+  \item{survey_design}{Survey design information}
 }
 }
 \description{
@@ -108,10 +108,10 @@ This function implements growth mixture modeling with full survey design
 integration, a feature combination not available in other R packages. The
 implementation uses:
 \itemize{
-\item EM algorithm with survey weight integration in the likelihood
-\item Multiple random starts to avoid local maxima
-\item Sandwich standard errors for stratification and clustering
-\item FIML for missing data
+  \item EM algorithm with survey weight integration in the likelihood
+  \item Multiple random starts to avoid local maxima
+  \item Sandwich standard errors for stratification and clustering
+  \item FIML for missing data
 }
 
 The function automatically converts data from long to wide format internally

@@ -60,11 +60,11 @@ gmm_select(
 \value{
 An S4 object of class \code{\linkS4class{SurveyMixrSelect}} containing:
 \describe{
-\item{comparison_table}{Data frame comparing fit across class solutions}
-\item{fitted_models}{List of fitted \code{SurveyMixr} objects}
-\item{blrt_results}{Detailed BLRT results if requested}
-\item{recommended_classes}{Recommended number of classes}
-\item{criteria}{Criteria used for selection}
+  \item{comparison_table}{Data frame comparing fit across class solutions}
+  \item{fitted_models}{List of fitted \code{SurveyMixr} objects}
+  \item{blrt_results}{Detailed BLRT results if requested}
+  \item{recommended_classes}{Recommended number of classes}
+  \item{criteria}{Criteria used for selection}
 }
 }
 \description{
@@ -78,21 +78,21 @@ of latent classes. Multiple criteria are available:
 
 \strong{Information Criteria:}
 \itemize{
-\item \strong{BIC}: Bayesian Information Criterion (lower is better)
-\item \strong{AIC}: Akaike Information Criterion (lower is better)
-\item \strong{aBIC}: Sample-size adjusted BIC (lower is better)
+  \item \strong{BIC}: Bayesian Information Criterion (lower is better)
+  \item \strong{AIC}: Akaike Information Criterion (lower is better)
+  \item \strong{aBIC}: Sample-size adjusted BIC (lower is better)
 }
 
 \strong{Classification Quality:}
 \itemize{
-\item \strong{Entropy}: Classification certainty (higher is better, >0.8 preferred)
+  \item \strong{Entropy}: Classification certainty (higher is better, >0.8 preferred)
 }
 
 \strong{Hypothesis Testing:}
 \itemize{
-\item \strong{BLRT}: Bootstrap Likelihood Ratio Test comparing K vs K-1 classes.
-Considered the gold standard for class enumeration. A significant p-value
-(< 0.05) indicates that K classes fit better than K-1 classes.
+  \item \strong{BLRT}: Bootstrap Likelihood Ratio Test comparing K vs K-1 classes.
+    Considered the gold standard for class enumeration. A significant p-value
+    (< 0.05) indicates that K classes fit better than K-1 classes.
 }
 
 The BLRT implementation uses parametric bootstrap: data is generated under
@@ -102,11 +102,11 @@ reliable test for class enumeration.
 
 \strong{Practical Considerations:}
 \itemize{
-\item Increase \code{starts} (500-1000) for final model selection
-\item BLRT is computationally intensive; use fewer bootstrap samples for
-initial exploration
-\item Smallest class should typically be >5\% of sample
-\item Consider substantive interpretability alongside statistical criteria
+  \item Increase \code{starts} (500-1000) for final model selection
+  \item BLRT is computationally intensive; use fewer bootstrap samples for
+    initial exploration
+  \item Smallest class should typically be >5% of sample
+  \item Consider substantive interpretability alongside statistical criteria
 }
 }
 \examples{

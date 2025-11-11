@@ -61,14 +61,14 @@ for each class. If NULL, reasonable defaults are generated.}
 \value{
 Data frame in long format with variables:
 \describe{
-\item{id}{Individual ID}
-\item{time}{Time point}
-\item{outcome}{Observed outcome value}
-\item{true_class}{True latent class (for validation)}
-\item{stratum}{Stratum indicator (if stratified)}
-\item{psu}{Primary sampling unit (if clustered)}
-\item{weight}{Sampling weight (if weighted)}
-\item{covariates}{Additional covariates (if requested)}
+  \item{id}{Individual ID}
+  \item{time}{Time point}
+  \item{outcome}{Observed outcome value}
+  \item{true_class}{True latent class (for validation)}
+  \item{stratum}{Stratum indicator (if stratified)}
+  \item{psu}{Primary sampling unit (if clustered)}
+  \item{weight}{Sampling weight (if weighted)}
+  \item{covariates}{Additional covariates (if requested)}
 }
 }
 \description{
@@ -84,16 +84,16 @@ For individual i in class k:
 
 where:
 \itemize{
-\item \eqn{\beta_{0k}}, \eqn{\beta_{1k}} are class-specific intercept and slope
-\item \eqn{u_{0i}}, \eqn{u_{1i}} are random effects (optional, not yet implemented)
-\item \eqn{\epsilon_{it}} ~ N(0, \eqn{\sigma_k^2}) are residuals
+  \item \eqn{\beta_{0k}}, \eqn{\beta_{1k}} are class-specific intercept and slope
+  \item \eqn{u_{0i}}, \eqn{u_{1i}} are random effects (optional, not yet implemented)
+  \item \eqn{\epsilon_{it}} ~ N(0, \eqn{\sigma_k^2}) are residuals
 }
 
 Survey design features:
 \itemize{
-\item \strong{Stratification}: Population divided into strata, sampling within strata
-\item \strong{Clustering}: Individuals nested within PSUs (e.g., schools, neighborhoods)
-\item \strong{Weights}: Inverse probability weights to account for unequal selection probabilities
+  \item \strong{Stratification}: Population divided into strata, sampling within strata
+  \item \strong{Clustering}: Individuals nested within PSUs (e.g., schools, neighborhoods)
+  \item \strong{Weights}: Inverse probability weights to account for unequal selection probabilities
 }
 
 The function can generate various missing data patterns to test robustness

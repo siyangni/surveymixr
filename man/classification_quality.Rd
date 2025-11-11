@@ -21,19 +21,19 @@ Classification quality metrics assess how well individuals are assigned to
 latent classes:
 
 \itemize{
-\item \strong{Entropy}: Overall classification certainty (0-1, higher better)
-\item \strong{AvePP}: Average posterior probability of assigned class
-\item \strong{OCC}: Odds of correct classification (AvePP / (1 - AvePP))
-\item \strong{mcaAvePP}: Minimum classification accuracy based on AvePP
+  \item \strong{Entropy}: Overall classification certainty (0-1, higher better)
+  \item \strong{AvePP}: Average posterior probability of assigned class
+  \item \strong{OCC}: Odds of correct classification (AvePP / (1 - AvePP))
+  \item \strong{mcaAvePP}: Minimum classification accuracy based on AvePP
 }
 
 \strong{Guidelines:}
 \itemize{
-\item Entropy > 0.80: Excellent separation
-\item Entropy 0.60-0.80: Good separation
-\item Entropy < 0.60: Poor separation, consider fewer classes
-\item AvePP > 0.90 for each class indicates reliable classification
-\item OCC > 5 is desirable
+  \item Entropy > 0.80: Excellent separation
+  \item Entropy 0.60-0.80: Good separation
+  \item Entropy < 0.60: Poor separation, consider fewer classes
+  \item AvePP > 0.90 for each class indicates reliable classification
+  \item OCC > 5 is desirable
 }
 }
 \examples{

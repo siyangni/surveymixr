@@ -6,21 +6,21 @@
 \format{
 A data frame with 29,400 rows and 14 variables:
 \describe{
-\item{id}{Individual identifier (1 to 5000)}
-\item{age}{Age at assessment (3, 5, 7, 11, 14, 17 years)}
-\item{selfcontrol}{Self-control score (continuous, higher = better)}
-\item{true_class}{True latent class membership (1, 2, or 3) - for validation only}
-\item{stratum}{Stratum indicator (1 to 4)}
-\item{stratum_factor}{Stratum labels: England-Advantaged, England-Disadvantaged,
-Scotland/Wales, Northern Ireland}
-\item{cluster}{Primary sampling unit (PSU) identifier (1 to 200)}
-\item{weight}{Sampling weight (inverse probability weight)}
-\item{sex}{Sex (0 = Female, 1 = Male)}
-\item{sex_factor}{Sex labels (Female, Male)}
-\item{baseline_risk}{Baseline risk score (standardized, continuous)}
-\item{ses}{Socioeconomic status (standardized, continuous)}
-\item{delinquency}{Delinquency score at age 17 (0-10, higher = more delinquent)}
-\item{academic_achievement}{Academic achievement score (IQ-like, mean ~100)}
+  \item{id}{Individual identifier (1 to 5000)}
+  \item{age}{Age at assessment (3, 5, 7, 11, 14, 17 years)}
+  \item{selfcontrol}{Self-control score (continuous, higher = better)}
+  \item{true_class}{True latent class membership (1, 2, or 3) - for validation only}
+  \item{stratum}{Stratum indicator (1 to 4)}
+  \item{stratum_factor}{Stratum labels: England-Advantaged, England-Disadvantaged,
+    Scotland/Wales, Northern Ireland}
+  \item{cluster}{Primary sampling unit (PSU) identifier (1 to 200)}
+  \item{weight}{Sampling weight (inverse probability weight)}
+  \item{sex}{Sex (0 = Female, 1 = Male)}
+  \item{sex_factor}{Sex labels (Female, Male)}
+  \item{baseline_risk}{Baseline risk score (standardized, continuous)}
+  \item{ses}{Socioeconomic status (standardized, continuous)}
+  \item{delinquency}{Delinquency score at age 17 (0-10, higher = more delinquent)}
+  \item{academic_achievement}{Academic achievement score (IQ-like, mean ~100)}
 }
 }
 \source{
@@ -44,24 +44,24 @@ for teaching and demonstration purposes. It contains:
 
 \strong{Three Latent Classes:}
 \itemize{
-\item \strong{Class 1 (55\%):} High self-control, stable trajectory
-\item \strong{Class 2 (30\%):} Moderate self-control, improving trajectory
-\item \strong{Class 3 (15\%):} Low self-control, declining trajectory
+  \item \strong{Class 1 (55\%):} High self-control, stable trajectory
+  \item \strong{Class 2 (30\%):} Moderate self-control, improving trajectory
+  \item \strong{Class 3 (15\%):} Low self-control, declining trajectory
 }
 
 \strong{Survey Design:}
 \itemize{
-\item Stratified by region (4 strata)
-\item Clustered within PSUs (200 clusters)
-\item Probability weights to adjust for unequal sampling
-\item ~12\% missing data (MAR mechanism)
+  \item Stratified by region (4 strata)
+  \item Clustered within PSUs (200 clusters)
+  \item Probability weights to adjust for unequal sampling
+  \item ~12\% missing data (MAR mechanism)
 }
 
 \strong{Auxiliary Variables:}
 \itemize{
-\item Delinquency and academic achievement are related to latent class
-\item Useful for demonstrating R3STEP analysis
-\item Sex and SES are time-invariant predictors
+  \item Delinquency and academic achievement are related to latent class
+  \item Useful for demonstrating R3STEP analysis
+  \item Sex and SES are time-invariant predictors
 }
 
 \strong{Important:} The \code{true_class} variable is included only for

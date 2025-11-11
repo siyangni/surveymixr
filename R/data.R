@@ -113,4 +113,5 @@
 #'
 #' @name mcs_simulated
 #' @keywords datasets
-NULL  # Dataset will be added in future version
+#' @aliases mcs_simulated
+#' @docType data

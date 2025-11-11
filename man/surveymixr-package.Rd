@@ -19,25 +19,25 @@ NLSY, and others.
 \section{Key Features}{
 
 \itemize{
-\item Complex survey integration (stratification, clustering, weights)
-\item Bootstrap Likelihood Ratio Test (BLRT) for class enumeration
-\item R3STEP method for auxiliary variable analysis
-\item Multiple random starts (500-1000+) with parallel processing
-\item Sandwich standard errors for survey designs
-\item Comprehensive convergence diagnostics
-\item Publication-ready visualization
+  \item Complex survey integration (stratification, clustering, weights)
+  \item Bootstrap Likelihood Ratio Test (BLRT) for class enumeration
+  \item R3STEP method for auxiliary variable analysis
+  \item Multiple random starts (500-1000+) with parallel processing
+  \item Sandwich standard errors for survey designs
+  \item Comprehensive convergence diagnostics
+  \item Publication-ready visualization
 }
 }
 
 \section{Main Functions}{
 
 \describe{
-\item{\code{\link{gmm_survey}}}{Fit growth mixture model with survey design}
-\item{\code{\link{gmm_select}}}{Model selection across class solutions}
-\item{\code{\link{r3step}}}{Auxiliary variable analysis with classification correction}
-\item{\code{\link{simulate_gmm_survey}}}{Simulate data for testing and validation}
-\item{\code{\link{diagnose_convergence}}}{Convergence diagnostics}
-\item{\code{\link{plot_trajectories}}}{Visualize growth trajectories}
+  \item{\code{\link{gmm_survey}}}{Fit growth mixture model with survey design}
+  \item{\code{\link{gmm_select}}}{Model selection across class solutions}
+  \item{\code{\link{r3step}}}{Auxiliary variable analysis with classification correction}
+  \item{\code{\link{simulate_gmm_survey}}}{Simulate data for testing and validation}
+  \item{\code{\link{diagnose_convergence}}}{Convergence diagnostics}
+  \item{\code{\link{plot_trajectories}}}{Visualize growth trajectories}
 }
 }
 
@@ -98,6 +98,6 @@ Useful links:
 
 }
 \author{
-Siyang Ni \email{your.email@example.com}
+Siyang Ni \email{johnni.nj@gmail.com}
 }
 \keyword{package}

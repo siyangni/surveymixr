@@ -22,9 +22,9 @@ can be directly translated.
 
 Supported Mplus features:
 \itemize{
-\item VARIABLE section: NAMES, USEVAR, CLASSES, CLUSTER, WEIGHT, STRATIFICATION
-\item ANALYSIS section: TYPE = MIXTURE, STARTS
-\item MODEL section: Linear and quadratic growth specifications
+  \item VARIABLE section: NAMES, USEVAR, CLASSES, CLUSTER, WEIGHT, STRATIFICATION
+  \item ANALYSIS section: TYPE = MIXTURE, STARTS
+  \item MODEL section: Linear and quadratic growth specifications
 }
 }
 \examples{
