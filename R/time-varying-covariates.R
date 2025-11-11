@@ -99,50 +99,46 @@
 #'
 #' @examples
 #' \donttest{
-#' data(mcs_simulated)
+#' # Simulate data with covariates
+#' set.seed(999)
+#' sim_data <- simulate_gmm_survey(
+#'   n_individuals = 200,
+#'   n_times = 4,
+#'   n_classes = 2,
+#'   covariates = TRUE,
+#'   design = "stratified_cluster",
+#'   n_strata = 2,
+#'   n_clusters = 20,
+#'   seed = 999
+#' )
 #'
-#' # Direct effects: SES directly predicts outcome
+#' # Direct effects: covariate directly predicts outcome
 #' fit_direct <- gmm_survey_tvc(
-#'   data = mcs_simulated,
+#'   data = sim_data,
 #'   id = "id",
-#'   time = "age",
-#'   outcome = "selfcontrol",
-#'   n_classes = 3,
-#'   tvc = ~ ses,
+#'   time = "time",
+#'   outcome = "outcome",
+#'   n_classes = 2,
+#'   tvc = ~ baseline_risk,
 #'   tvc_effects = "direct",
-#'   strata = "stratum",
-#'   cluster = "cluster",
-#'   weights = "weight",
-#'   starts = 200
+#'   starts = 20
 #' )
 #'
 #' # Both within- and between-person effects
 #' fit_both <- gmm_survey_tvc(
-#'   data = mcs_simulated,
+#'   data = sim_data,
 #'   id = "id",
-#'   time = "age",
-#'   outcome = "selfcontrol",
-#'   n_classes = 3,
-#'   tvc = ~ ses,
+#'   time = "time",
+#'   outcome = "outcome",
+#'   n_classes = 2,
+#'   tvc = ~ baseline_risk,
 #'   tvc_effects = "both",
-#'   starts = 200
+#'   starts = 20
 #' )
 #'
 #' # Extract TVC effects
 #' tvc_effects <- extract_tvc_effects(fit_both)
 #' print(tvc_effects)
-#'
-#' # Lagged effects
-#' fit_lag <- gmm_survey_tvc(
-#'   data = mcs_simulated,
-#'   id = "id",
-#'   time = "age",
-#'   outcome = "selfcontrol",
-#'   n_classes = 3,
-#'   tvc = ~ ses,
-#'   tvc_lag = 1,  # Previous timepoint predicts current
-#'   starts = 200
-#' )
 #' }
 gmm_survey_tvc <- function(data,
                            id,
@@ -369,10 +365,20 @@ gmm_survey_tvc <- function(data,
 #'
 #' @examples
 #' \donttest{
+#' # Simulate data with covariates
+#' set.seed(789)
+#' sim_data <- simulate_gmm_survey(
+#'   n_individuals = 200,
+#'   n_times = 4,
+#'   n_classes = 3,
+#'   covariates = TRUE,
+#'   seed = 789
+#' )
+#'
 #' fit <- gmm_survey_tvc(
-#'   data = mcs_simulated,
-#'   id = "id", time = "age", outcome = "selfcontrol",
-#'   n_classes = 3, tvc = ~ ses, tvc_effects = "both", starts = 100
+#'   data = sim_data,
+#'   id = "id", time = "time", outcome = "outcome",
+#'   n_classes = 3, tvc = ~ baseline_risk, tvc_effects = "both", starts = 20
 #' )
 #'
 #' # Extract all TVC effects
