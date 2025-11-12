@@ -26,7 +26,7 @@ Performs Wald tests for significance of TVC effects, both overall
 and class-specific.
 }
 \examples{
-\donttest{
+\dontrun{
 fit <- gmm_survey_tvc(
   data = mcs_simulated,
   id = "id", time = "age", outcome = "selfcontrol",

@@ -425,7 +425,7 @@ extract_tvc_effects <- function(object, effect_type = "all", class = "all") {
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' fit <- gmm_survey_tvc(
 #'   data = mcs_simulated,
 #'   id = "id", time = "age", outcome = "selfcontrol",
