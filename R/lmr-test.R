@@ -338,8 +338,10 @@ print.lmr_sequential <- function(x, ...) {
   cat(rep("=", 70), "\n", sep = "")
 
   cat("\n")
-  print(x[, c("comparison", "almr_statistic", "df", "p_value_adjusted", "significant")],
-        row.names = FALSE, digits = 4)
+  # Use print.data.frame directly to avoid infinite recursion
+  # (subsetted object still has lmr_sequential class)
+  print.data.frame(x[, c("comparison", "almr_statistic", "df", "p_value_adjusted", "significant")],
+                   row.names = FALSE, digits = 4)
 
   cat("\nRecommendation based on aLMR:\n")
   sig_tests <- which(x$significant)

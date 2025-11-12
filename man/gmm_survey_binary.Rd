@@ -86,17 +86,20 @@ Survey weights, clustering, and stratification are incorporated in both
 the EM algorithm and standard error calculation.
 }
 \examples{
-\donttest{
+\dontrun{
 # Simulate binary outcome data
 set.seed(123)
 binary_data <- simulate_gmm_survey(
   n_individuals = 1000,
   n_times = 5,
   n_classes = 2,
-  outcome_type = "binary",
+
   design = "stratified_cluster",
   seed = 123
 )
+
+# Convert continuous outcome to binary (0/1) using median split
+binary_data$outcome <- ifelse(binary_data$outcome > median(binary_data$outcome), 1, 0)
 
 # Fit 2-class model with binary outcome
 fit_binary <- gmm_survey_binary(

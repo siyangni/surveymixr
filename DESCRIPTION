@@ -34,7 +34,8 @@ Imports:
     MASS,
     numDeriv,
     ggplot2,
-    parallel
+    parallel,
+    doParallel
 Suggests:
     knitr,
     rmarkdown,

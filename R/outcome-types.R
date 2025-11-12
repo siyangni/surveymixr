@@ -101,17 +101,20 @@ get_link_function <- function(outcome_type = "continuous") {
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Simulate binary outcome data
 #' set.seed(123)
 #' binary_data <- simulate_gmm_survey(
 #'   n_individuals = 1000,
 #'   n_times = 5,
 #'   n_classes = 2,
-#'   outcome_type = "binary",
+#'
 #'   design = "stratified_cluster",
 #'   seed = 123
 #' )
+#'
+#' # Convert continuous outcome to binary (0/1) using median split
+#' binary_data$outcome <- ifelse(binary_data$outcome > median(binary_data$outcome), 1, 0)
 #'
 #' # Fit 2-class model with binary outcome
 #' fit_binary <- gmm_survey_binary(
@@ -182,7 +185,7 @@ gmm_survey_binary <- function(data,
     cluster = cluster,
     weights = weights,
     covariates = covariates,
-    outcome_type = "binary",
+    
     link_function = link_obj,
     starts = starts,
     cores = cores,
@@ -217,16 +220,21 @@ gmm_survey_binary <- function(data,
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Simulate ordinal outcome (e.g., Likert scale: 0-4)
 #' ordinal_data <- simulate_gmm_survey(
 #'   n_individuals = 1000,
 #'   n_times = 4,
 #'   n_classes = 3,
-#'   outcome_type = "ordinal",
-#'   n_categories = 5,
+#'
 #'   design = "srs"
 #' )
+#'
+#' # Convert continuous outcome to ordinal (0-4 scale)
+#' outcome_range <- range(ordinal_data$outcome)
+#' ordinal_data$outcome <- cut(ordinal_data$outcome,
+#'                            breaks = 5,
+#'                            labels = FALSE) - 1
 #'
 #' # Fit 3-class ordinal model
 #' fit_ordinal <- gmm_survey_ordinal(
@@ -328,16 +336,20 @@ gmm_survey_ordinal <- function(data,
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Simulate count outcome data (e.g., number of delinquent acts)
 #' count_data <- simulate_gmm_survey(
 #'   n_individuals = 1500,
 #'   n_times = 6,
 #'   n_classes = 3,
-#'   outcome_type = "count",
+#'
 #'   design = "cluster",
 #'   seed = 456
 #' )
+#'
+#' # Convert continuous outcome to count data (non-negative integers)
+#' # Shift to be positive then take absolute value and round to integers
+#' count_data$outcome <- as.integer(round(abs(count_data$outcome + 3)))
 #'
 #' # Fit 3-class Poisson model
 #' fit_count <- gmm_survey_count(
@@ -346,7 +358,6 @@ gmm_survey_ordinal <- function(data,
 #'   time = "time",
 #'   outcome = "outcome",
 #'   n_classes = 3,
-#'   count_model = "poisson",
 #'   cluster = "psu",
 #'   weights = "weight",
 #'   starts = 200

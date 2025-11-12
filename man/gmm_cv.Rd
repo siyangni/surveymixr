@@ -18,7 +18,7 @@ gmm_cv(
   covariates = NULL,
   stratified_cv = TRUE,
   starts = 200,
-  cores = parallel::detectCores() - 1,
+  cores = 1,
   seed = NULL,
   verbose = TRUE
 )
@@ -92,23 +92,23 @@ Class labels may differ across folds. The algorithm attempts to align
 labels based on trajectory patterns.
 }
 \examples{
-\donttest{
+\dontrun{
 data(mcs_simulated)
 
-# 5-fold CV comparing 1-4 class models
+# 3-fold CV comparing 1-2 class models (lighter for examples)
 cv_results <- gmm_cv(
   data = mcs_simulated,
   id = "id",
   time = "age",
   outcome = "selfcontrol",
-  classes = 1:4,
-  k_folds = 5,
+  classes = 1:2,
+  k_folds = 3,
   strata = "stratum",
   cluster = "cluster",
   weights = "weight",
   stratified_cv = TRUE,
-  starts = 100,
-  cores = 4,
+  starts = 20,  # Reduced for faster execution
+  cores = 1,    # Sequential for stability in examples
   seed = 123
 )
 

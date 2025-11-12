@@ -253,8 +253,6 @@ test_that("Individual-level splitting in CV works correctly", {
 })
 
 test_that("Sequential LMR print method works", {
-  skip("Print method causes C stack overflow - needs debugging")
-
   mock_seq <- data.frame(
     comparison = c("2 vs 1", "3 vs 2", "4 vs 3"),
     k = 2:4,
@@ -268,7 +266,7 @@ test_that("Sequential LMR print method works", {
   )
   class(mock_seq) <- c("lmr_sequential", "data.frame")
 
-  expect_output(print(mock_seq), "Sequential")
+  expect_output(print(mock_seq), "Sequential Lo-Mendell-Rubin Tests")
   expect_output(print(mock_seq), "Recommendation")
   expect_output(print(mock_seq), "class model")
 })

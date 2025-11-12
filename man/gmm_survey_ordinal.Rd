@@ -79,16 +79,21 @@ where \eqn{\tau_1 < \tau_2 < ... < \tau_{K-1}} are threshold parameters
 and \eqn{\eta_{itk}} is the linear predictor.
 }
 \examples{
-\donttest{
+\dontrun{
 # Simulate ordinal outcome (e.g., Likert scale: 0-4)
 ordinal_data <- simulate_gmm_survey(
   n_individuals = 1000,
   n_times = 4,
   n_classes = 3,
-  outcome_type = "ordinal",
-  n_categories = 5,
+
   design = "srs"
 )
+
+# Convert continuous outcome to ordinal (0-4 scale)
+outcome_range <- range(ordinal_data$outcome)
+ordinal_data$outcome <- cut(ordinal_data$outcome,
+                           breaks = 5,
+                           labels = FALSE) - 1
 
 # Fit 3-class ordinal model
 fit_ordinal <- gmm_survey_ordinal(

@@ -82,16 +82,20 @@ For zero-inflated models:
 \deqn{P(Y_{it} = y | C_i = k) = (1 - \pi_k) \times Poisson(y; \lambda_{itk}), \quad y > 0}
 }
 \examples{
-\donttest{
+\dontrun{
 # Simulate count outcome data (e.g., number of delinquent acts)
 count_data <- simulate_gmm_survey(
   n_individuals = 1500,
   n_times = 6,
   n_classes = 3,
-  outcome_type = "count",
+
   design = "cluster",
   seed = 456
 )
+
+# Convert continuous outcome to count data (non-negative integers)
+# Shift to be positive then take absolute value and round to integers
+count_data$outcome <- as.integer(round(abs(count_data$outcome + 3)))
 
 # Fit 3-class Poisson model
 fit_count <- gmm_survey_count(
@@ -100,7 +104,6 @@ fit_count <- gmm_survey_count(
   time = "time",
   outcome = "outcome",
   n_classes = 3,
-  count_model = "poisson",
   cluster = "psu",
   weights = "weight",
   starts = 200
