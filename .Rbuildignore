@@ -25,3 +25,9 @@
 ^ROADMAP\.md$
 ^WEEK1-INSTRUCTIONS\.md$
 ^scripts$
+^\.claude$
+^CODE_OF_CONDUCT\.md$
+^CONTRIBUTING\.md$
+^ROADMAP_COMPLETION_REPORT\.md$
+^TESTING-SUMMARY\.md$
+^cran-comments\.md$
