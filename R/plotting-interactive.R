@@ -125,8 +125,12 @@ plot_interactive <- function(object,
 #' @keywords internal
 .plot_trajectories_ggplot <- function(object, show_ci, show_points, color_palette) {
 
-  # Extract trajectories
-  traj_data <- extract_trajectories(object)
+  # Extract trajectories for all classes
+  n_classes <- object@model_info$n_classes
+  traj_list <- lapply(1:n_classes, function(k) {
+    extract_trajectories(object, class = k)
+  })
+  traj_data <- do.call(rbind, traj_list)
 
   # Get colors
   n_classes <- object@model_info$n_classes
@@ -140,7 +144,7 @@ plot_interactive <- function(object,
   }
 
   # Create plot
-  p <- ggplot2::ggplot(traj_data, ggplot2::aes(x = time, y = fitted,
+  p <- ggplot2::ggplot(traj_data, ggplot2::aes(x = time, y = predicted,
                                                color = factor(class),
                                                fill = factor(class),
                                                group = class)) +
@@ -298,10 +302,14 @@ plot_interactive <- function(object,
     )
 
   # Add class means
-  traj_data <- extract_trajectories(object)
+  n_classes <- object@model_info$n_classes
+  traj_list <- lapply(1:n_classes, function(k) {
+    extract_trajectories(object, class = k)
+  })
+  traj_data <- do.call(rbind, traj_list)
   p <- p + ggplot2::geom_line(
     data = traj_data,
-    ggplot2::aes(x = time, y = fitted, color = factor(class), group = class),
+    ggplot2::aes(x = time, y = predicted, color = factor(class), group = class),
     linewidth = 1.5,
     alpha = 1
   )
