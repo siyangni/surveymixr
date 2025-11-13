@@ -1,5 +1,16 @@
 # surveymixr 0.2.0 (Development Version)
 
+## Critical Bug Fixes (2025-11-13)
+
+Fixed 4 critical bugs that were blocking CRAN submission and preventing core features from working:
+
+* **class_proportions dimension mismatch**: Fixed error when not all classes have assignments by using `factor()` with explicit levels
+* **r3step subscript out of bounds**: Added validation requiring person-level data (one row per individual); updated all tests and provided clear error messages
+* **gmm_select parameter compatibility**: Added support for `min_classes`/`max_classes` and `run_blrt` parameters for backward compatibility
+* **residuals() non-conformable arrays**: Fixed residuals method to properly reshape long-format data to wide format before computing residuals
+
+These fixes enabled 9 previously skipped tests, reducing total skipped tests from 32 to 23.
+
 ## Major Enhancements
 
 This release significantly expands surveymixr's capabilities with new outcome types, enhanced model selection methods, advanced diagnostics, and interactive visualizations.
