@@ -11,50 +11,139 @@ navbar:
     articles:
       text: Articles
       menu:
+      - text: "---Getting Started---"
       - text: Introduction to surveymixr
         href: articles/surveymixr-intro.html
+      - text: Complete User Manual
+        href: articles/user-manual.html
+      - text: "---Advanced Topics---"
+      - text: Categorical Outcomes
+        href: articles/categorical-outcomes.html
+      - text: Enhanced Model Selection
+        href: articles/model-selection-enhanced.html
+      - text: R3STEP Auxiliary Analysis
+        href: articles/r3step-analysis.html
+      - text: "---Reference---"
+      - text: Technical Details & Algorithms
+        href: articles/technical-details.html
+      - text: Validation Against Mplus
+        href: articles/mplus-validation.html
 
 reference:
-- title: Main Functions
-  desc: Core functions for fitting growth mixture models
+- title: Core Estimation Functions
+  desc: Main functions for fitting growth mixture models
   contents:
   - gmm_survey
+  - gmm_survey_binary
+  - gmm_survey_ordinal
+  - gmm_survey_count
+  - gmm_survey_re
+  - gmm_survey_tvc
+
+- title: Model Selection
+  desc: Functions for determining optimal number of classes
+  contents:
   - gmm_select
+  - gmm_cv
+  - lmr_test
+  - lmr_sequential
+
+- title: Auxiliary Variable Analysis
+  desc: R3STEP and classification uncertainty correction
+  contents:
   - r3step
 
-- title: Diagnostic Functions
+- title: Advanced Diagnostics
   desc: Model diagnostics and quality assessment
   contents:
   - diagnose_convergence
+  - diagnose_influence
+  - diagnose_separation
+  - residual_diagnostics
   - classification_quality
+  - entropy
   - class_proportions
+  - compare_classes
 
-- title: Plotting Functions
-  desc: Visualization of results
+- title: Visualization Functions
+  desc: Plotting and interactive visualization
   contents:
   - plot_trajectories
+  - plot_interactive
   - plot_model_selection
-  - plot_convergence
-  - plot_entropy_distribution
-  - plot_class_sizes
+  - plot_model_selection_interactive
+  - plot_class_comparison
+  - plot_posterior_dist
+  - plot_random_effects
+  - plot_tvc_effects
 
-- title: Utility Functions
-  desc: Helper functions for data manipulation and simulation
+- title: Extractors & Accessors
+  desc: Extract parameters and predictions from fitted models
+  contents:
+  - extract_fit_indices
+  - extract_trajectories
+  - extract_tvc_effects
+  - get_random_effects
+  - variance_components
+  - calculate_icc
+
+- title: Data Preparation & Validation
+  desc: Helper functions for data manipulation
+  contents:
+  - validate_survey_data
+  - wide_to_long
+
+- title: Simulation & Testing
+  desc: Data simulation for testing and validation
   contents:
   - simulate_gmm_survey
-  - wide_to_long
-  - mplus_to_surveymixr
+  - test_tvc_effects
 
-- title: Data
-  desc: Example datasets
+- title: Software Integration
+  desc: Integration with Mplus and other software
+  contents:
+  - mplus_to_surveymixr
+  - surveymixr_to_mplus
+  - compare_with_mplus
+
+- title: Example Data
+  desc: Included datasets for examples
   contents:
   - mcs_simulated
 
-- title: S4 Classes and Methods
-  desc: Object-oriented infrastructure
+- title: S4 Classes
+  desc: Object-oriented class definitions
   contents:
   - SurveyMixr-class
+  - SurveyMixrRE-class
+  - SurveyMixrTVC-class
+  - SurveyMixrSelect-class
+  - R3StepResults-class
+  - ConvergenceDiagnostics-class
+  - InfluenceDiagnostics-class
+  - DataValidation-class
+
+- title: S4 Methods
+  desc: Generic methods for surveymixr objects
+  contents:
   - surveymixr-methods
+  - show,DataValidation-method
+  - show,InfluenceDiagnostics-method
+
+- title: S3 Methods
+  desc: Print and plot methods for specific objects
+  contents:
+  - plot.gmm_cv
+  - print.gmm_cv
+  - print.lmr_sequential
+  - print.lmr_test
+
+- title: Internal
+  desc: Package infrastructure
+  contents:
+  - surveymixr-package
+  - plotting
+  - utilities
 
 authors:
   Siyang Ni:

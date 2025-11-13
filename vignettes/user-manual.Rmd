@@ -1,0 +1,1469 @@
+---
+title: "Complete User Manual for surveymixr"
+author: "Siyang Ni"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 4
+vignette: >
+  %\VignetteIndexEntry{Complete User Manual for surveymixr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  eval = FALSE
+)
+```
+
+# Introduction
+
+## About This Manual
+
+This comprehensive manual covers all aspects of the **surveymixr** package, from basic concepts to advanced applications. It consolidates information from all package vignettes into a single, unified guide suitable for both beginners and advanced users.
+
+## What is surveymixr?
+
+**surveymixr** is the first R package to implement growth mixture modeling (GMM) with full integration of complex survey design features. It enables rigorous analysis of longitudinal data from large-scale surveys (e.g., Millennium Cohort Study, Add Health, NLSY, ECLS) that were previously only possible in proprietary software like Mplus.
+
+### Key Features
+
+- **Complex Survey Integration**: Full support for stratification, clustering (PSUs), and probability weights
+- **Survey-Adjusted Standard Errors**: Sandwich estimators accounting for design effects
+- **Multiple Outcome Types**: Continuous, binary, ordinal, and count outcomes
+- **Advanced Model Selection**: Bootstrap LRT (BLRT), Lo-Mendell-Rubin test, cross-validation
+- **R3STEP Method**: Classification uncertainty correction for auxiliary variables
+- **Random Effects**: Individual-level variance in growth parameters
+- **Time-Varying Covariates**: Within-person and between-person effects
+- **Comprehensive Diagnostics**: Convergence tracking, influence detection, separation checks
+- **Professional Visualization**: Publication-ready plots with ggplot2 and plotly
+- **Parallel Processing**: Efficient handling of 500-1000+ random starts
+
+### Why Choose surveymixr?
+
+**Comparison with Existing R Packages:**
+
+| Feature | surveymixr | lcmm | flexmix | lavaan | openmx |
+|---------|------------|------|---------|--------|---------|
+| Growth mixture models | ✓ | ✓ | Partial | ✗ | ✗ |
+| Complex survey design | ✓ | ✗ | ✗ | Partial | ✗ |
+| Stratification + clustering | ✓ | ✗ | ✗ | ✗ | ✗ |
+| Probability weights | ✓ | ✗ | ✗ | ✗ | ✗ |
+| Survey-adjusted SEs | ✓ | ✗ | ✗ | ✗ | ✗ |
+| BLRT | ✓ | ✗ | ✗ | ✗ | ✗ |
+| R3STEP | ✓ | ✗ | ✗ | ✗ | ✗ |
+| 1000+ random starts | ✓ | ✗ | ✗ | ✗ | ✗ |
+
+---
+
+# Part I: Getting Started
+
+## Installation
+
+### From CRAN (Recommended)
+
+```{r}
+install.packages("surveymixr")
+```
+
+### Development Version from GitHub
+
+```{r}
+# Install devtools if needed
+install.packages("devtools")
+
+# Install surveymixr
+devtools::install_github("siyangni/surveymixr")
+```
+
+### System Requirements
+
+- R (>= 4.0.0)
+- No compiled code (pure R package, works on all platforms)
+
+## Loading the Package
+
+```{r}
+library(surveymixr)
+
+# Check version
+packageVersion("surveymixr")
+```
+
+## Quick Start Example
+
+### Load Example Data
+
+```{r}
+# Load simulated Millennium Cohort Study data
+data(mcs_simulated)
+
+# Examine data structure
+head(mcs_simulated)
+str(mcs_simulated)
+```
+
+The data contains:
+- `id`: Individual identifier
+- `age`: Time points (3, 5, 7, 11, 14, 17 years)
+- `selfcontrol`: Outcome variable (self-control scores)
+- `stratum`, `psu`, `weight`: Survey design variables
+- `true_class`: True class membership (for validation)
+
+### Fit a Basic 3-Class Model
+
+```{r}
+fit <- gmm_survey(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  n_classes = 3,
+  growth_model = "linear",
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight",
+  starts = 100,
+  cores = 4,
+  verbose = TRUE
+)
+```
+
+### View Results
+
+```{r}
+# Comprehensive summary
+summary(fit)
+
+# Extract fit indices
+extract_fit_indices(fit)
+
+# Classification quality
+classification_quality(fit)
+```
+
+### Visualize Trajectories
+
+```{r}
+# Static plot
+plot(fit, type = "trajectories")
+
+# Interactive plot
+plot_interactive(fit, type = "trajectories")
+```
+
+---
+
+# Part II: Core Concepts
+
+## Growth Mixture Models
+
+### What are GMMs?
+
+Growth mixture models (GMMs) identify subgroups with distinct developmental trajectories in longitudinal data. They combine:
+
+1. **Growth Models**: Model change over time within individuals
+2. **Mixture Models**: Identify latent subgroups (classes) with different patterns
+3. **Survey Design**: Account for complex sampling structures
+
+### When to Use GMMs
+
+Use GMMs when:
+- You have longitudinal data (3+ time points)
+- You suspect heterogeneity in trajectories
+- You want to identify distinct developmental patterns
+- Data comes from complex surveys with sampling weights
+
+### Model Components
+
+```
+Y_it = f(time) + ε_it        # Within-class growth model
+P(Class = k) = π_k           # Class membership probabilities
+```
+
+Where:
+- `Y_it`: Outcome for individual i at time t
+- `f(time)`: Growth function (linear, quadratic, etc.)
+- `ε_it`: Residual error
+- `π_k`: Proportion in class k
+
+## Complex Survey Design
+
+### Why Survey Design Matters
+
+Ignoring survey design features leads to:
+- **Biased standard errors** (usually underestimated)
+- **Invalid p-values and confidence intervals**
+- **Incorrect inference** about class differences
+
+### Survey Features in surveymixr
+
+**1. Stratification**
+- Divides population into non-overlapping groups
+- Example: Geographic regions, urban/rural
+
+**2. Clustering (PSUs)**
+- Individuals sampled in groups
+- Example: Schools, neighborhoods
+- Creates within-cluster correlation
+
+**3. Probability Weights**
+- Adjust for unequal sampling probabilities
+- Example: Oversampling of minorities
+- Ensures nationally representative estimates
+
+**4. Survey-Adjusted Standard Errors**
+- Uses sandwich estimator
+- Accounts for design effects
+- Produces valid inference
+
+### Specifying Survey Design
+
+```{r}
+fit <- gmm_survey(
+  data = your_data,
+  id = "id",
+  time = "time",
+  outcome = "outcome",
+  n_classes = 3,
+
+  # Survey design features:
+  strata = "stratum_var",     # Stratification variable
+  cluster = "psu_var",        # Primary sampling unit
+  weights = "weight_var",     # Sampling weights
+  nest = TRUE                 # PSUs nested within strata
+)
+```
+
+---
+
+# Part III: Basic Model Fitting
+
+## Model Specification
+
+### Required Arguments
+
+```{r}
+fit <- gmm_survey(
+  data = your_data,           # Long-format data frame
+  id = "id_variable",         # Individual ID
+  time = "time_variable",     # Time variable
+  outcome = "outcome_var",    # Outcome variable
+  n_classes = 3               # Number of latent classes
+)
+```
+
+### Growth Model Types
+
+**1. Linear Growth (Default)**
+```{r}
+fit <- gmm_survey(..., growth_model = "linear")
+# Y_it = β0 + β1*time + ε
+```
+
+**2. Quadratic Growth**
+```{r}
+fit <- gmm_survey(..., growth_model = "quadratic")
+# Y_it = β0 + β1*time + β2*time² + ε
+```
+
+**3. Nonlinear Growth**
+```{r}
+fit <- gmm_survey(..., growth_model = "nonlinear")
+# Flexible spline-based trajectories
+```
+
+**4. Free Basis (Time Scores)**
+```{r}
+fit <- gmm_survey(..., growth_model = "free_basis")
+# Estimates time loadings freely
+```
+
+### Estimation Options
+
+```{r}
+fit <- gmm_survey(
+  ...,
+  starts = 500,              # Number of random starts (higher = better)
+  convergence = 1e-6,        # Convergence criterion
+  max_iter = 1000,           # Maximum EM iterations
+  cores = 4,                 # Parallel processing cores
+  keep_data = TRUE,          # Store data in object (for diagnostics)
+  verbose = TRUE             # Print progress
+)
+```
+
+**Recommended Settings:**
+- `starts`: 200-500 for exploration, 500-1000 for final models
+- `cores`: Set to number of available CPU cores
+- `convergence`: Default (1e-6) is usually adequate
+
+## Examining Results
+
+### Summary Output
+
+```{r}
+summary(fit)
+```
+
+Shows:
+- Model information (classes, growth model, sample size)
+- Survey design features
+- Fit indices (AIC, BIC, aBIC, entropy, log-likelihood)
+- Class proportions (weighted and unweighted)
+- Growth parameters by class
+- Standard errors
+
+### Extracting Components
+
+```{r}
+# Coefficients
+coef(fit)
+
+# Variance-covariance matrix
+vcov(fit)
+
+# Log-likelihood
+logLik(fit)
+
+# Information criteria
+AIC(fit)
+BIC(fit)
+
+# Fit indices table
+extract_fit_indices(fit)
+
+# Predicted trajectories
+trajectories <- extract_trajectories(fit, class = 1)
+```
+
+### Classification
+
+```{r}
+# Posterior probabilities
+post_probs <- fit@posterior_probs
+head(post_probs)
+
+# Most likely class assignments
+class_assignments <- fit@class_assignments
+table(class_assignments)
+
+# Classification quality
+classification_quality(fit)
+
+# Entropy (higher = better separation)
+entropy(fit)
+
+# Class proportions
+class_proportions(fit)
+```
+
+---
+
+# Part IV: Model Selection
+
+## Determining the Number of Classes
+
+Model selection is **critical** in GMM. Use multiple criteria:
+
+### 1. Information Criteria
+
+**Lower is better** for IC measures:
+
+```{r}
+# Compare models with different class counts
+selection <- gmm_select(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  classes = 1:5,              # Test 1-5 classes
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight",
+  criteria = c("BIC", "aBIC", "entropy"),
+  starts = 200,
+  cores = 4
+)
+
+# View results
+print(selection)
+plot_model_selection(selection)
+```
+
+**Criteria:**
+- **BIC**: Bayesian Information Criterion (most commonly used)
+- **aBIC**: Sample-size adjusted BIC (for large samples)
+- **AIC**: Akaike Information Criterion (less penalized)
+
+**Decision Rule:**
+- Choose model where IC reaches minimum or "elbow"
+- Lower values indicate better fit
+- Balance fit vs. parsimony
+
+### 2. Bootstrap Likelihood Ratio Test (BLRT)
+
+**Gold standard** for class enumeration:
+
+```{r}
+selection <- gmm_select(
+  ...,
+  criteria = c("BIC", "BLRT"),
+  blrt_samples = 100,        # Bootstrap samples
+  blrt_cores = 4             # Parallel processing
+)
+```
+
+**Interpretation:**
+- Tests k-class vs. (k-1)-class model
+- Significant p-value → k-class model is better
+- Stop when p-value becomes non-significant
+
+### 3. Lo-Mendell-Rubin (LMR) Test
+
+**Faster alternative** to BLRT (no bootstrap):
+
+```{r}
+# Fit two models
+fit2 <- gmm_survey(..., n_classes = 2, ...)
+fit3 <- gmm_survey(..., n_classes = 3, ...)
+
+# LMR test
+lmr_result <- lmr_test(fit3, fit2, adjusted = TRUE)
+print(lmr_result)
+```
+
+**Advantages:**
+- Much faster than BLRT
+- Good approximation in large samples
+
+**Disadvantages:**
+- Less accurate in small samples
+- May be anti-conservative
+
+### 4. Cross-Validation
+
+**Predictive performance** approach:
+
+```{r}
+cv_results <- gmm_cv(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  classes = 1:5,
+  k_folds = 5,              # 5-fold CV
+  stratified = TRUE,         # Maintain class proportions
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight",
+  starts = 100,
+  cores = 4
+)
+
+print(cv_results)
+plot(cv_results)
+```
+
+**Metrics:**
+- Predictive log-likelihood
+- Mean squared prediction error (MSPE)
+- One-standard-error rule
+
+### 5. Classification Quality
+
+```{r}
+# For each candidate model
+classification_quality(fit)
+```
+
+**Metrics:**
+- **Entropy** (0-1): Higher = better separation (>0.80 good)
+- **AvePP** (Average Posterior Probability): >0.70 adequate, >0.80 good
+- **OCC** (Odds of Correct Classification): >5 adequate
+
+### Recommended Strategy
+
+1. **Start with IC** (BIC, aBIC) to narrow range
+2. **Use BLRT** to confirm optimal k
+3. **Check classification quality** (entropy, AvePP)
+4. **Consider interpretability** and theoretical fit
+5. **Validate with CV** if computational resources allow
+
+**Example Workflow:**
+
+```{r}
+# Step 1: Comprehensive selection
+selection <- gmm_select(
+  data = mcs_simulated,
+  id = "id", time = "age", outcome = "selfcontrol",
+  classes = 1:6,
+  strata = "stratum", cluster = "psu", weights = "weight",
+  criteria = c("BIC", "aBIC", "entropy", "BLRT"),
+  blrt_samples = 100,
+  starts = 500,
+  cores = 4
+)
+
+print(selection)
+plot_model_selection(selection)
+
+# Step 2: Fit final model
+best_k <- selection@recommended_classes$BLRT
+fit_final <- gmm_survey(
+  data = mcs_simulated,
+  id = "id", time = "age", outcome = "selfcontrol",
+  n_classes = best_k,
+  strata = "stratum", cluster = "psu", weights = "weight",
+  starts = 1000,  # More starts for final model
+  cores = 4
+)
+
+# Step 3: Validate
+diagnose_convergence(fit_final)
+classification_quality(fit_final)
+```
+
+---
+
+# Part V: Outcome Types
+
+## Continuous Outcomes (Default)
+
+```{r}
+fit <- gmm_survey(
+  data = your_data,
+  id = "id", time = "time", outcome = "continuous_var",
+  n_classes = 3,
+  outcome_type = "continuous"  # Default
+)
+```
+
+**Assumptions:**
+- Normal distribution
+- Linear relationship (or specify quadratic/nonlinear)
+
+## Binary Outcomes
+
+```{r}
+fit_binary <- gmm_survey_binary(
+  data = your_data,
+  id = "id", time = "time", outcome = "binary_var",  # 0/1
+  n_classes = 3,
+  link = "probit",           # or "logit"
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight"
+)
+```
+
+**Link Functions:**
+- `"probit"` (default): Assumes normal latent variable
+- `"logit"`: Logistic model
+
+**Example:** Smoking initiation trajectories (yes/no)
+
+## Ordinal Outcomes
+
+```{r}
+fit_ordinal <- gmm_survey_ordinal(
+  data = your_data,
+  id = "id", time = "time", outcome = "ordinal_var",  # 1,2,3,4,5
+  n_classes = 3,
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight"
+)
+```
+
+**Model:**
+- Proportional odds model
+- Ordered categories (e.g., Likert scales)
+
+**Example:** Health rating trajectories (Poor, Fair, Good, Very Good, Excellent)
+
+## Count Outcomes
+
+```{r}
+fit_count <- gmm_survey_count(
+  data = your_data,
+  id = "id", time = "time", outcome = "count_var",  # 0,1,2,3,...
+  n_classes = 3,
+  distribution = "poisson",  # or "negbin", "zip"
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight"
+)
+```
+
+**Distributions:**
+- `"poisson"`: Simple count model
+- `"negbin"`: Negative binomial (handles overdispersion)
+- `"zip"`: Zero-inflated Poisson (excess zeros)
+
+**Example:** Delinquency trajectories (number of incidents)
+
+---
+
+# Part VI: Advanced Features
+
+## Random Effects Models
+
+### Why Random Effects?
+
+Standard GMM assumes **no within-class variance** in growth parameters. Random effects add:
+
+- Individual-level deviations from class means
+- More realistic modeling of heterogeneity
+- Better fit for highly variable trajectories
+
+### Fitting RE Models
+
+```{r}
+fit_re <- gmm_survey_re(
+  data = mcs_simulated,
+  id = "id", time = "age", outcome = "selfcontrol",
+  n_classes = 3,
+  random = ~ 1 + age,        # Random intercept and slope
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight",
+  starts = 200,
+  cores = 4
+)
+```
+
+### Extracting Random Effects
+
+```{r}
+# Get BLUPs (Best Linear Unbiased Predictors)
+random_effects <- get_random_effects(fit_re)
+head(random_effects)
+
+# Variance components
+variance_components(fit_re)
+
+# Intraclass correlations
+calculate_icc(fit_re)
+
+# Visualize
+plot_random_effects(fit_re, type = "density")
+plot_random_effects(fit_re, type = "caterpillar")
+```
+
+## Time-Varying Covariates
+
+### Why TVCs?
+
+Model how **within-person changes** in predictors affect outcomes.
+
+**Example:** How does stress (changing over time) affect mental health trajectories?
+
+### Fitting TVC Models
+
+```{r}
+fit_tvc <- gmm_survey_tvc(
+  data = your_data,
+  id = "id", time = "time", outcome = "outcome",
+  n_classes = 3,
+  tvc_formula = ~ stress + support,  # Time-varying predictors
+  tvc_effect = "both",               # Within + between effects
+  lag = 1,                           # Lagged effects
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight"
+)
+```
+
+**Effect Types:**
+- `"direct"`: Contemporaneous effects
+- `"indirect"`: Mediated through growth
+- `"both"`: Within-person + between-person decomposition
+- `"interaction"`: TVC × time interaction
+
+### Interpreting TVC Results
+
+```{r}
+# Extract effects
+tvc_effects <- extract_tvc_effects(fit_tvc)
+print(tvc_effects)
+
+# Statistical tests
+test_tvc_effects(fit_tvc)
+
+# Visualize
+plot_tvc_effects(fit_tvc, covariate = "stress")
+```
+
+---
+
+# Part VII: Auxiliary Variable Analysis
+
+## The R3STEP Approach
+
+### Why R3STEP?
+
+**Problem:** Direct inclusion of auxiliary variables (e.g., demographics, outcomes) in GMM can:
+- Alter class formation
+- Lead to biased estimates
+- Change class membership
+
+**Solution:** R3STEP performs auxiliary analysis **after** class formation, accounting for classification uncertainty.
+
+### When to Use R3STEP
+
+Use R3STEP to:
+- Compare classes on **distal outcomes** (e.g., academic achievement)
+- Examine **demographic differences** between classes
+- Test **predictors** of class membership
+- Avoid **bias from classification error**
+
+### Fitting R3STEP Models
+
+```{r}
+# Step 1: Fit GMM (without auxiliary variables)
+fit <- gmm_survey(
+  data = mcs_simulated,
+  id = "id", time = "age", outcome = "selfcontrol",
+  n_classes = 3,
+  strata = "stratum", cluster = "psu", weights = "weight",
+  starts = 500
+)
+
+# Step 2: Prepare distal variables (one row per individual)
+distal_data <- mcs_simulated[!duplicated(mcs_simulated$id), ]
+
+# Step 3: R3STEP analysis
+r3step_results <- r3step(
+  gmm_object = fit,
+  distal_vars = c("academic_achievement", "delinquency", "ses"),
+  data = distal_data,
+  method = "BCH"             # or "ML", "manual"
+)
+```
+
+### Methods
+
+**1. BCH (Bolck-Croon-Hagenaars)**
+- Default method
+- Most commonly used
+- Good balance of bias and efficiency
+
+**2. ML (Maximum Likelihood)**
+- More efficient
+- Slightly more complex
+
+**3. Manual (Three-Step)**
+- Simple but potentially biased
+- Use for comparison only
+
+### Interpreting R3STEP Results
+
+```{r}
+# Comprehensive summary
+summary(r3step_results)
+
+# Class-specific means for distal variables
+print(r3step_results@class_means)
+
+# Omnibus tests (overall differences across classes)
+print(r3step_results@test_results)
+
+# Effect sizes (Cohen's d for pairwise comparisons)
+print(r3step_results@effect_sizes)
+```
+
+**Interpretation:**
+- Omnibus test: Are there overall differences?
+- Pairwise tests: Which classes differ?
+- Effect sizes: How large are differences? (d > 0.5 = medium, d > 0.8 = large)
+
+---
+
+# Part VIII: Diagnostics
+
+## Convergence Diagnostics
+
+### Why Check Convergence?
+
+GMM estimation can find **local maxima**. Multiple random starts help find the global maximum.
+
+### Diagnose Convergence
+
+```{r}
+conv_diag <- diagnose_convergence(fit)
+print(conv_diag)
+
+# Visualize distribution of log-likelihoods
+plot(conv_diag)
+```
+
+**Red Flags:**
+- ⚠️ Best solution replicated <10% of the time
+- ⚠️ Multiple distinct local maxima
+- ⚠️ Wide range of log-likelihood values
+
+**Solutions:**
+- Increase `starts` (e.g., 500 → 1000)
+- Try different initialization methods
+- Consider simpler model (fewer classes)
+
+## Influence Diagnostics
+
+### Detecting Influential Cases
+
+```{r}
+# Requires keep_data = TRUE in original fit
+fit <- gmm_survey(..., keep_data = TRUE)
+
+# Influence diagnostics
+influence <- diagnose_influence(fit, measure = "all")
+print(influence)
+
+# Get influential IDs
+influential_ids <- influence@influential_ids
+
+# Examine influential cases
+mcs_simulated[mcs_simulated$id %in% influential_ids, ]
+```
+
+**Measures:**
+- **Cook's Distance**: Overall influence on parameters
+- **DFBETAS**: Parameter-specific influence
+- **Leverage**: Unusual predictor patterns
+
+**Actions:**
+- Examine influential cases for data quality issues
+- Sensitivity analysis: Refit without influential cases
+- Consider robustness checks
+
+## Separation Diagnostics
+
+### Detecting Perfect Separation
+
+```{r}
+sep_diag <- diagnose_separation(fit)
+print(sep_diag)
+```
+
+**Problems:**
+- Perfect separation: Classes completely distinct
+- Quasi-separation: Near-perfect distinction
+- Empty classes: Class with 0 or very few members
+
+**Solutions:**
+- Reduce number of classes
+- Check for data issues or outliers
+- Add constraints
+
+## Residual Diagnostics
+
+```{r}
+resid_diag <- residual_diagnostics(fit)
+print(resid_diag)
+```
+
+**Checks:**
+- Normality (Shapiro-Wilk test, Q-Q plots)
+- Outliers
+- Autocorrelation
+- Class-specific patterns
+
+---
+
+# Part IX: Visualization
+
+## Static Plots (ggplot2)
+
+### Trajectory Plots
+
+```{r}
+# Class-specific mean trajectories
+plot(fit, type = "trajectories")
+
+# With confidence intervals
+plot_trajectories(fit, show_ci = TRUE)
+
+# Customize
+plot_trajectories(fit,
+  show_ci = TRUE,
+  color_palette = c("red", "blue", "green")
+)
+```
+
+### Model Selection Plots
+
+```{r}
+# Compare fit indices
+plot_model_selection(selection)
+
+# Specific criteria
+plot_model_selection(selection, criteria = c("BIC", "entropy"))
+```
+
+### Classification Plots
+
+```{r}
+# Posterior probability distributions
+plot_posterior_dist(fit)
+
+# Class size comparison
+plot_class_comparison(fit)
+```
+
+## Interactive Plots (plotly)
+
+```{r}
+# Interactive trajectories (hover, zoom, pan)
+plot_interactive(fit, type = "trajectories")
+
+# Spaghetti plot (individual trajectories)
+plot_interactive(fit, type = "spaghetti", n_individuals = 50)
+
+# Save to HTML
+library(htmlwidgets)
+p <- plot_interactive(fit)
+saveWidget(p, "trajectories.html")
+```
+
+## Specialized Plots
+
+```{r}
+# Random effects
+plot_random_effects(fit_re, type = "density")
+plot_random_effects(fit_re, type = "caterpillar")
+plot_random_effects(fit_re, type = "qq")
+
+# Time-varying covariates
+plot_tvc_effects(fit_tvc, covariate = "stress")
+
+# Cross-validation
+plot(cv_results)
+```
+
+---
+
+# Part X: Data Management
+
+## Data Validation
+
+### Pre-Analysis Checks
+
+```{r}
+validation <- validate_survey_data(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight",
+  min_observations = 3,     # Minimum time points per person
+  check_weights = TRUE,
+  verbose = TRUE
+)
+
+print(validation)
+```
+
+**Checks:**
+- Data structure (duplicates, missing values)
+- Survey design validity (nested clusters, weights)
+- Missing data patterns
+- Outcome distribution
+- Covariate multicollinearity
+
+**Actions:**
+- Review `validation@errors` for critical issues
+- Consider `validation@warnings` for potential problems
+- Follow `validation@recommendations`
+
+## Data Preparation
+
+### Wide to Long Format
+
+```{r}
+# Wide format data
+wide_data <- data.frame(
+  id = 1:100,
+  y_t1 = rnorm(100),
+  y_t2 = rnorm(100),
+  y_t3 = rnorm(100)
+)
+
+# Convert to long
+long_data <- wide_to_long(
+  data = wide_data,
+  id_var = "id",
+  outcome_vars = c("y_t1", "y_t2", "y_t3"),
+  time_values = c(0, 1, 2)
+)
+```
+
+### Missing Data
+
+surveymixr uses **Full Information Maximum Likelihood (FIML)** by default:
+- Handles missing data automatically
+- No need for imputation
+- Valid under MAR (Missing At Random) assumption
+
+**Patterns:**
+```{r}
+# Check missing patterns in validation
+validation@info$missing_patterns
+```
+
+---
+
+# Part XI: Software Integration
+
+## Integration with Mplus
+
+### Convert Mplus Syntax to R
+
+```{r}
+# Read Mplus .inp file
+r_code <- mplus_to_surveymixr("my_analysis.inp")
+
+# View suggested R code
+cat(r_code)
+```
+
+### Generate Mplus-Style Output
+
+```{r}
+# Create Mplus-formatted output
+surveymixr_to_mplus(fit, file = "surveymixr_results.txt")
+```
+
+### Validate Against Mplus
+
+```{r}
+# Compare results (manual)
+compare_with_mplus(fit, "mplus_output.out")
+```
+
+**Typical Differences:**
+- Minor numerical differences due to optimization algorithms
+- surveymixr may find better solutions with more random starts
+- Standard errors should be very similar
+
+---
+
+# Part XII: Simulation & Testing
+
+## Simulate Data
+
+### Basic Simulation
+
+```{r}
+sim_data <- simulate_gmm_survey(
+  n_individuals = 1000,
+  n_times = 5,
+  n_classes = 3,
+  time_scores = c(0, 1, 2, 3, 4),
+
+  # Growth parameters by class
+  class_params = list(
+    class1 = list(intercept = 50, slope = 2),
+    class2 = list(intercept = 40, slope = 0),
+    class3 = list(intercept = 60, slope = -1)
+  ),
+
+  # Class proportions
+  class_proportions = c(0.4, 0.3, 0.3),
+
+  # Survey design
+  design = "stratified_cluster",
+  n_strata = 4,
+  n_clusters = 50,
+
+  # Missing data
+  missing_rate = 0.15,
+
+  seed = 123
+)
+```
+
+### Power Analysis
+
+```{r}
+# Simulate multiple datasets to assess power
+results <- replicate(100, {
+  sim <- simulate_gmm_survey(...)
+  fit <- gmm_survey(sim, ...)
+  classification_quality(fit)$entropy
+}, simplify = FALSE)
+
+# Analyze power
+mean(sapply(results, function(x) x > 0.80))
+```
+
+---
+
+# Part XIII: Best Practices
+
+## Workflow Recommendations
+
+### 1. Exploratory Phase
+
+```{r}
+# Quick exploration with fewer starts
+fit_explore <- gmm_survey(
+  ...,
+  starts = 100,
+  cores = 4
+)
+```
+
+### 2. Model Selection Phase
+
+```{r}
+# Comprehensive comparison
+selection <- gmm_select(
+  ...,
+  classes = 1:6,
+  criteria = c("BIC", "BLRT", "entropy"),
+  blrt_samples = 100,
+  starts = 200,
+  cores = 4
+)
+```
+
+### 3. Final Model Phase
+
+```{r}
+# Best model with more starts
+fit_final <- gmm_survey(
+  ...,
+  n_classes = best_k,
+  starts = 1000,
+  cores = 4,
+  keep_data = TRUE
+)
+
+# Thorough diagnostics
+diagnose_convergence(fit_final)
+diagnose_influence(fit_final)
+classification_quality(fit_final)
+```
+
+## Reporting Results
+
+### Essential Information
+
+Include in publications:
+1. **Model specification**: Classes, growth model, covariates
+2. **Sample**: N, time points, missing data handling
+3. **Survey design**: Strata, clusters, weights
+4. **Estimation**: Random starts, convergence
+5. **Model selection**: Criteria used, comparison table
+6. **Classification quality**: Entropy, AvePP
+7. **Parameters**: Growth parameters with SEs
+8. **Diagnostics**: Convergence checks
+
+### Example Results Table
+
+```{r}
+# Create comparison table
+comparison <- data.frame(
+  Classes = 1:5,
+  LogLik = sapply(model_list, logLik),
+  AIC = sapply(model_list, AIC),
+  BIC = sapply(model_list, BIC),
+  Entropy = sapply(model_list, function(m) entropy(m))
+)
+
+print(comparison)
+```
+
+## Computational Efficiency
+
+### Parallel Processing
+
+```{r}
+# Use all available cores
+fit <- gmm_survey(
+  ...,
+  cores = parallel::detectCores() - 1  # Leave 1 for system
+)
+```
+
+### Memory Management
+
+```{r}
+# Don't store data unless needed
+fit <- gmm_survey(..., keep_data = FALSE)
+
+# Clear old models
+rm(fit_old)
+gc()
+```
+
+---
+
+# Part XIV: Troubleshooting
+
+## Common Issues
+
+### 1. Convergence Failures
+
+**Problem:** "Model did not converge"
+
+**Solutions:**
+- Increase `max_iter` (e.g., 1000 → 2000)
+- Increase `starts` (e.g., 200 → 500)
+- Try simpler model (fewer classes)
+- Check for data issues (outliers, missing)
+
+### 2. Separation Warnings
+
+**Problem:** "Classes are perfectly separated"
+
+**Solutions:**
+- Reduce number of classes
+- Check for extreme values or data errors
+- Consider different growth model
+- Add constraints on parameters
+
+### 3. Local Maxima
+
+**Problem:** Best solution replicated infrequently
+
+**Solutions:**
+- Increase random starts
+- Use different initialization
+- Try multiple runs and compare
+
+### 4. Negative Variance Estimates
+
+**Problem:** "Negative variance detected"
+
+**Solutions:**
+- Fix variance to positive value
+- Constrain variances across classes
+- Check model identification
+
+### 5. Slow Performance
+
+**Problem:** Estimation takes too long
+
+**Solutions:**
+- Reduce `starts` for initial exploration
+- Use more `cores` for parallelization
+- Start with simpler model
+- Consider smaller subset for testing
+
+## Error Messages
+
+### Data-Related Errors
+
+```
+Error: ID variable not found
+```
+→ Check spelling of `id` parameter
+
+```
+Error: Duplicate id-time combinations
+```
+→ Data has repeated observations; fix data structure
+
+### Estimation Errors
+
+```
+Error: Numerical instability
+```
+→ Try rescaling outcome variable (z-score)
+
+```
+Warning: Hessian is not positive definite
+```
+→ Model may be misspecified or unidentified
+
+---
+
+# Part XV: Advanced Topics
+
+## Custom Growth Models
+
+### Piecewise Linear Growth
+
+```{r}
+# Create piecewise time variable
+data$time1 <- ifelse(data$time <= 5, data$time, 5)
+data$time2 <- ifelse(data$time > 5, data$time - 5, 0)
+
+# Fit model with both slopes
+# (requires manual specification)
+```
+
+### Cohort Effects
+
+```{r}
+# Include cohort as time-invariant predictor in R3STEP
+r3step_results <- r3step(
+  gmm_object = fit,
+  distal_vars = c("cohort", "other_outcomes"),
+  data = distal_data
+)
+```
+
+## Multiple Group Analysis
+
+### By Gender
+
+```{r}
+# Fit separate models
+fit_male <- gmm_survey(data_male, ...)
+fit_female <- gmm_survey(data_female, ...)
+
+# Compare class structures
+compare_classes(fit_male, fit_female)
+```
+
+## Latent Transition Analysis
+
+*Note: Not yet implemented. Planned for future version.*
+
+## Growth Mixture SEM
+
+*Note: For complex SEM with multiple processes, consider integration with lavaan.*
+
+---
+
+# Part XVI: References & Resources
+
+## Key References
+
+### Growth Mixture Modeling
+
+1. Muthén, B. (2004). Latent variable analysis: Growth mixture modeling and related techniques for longitudinal data. In D. Kaplan (Ed.), *Handbook of quantitative methodology for the social sciences* (pp. 345-368). Sage.
+
+2. Nagin, D. S. (2005). *Group-based modeling of development*. Harvard University Press.
+
+### Survey Methodology
+
+3. Lumley, T. (2010). *Complex surveys: A guide to analysis using R*. Wiley.
+
+4. Pfeffermann, D., & Sverchkov, M. (1999). Parametric and semi-parametric estimation of regression models fitted to survey data. *Sankhyā*, 61(1), 166-186.
+
+### Model Selection
+
+5. Nylund, K. L., Asparouhov, T., & Muthén, B. O. (2007). Deciding on the number of classes in latent class analysis and growth mixture modeling: A Monte Carlo simulation study. *Structural Equation Modeling*, 14(4), 535-569.
+
+### R3STEP Method
+
+6. Asparouhov, T., & Muthén, B. (2014). Auxiliary variables in mixture modeling: Three-step approaches using Mplus. *Structural Equation Modeling*, 21(3), 329-341.
+
+7. Vermunt, J. K. (2010). Latent class modeling with covariates: Two improved three-step approaches. *Political Analysis*, 18(4), 450-469.
+
+## Getting Help
+
+### Documentation
+
+```{r}
+# Package help
+help(package = "surveymixr")
+
+# Function help
+?gmm_survey
+?gmm_select
+
+# Vignettes
+browseVignettes("surveymixr")
+```
+
+### Online Resources
+
+- **Website**: https://siyangni.github.io/surveymixr
+- **GitHub**: https://github.com/siyangni/surveymixr
+- **Issues**: https://github.com/siyangni/surveymixr/issues
+
+### Citing surveymixr
+
+```{r}
+citation("surveymixr")
+```
+
+---
+
+# Appendix A: Function Quick Reference
+
+## Core Functions
+
+- `gmm_survey()` - Main estimation function
+- `gmm_survey_binary()` - Binary outcomes
+- `gmm_survey_ordinal()` - Ordinal outcomes
+- `gmm_survey_count()` - Count outcomes
+- `gmm_survey_re()` - Random effects
+- `gmm_survey_tvc()` - Time-varying covariates
+
+## Model Selection
+
+- `gmm_select()` - Comprehensive model comparison
+- `gmm_cv()` - Cross-validation
+- `lmr_test()` - Lo-Mendell-Rubin test
+- `lmr_sequential()` - Sequential LMR testing
+
+## Diagnostics
+
+- `diagnose_convergence()` - Convergence checks
+- `diagnose_influence()` - Influential cases
+- `diagnose_separation()` - Separation detection
+- `residual_diagnostics()` - Residual analysis
+- `classification_quality()` - Classification metrics
+- `entropy()` - Classification entropy
+
+## Visualization
+
+- `plot_trajectories()` - Static trajectory plots
+- `plot_interactive()` - Interactive plots
+- `plot_model_selection()` - Model comparison plots
+- `plot_random_effects()` - Random effects plots
+- `plot_tvc_effects()` - TVC effect plots
+
+## Utilities
+
+- `validate_survey_data()` - Data validation
+- `simulate_gmm_survey()` - Data simulation
+- `wide_to_long()` - Format conversion
+- `mplus_to_surveymixr()` - Mplus conversion
+
+# Appendix B: Formulas & Mathematics
+
+## EM Algorithm
+
+surveymixr uses the Expectation-Maximization (EM) algorithm:
+
+**E-Step:** Compute posterior probabilities
+$$P(C_i = k | Y_i) = \frac{\pi_k f(Y_i | \theta_k)}{\sum_{j=1}^K \pi_j f(Y_i | \theta_j)}$$
+
+**M-Step:** Update parameters
+$$\theta^{(t+1)} = \arg\max_\theta \sum_{i=1}^N \sum_{k=1}^K P(C_i=k|Y_i;\theta^{(t)}) \log f(Y_i|\theta_k)$$
+
+## Survey-Adjusted Standard Errors
+
+Sandwich estimator:
+$$\text{Var}(\hat{\theta}) = H^{-1} \Sigma H^{-1}$$
+
+Where:
+- $H$ = Hessian matrix
+- $\Sigma$ = Survey-adjusted score covariance
+
+## Information Criteria
+
+$$\text{AIC} = -2\log L + 2p$$
+$$\text{BIC} = -2\log L + p\log N$$
+$$\text{aBIC} = -2\log L + p\log\left(\frac{N+2}{24}\right)$$
+
+---
+
+**End of User Manual**
+
+*For updates and additional resources, visit: https://siyangni.github.io/surveymixr*
