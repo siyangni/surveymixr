@@ -121,7 +121,7 @@ Existing R packages have significant limitations:
 
 ## Documentation
 
-### 📖 [Complete User Manual](https://siyangni.github.io/surveymixr/articles/user-manual.html)
+### [User Manual](https://siyangni.github.io/surveymixr/articles/user-manual.html)
 
 A comprehensive, unified guide covering:
 - Getting started with installation and quick examples
