@@ -10,6 +10,8 @@
 
 **surveymixr** implements growth mixture modeling (GMM) for longitudinal data with full integration of complex survey design features including stratification, clustering, and probability weights. This package fills a critical gap in R's statistical capabilities by enabling analyses of large-scale longitudinal surveys (e.g., Millennium Cohort Study, Add Health, NLSY) that were previously only possible in proprietary software like Mplus.
 
+📖 **[Read the complete User Manual](https://siyangni.github.io/surveymixr/articles/user-manual.html)** for comprehensive documentation covering all features, workflows, and best practices.
+
 ## Key Features
 
 - **Survey Design Integration**: Proper handling of stratification, clustering (PSUs), and probability weights with sandwich standard errors
@@ -119,14 +121,25 @@ Existing R packages have significant limitations:
 
 ## Documentation
 
-Four comprehensive vignettes are included:
+### 📖 [Complete User Manual](https://siyangni.github.io/surveymixr/articles/user-manual.html)
+
+A comprehensive, unified guide covering:
+- Getting started with installation and quick examples
+- Core concepts of growth mixture models and survey design
+- Model fitting, selection, and diagnostics
+- Advanced features (random effects, time-varying covariates, R3STEP)
+- Visualization, troubleshooting, and best practices
+
+### Additional Vignettes
+
+Specialized topics are covered in additional vignettes:
 
 - Introduction to surveymixr (`vignette("surveymixr-intro")`)
 - Technical Details and Algorithms (`vignette("technical-details")`)
 - R3STEP Auxiliary Variable Analysis (`vignette("r3step-analysis")`)
 - Validation Against Mplus (`vignette("mplus-validation")`)
 
-After package installation, view vignettes with:
+After package installation, view all vignettes with:
 ```r
 browseVignettes("surveymixr")
 ```

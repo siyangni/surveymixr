@@ -367,6 +367,7 @@ This package fills a critical gap in R’s statistical capabilities by
 enabling analyses of large-scale longitudinal surveys (e.g., Millennium
 Cohort Study, Add Health, NLSY) that were previously only possible in
 proprietary software like Mplus.</p>
+<p>📖 <strong><a href="articles/user-manual.html">Read the complete User Manual</a></strong> for comprehensive documentation covering all features, workflows, and best practices.</p>
 </div>
 <div id="key-features" class="section level2">
 <h2>Key Features</h2>
@@ -540,21 +541,30 @@ growth mixture modeling with full complex survey design features.</p>
 </div>
 <div id="documentation" class="section level2">
 <h2>Documentation</h2>
-<p>Four comprehensive vignettes are included:</p>
+<div id="complete-user-manual" class="section level3">
+<h3>📖 <a href="articles/user-manual.html">Complete User Manual</a></h3>
+<p>A comprehensive, unified guide covering:</p>
 <ul>
-<li>Introduction to surveymixr
-(<code>vignette(&quot;surveymixr-intro&quot;)</code>)</li>
-<li>Technical Details and Algorithms
-(<code>vignette(&quot;technical-details&quot;)</code>)</li>
-<li>R3STEP Auxiliary Variable Analysis
-(<code>vignette(&quot;r3step-analysis&quot;)</code>)</li>
-<li>Validation Against Mplus
-(<code>vignette(&quot;mplus-validation&quot;)</code>)</li>
+<li>Getting started with installation and quick examples</li>
+<li>Core concepts of growth mixture models and survey design</li>
+<li>Model fitting, selection, and diagnostics</li>
+<li>Advanced features (random effects, time-varying covariates, R3STEP)</li>
+<li>Visualization, troubleshooting, and best practices</li>
 </ul>
-<p>After package installation, view vignettes with:</p>
-<pre class="r"><code>browseVignettes(&quot;surveymixr&quot;)</code></pre>
 </div>
-<div id="citation" class="section level2">
+<div id="additional-vignettes" class="section level3">
+<h3>Additional Vignettes</h3>
+<p>Specialized topics are covered in additional vignettes:</p>
+<ul>
+<li>Introduction to surveymixr (<code>vignette("surveymixr-intro")</code>)</li>
+<li>Technical Details and Algorithms (<code>vignette("technical-details")</code>)</li>
+<li>R3STEP Auxiliary Variable Analysis (<code>vignette("r3step-analysis")</code>)</li>
+<li>Validation Against Mplus (<code>vignette("mplus-validation")</code>)</li>
+</ul>
+<p>After package installation, view all vignettes with:</p>
+<pre class="r"><code>browseVignettes("surveymixr")</code></pre>
+</div>
+</div>
 <h2>Citation</h2>
 <p>If you use surveymixr in your research, please cite:</p>
 <pre><code>Ni, S. (2025). surveymixr: An Open-Source R Package for Growth Mixture
