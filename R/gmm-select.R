@@ -121,6 +121,28 @@ gmm_select <- function(data,
                        verbose = TRUE,
                        ...) {
 
+  # Handle deprecated/convenience parameters from ...
+  dots <- list(...)
+
+  # Support min_classes/max_classes for convenience
+  if ("min_classes" %in% names(dots) || "max_classes" %in% names(dots)) {
+    min_k <- if ("min_classes" %in% names(dots)) dots$min_classes else 1
+    max_k <- if ("max_classes" %in% names(dots)) dots$max_classes else 5
+    classes <- min_k:max_k
+    if (verbose) {
+      message("Using classes ", min_k, ":", max_k,
+              " (from min_classes/max_classes parameters)")
+    }
+  }
+
+  # Support run_blrt parameter for backward compatibility
+  if ("run_blrt" %in% names(dots) && !dots$run_blrt) {
+    criteria <- setdiff(criteria, "BLRT")
+    if (verbose) {
+      message("BLRT disabled via run_blrt=FALSE parameter")
+    }
+  }
+
   if (verbose) {
     message("========================================")
     message("Growth Mixture Model Selection")

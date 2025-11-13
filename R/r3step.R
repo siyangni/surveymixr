@@ -141,6 +141,17 @@ r3step <- function(gmm_object,
          paste(missing_vars, collapse = ", "))
   }
 
+  # Validate data dimensions
+  n_individuals <- nrow(posterior_probs)
+  if (nrow(data) != n_individuals) {
+    stop(
+      "Data has ", nrow(data), " rows but GMM object has ", n_individuals,
+      " individuals.\n",
+      "R3STEP requires person-level data (one row per individual).\n",
+      "If your data is in long format, aggregate to person-level first."
+    )
+  }
+
   n_distal <- length(distal_vars)
 
   # ============================================================================
