@@ -1,5 +1,5 @@
 ---
-title: "Complete User Manual for surveymixr"
+title: "surveymixr User Manual"
 author: "Siyang Ni"
 date: "`r Sys.Date()`"
 output:
@@ -7,7 +7,7 @@ output:
     toc: true
     toc_depth: 4
 vignette: >
-  %\VignetteIndexEntry{Complete User Manual for surveymixr}
+  %\VignetteIndexEntry{surveymixr User Manual}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

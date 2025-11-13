@@ -3,6 +3,13 @@ template:
   bootstrap: 5
   bootswatch: flatly
 
+home:
+  links:
+  - text: 📖 Read the comprehensive User Manual
+    href: articles/user-manual.html
+  - text: Browse all documentation
+    href: reference/index.html
+
 navbar:
   structure:
     left:  [intro, reference, articles, news]
@@ -14,7 +21,7 @@ navbar:
       - text: "---Getting Started---"
       - text: Introduction to surveymixr
         href: articles/surveymixr-intro.html
-      - text: Complete User Manual
+      - text: surveymixr User Manual
         href: articles/user-manual.html
       - text: "---Advanced Topics---"
       - text: Categorical Outcomes
