@@ -67,7 +67,8 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
+#' # Full example (slow - use for actual analysis):
 #' data(mcs_simulated)
 #'
 #' # Fit 2-class and 3-class models
@@ -264,8 +265,9 @@ print.lmr_test <- function(x, ...) {
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' # Fit models with 1-4 classes
+#' \dontrun{
+#' # Fit models with 1-4 classes (slow - use for actual analysis)
+#' data(mcs_simulated)
 #' models <- lapply(1:4, function(k) {
 #'   gmm_survey(
 #'     data = mcs_simulated,

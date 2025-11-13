@@ -63,7 +63,8 @@ Creates interactive visualizations with the following features:
 - **spaghetti**: All individual trajectories overlaid
 }
 \examples{
-\donttest{
+\dontrun{
+# Full example (requires plotly package)
 data(mcs_simulated)
 
 fit <- gmm_survey(
