@@ -61,8 +61,8 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' # Simulate data
+#' \dontrun{
+#' # Full example (requires model fitted with keep_data = TRUE)
 #' set.seed(123)
 #' mcs_simulated <- simulate_gmm_survey(
 #'   n_individuals = 500,

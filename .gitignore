@@ -12,3 +12,6 @@ Thumbs.db
 inst/doc
 doc
 Meta
+*.Rcheck/
+*.tar.gz
+*.tgz

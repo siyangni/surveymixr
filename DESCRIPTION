@@ -50,5 +50,4 @@ URL: https://github.com/siyangni/surveymixr
 BugReports: https://github.com/siyangni/surveymixr/issues
 RoxygenNote: 7.3.3
 Config/roxygen/markdown: TRUE
-SystemRequirements: C++11
 NeedsCompilation: no

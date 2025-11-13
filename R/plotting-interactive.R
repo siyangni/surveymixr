@@ -46,7 +46,8 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
+#' # Full example (requires plotly package)
 #' data(mcs_simulated)
 #'
 #' fit <- gmm_survey(
