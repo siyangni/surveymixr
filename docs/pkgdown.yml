@@ -1,0 +1,15 @@
+pandoc: 3.1.3
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  categorical-outcomes: categorical-outcomes.html
+  model-selection-enhanced: model-selection-enhanced.html
+  mplus-validation: mplus-validation.html
+  r3step-analysis: r3step-analysis.html
+  surveymixr-intro: surveymixr-intro.html
+  technical-details: technical-details.html
+  user-manual: user-manual.html
+last_built: 2025-11-13T06:27Z
+urls:
+  reference: https://siyangni.github.io/surveymixr/reference
+  article: https://siyangni.github.io/surveymixr/articles
