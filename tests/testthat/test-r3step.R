@@ -104,11 +104,14 @@ test_that("r3step manual 3-step method works", {
     cores = 1
   )
 
+  # R3STEP requires person-level data - aggregate
+  person_data <- sim_data[!duplicated(sim_data$id), c("id", "baseline_risk")]
+
   # Run manual 3-step
   r3_result <- r3step(
     gmm_object = fit,
     distal_vars = "baseline_risk",
-    data = sim_data,
+    data = person_data,
     method = "manual"
   )
 

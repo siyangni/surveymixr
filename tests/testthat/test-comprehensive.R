@@ -72,7 +72,7 @@ test_that("gmm_select works across class range", {
 
   expect_s4_class(result, "SurveyMixrSelect")
   expect_equal(nrow(result@comparison_table), 4)
-  expect_true(all(c("AIC", "BIC", "aBIC", "entropy") %in% colnames(result@comparison_table)))
+  expect_true(all(c("aic", "bic", "abic", "entropy") %in% colnames(result@comparison_table)))
 })
 
 # =============================================================================
