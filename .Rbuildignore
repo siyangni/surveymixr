@@ -21,3 +21,6 @@
 ^CONTRIBUTING\.md$
 ^cran-comments\.md$
 ^archives$
+^CLAUDE\.md$
+^CRAN_READINESS_REPORT\.md$
+^VIGNETTE_FIXES_NEEDED\.md$
