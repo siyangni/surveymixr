@@ -131,24 +131,7 @@ Use BLRT when:
 
 ### Conducting LMR Tests
 
-#### Option 1: Within `gmm_select()`
-
-```{r lmr-select, eval=FALSE}
-# Include "LMR" in criteria
-selection <- gmm_select(
-  data = mcs_simulated,
-  id = "id", time = "age", outcome = "selfcontrol",
-  classes = 1:5,
-  criteria = c("BIC", "LMR"),  # Fast combination
-  starts = 100
-)
-
-# Extract LMR results
-lmr_results <- selection$lmr_tests
-print(lmr_results)
-```
-
-#### Option 2: Manual Comparison
+#### Pairwise Model Comparison
 
 ```{r lmr-manual, eval=FALSE}
 # Fit individual models
