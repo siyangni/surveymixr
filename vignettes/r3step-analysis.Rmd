@@ -60,6 +60,10 @@ gmm_fit <- gmm_survey(
 )
 
 summary(gmm_fit)
+
+# Create person-level data for R3STEP analysis
+# R3STEP requires one row per individual
+person_data <- mcs_simulated[!duplicated(mcs_simulated$id), ]
 ```
 
 ### Step 2: Assign Most Likely Class
@@ -83,8 +87,9 @@ Use the R3STEP method to test for class differences on the distal outcome, accou
 ```{r step3, eval=FALSE}
 # Analyze delinquency as distal outcome
 r3_result <- r3step(
-  gmm_fit,
-  distal = "delinquency",
+  gmm_object = gmm_fit,
+  distal_vars = "delinquency",
+  data = person_data,
   method = "BCH"  # Recommended method
 )
 
@@ -109,8 +114,9 @@ The Bolck-Croon-Hagenaars [@bolck2004estimating] method uses weights to correct 
 
 ```{r bch, eval=FALSE}
 result_bch <- r3step(
-  gmm_fit,
-  distal = "academic_achievement",
+  gmm_object = gmm_fit,
+  distal_vars = "academic_achievement",
+  data = person_data,
   method = "BCH"
 )
 
@@ -140,8 +146,9 @@ Maximum likelihood approach jointly models class membership and distal outcome.
 
 ```{r ml, eval=FALSE}
 result_ml <- r3step(
-  gmm_fit,
-  distal = "delinquency",
+  gmm_object = gmm_fit,
+  distal_vars = "delinquency",
+  data = person_data,
   method = "ML",
   cores = 4  # Can parallelize
 )
@@ -155,8 +162,9 @@ For custom analyses or when you want full control over Step 3.
 
 ```{r manual, eval=FALSE}
 result_manual <- r3step(
-  gmm_fit,
-  distal = "academic_achievement",
+  gmm_object = gmm_fit,
+  distal_vars = "academic_achievement",
+  data = person_data,
   method = "manual"
 )
 
@@ -263,8 +271,9 @@ Shows density plots or violin plots of the distal outcome by latent class.
 
 # Step 2+3: Analyze achievement as distal
 achievement_result <- r3step(
-  gmm_fit,
-  distal = "academic_achievement",
+  gmm_object = gmm_fit,
+  distal_vars = "academic_achievement",
+  data = person_data,
   method = "BCH"
 )
 
@@ -302,8 +311,9 @@ mcs_simulated$high_delinquency <- ifelse(
 
 # Analyze binary distal
 binary_result <- r3step(
-  gmm_fit,
-  distal = "high_delinquency",
+  gmm_object = gmm_fit,
+  distal_vars = "high_delinquency",
+  data = person_data,
   distal_type = "binary",  # Specify binary
   method = "BCH"
 )
@@ -325,7 +335,12 @@ Test multiple outcomes separately (with multiple comparison correction):
 outcomes <- c("delinquency", "academic_achievement", "ses")
 
 results_list <- lapply(outcomes, function(outcome) {
-  r3step(gmm_fit, distal = outcome, method = "BCH")
+  r3step(
+    gmm_object = gmm_fit,
+    distal_vars = outcome,
+    data = person_data,
+    method = "BCH"
+  )
 })
 
 names(results_list) <- outcomes
@@ -400,8 +415,9 @@ print(comparison)
 ```{r survey, eval=FALSE}
 # R3STEP with full survey design
 result_survey <- r3step(
-  gmm_fit,  # Already includes strata, clusters, weights
-  distal = "delinquency",
+  gmm_object = gmm_fit,  # Already includes strata, clusters, weights
+  distal_vars = "delinquency",
+  data = person_data,
   method = "BCH"
 )
 
@@ -413,8 +429,9 @@ result_survey <- r3step(
 
 # Compare to naive (ignoring survey design)
 result_naive <- r3step(
-  gmm_fit_no_survey,  # Fit without survey features
-  distal = "delinquency",
+  gmm_object = gmm_fit_no_survey,  # Fit without survey features
+  distal_vars = "delinquency",
+  data = person_data,
   method = "BCH"
 )
 
@@ -475,8 +492,18 @@ Test robustness to different methods:
 
 ```{r sensitivity, eval=FALSE}
 # Compare BCH vs ML
-result_bch <- r3step(gmm_fit, distal = "delinquency", method = "BCH")
-result_ml <- r3step(gmm_fit, distal = "delinquency", method = "ML")
+result_bch <- r3step(
+  gmm_object = gmm_fit,
+  distal_vars = "delinquency",
+  data = person_data,
+  method = "BCH"
+)
+result_ml <- r3step(
+  gmm_object = gmm_fit,
+  distal_vars = "delinquency",
+  data = person_data,
+  method = "ML"
+)
 
 # Extract means
 means_compare <- data.frame(
@@ -498,14 +525,16 @@ Test whether class differences on distal outcome vary by another variable:
 ```{r moderation, eval=FALSE}
 # Split by gender
 result_female <- r3step(
-  gmm_fit_female,
-  distal = "delinquency",
+  gmm_object = gmm_fit_female,
+  distal_vars = "delinquency",
+  data = person_data_female,
   method = "BCH"
 )
 
 result_male <- r3step(
-  gmm_fit_male,
-  distal = "delinquency",
+  gmm_object = gmm_fit_male,
+  distal_vars = "delinquency",
+  data = person_data_male,
   method = "BCH"
 )
 
