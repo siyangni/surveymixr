@@ -1,5 +1,11 @@
 # surveymixr 0.2.0 (Development Version)
 
+## Documentation Fixes (2025-11-15)
+
+* **Fixed r3step-analysis.Rmd vignette**: Corrected all r3step() function calls to use proper parameters (`distal_vars` instead of `distal`, added `data` parameter, added person-level data extraction). All 13 r3step() calls now use correct function signatures.
+* **Fixed model-selection-enhanced.Rmd vignette**: Removed "LMR" from gmm_select() criteria (not implemented in gmm_select). Added clarification that LMR tests are available via standalone lmr_test() and lmr_sequential() functions.
+* All vignette code now uses correct function signatures and will build successfully
+
 ## Critical Bug Fixes (2025-11-13)
 
 Fixed 4 critical bugs that were blocking CRAN submission and preventing core features from working:

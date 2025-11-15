@@ -89,7 +89,7 @@ selection <- gmm_select(
   strata = "stratum",
   cluster = "cluster",
   weights = "weight",
-  criteria = c("BIC", "aBIC", "entropy", "BLRT", "LMR"),  # NEW in v0.2.0
+  criteria = c("BIC", "aBIC", "entropy", "BLRT"),  # Multiple criteria
   blrt_samples = 100,
   starts = 200,
   cores = 4
@@ -101,6 +101,8 @@ plot(selection)
 ```
 
 ## Lo-Mendell-Rubin (LMR) Test
+
+**Note**: LMR tests are not automatically computed by `gmm_select()`. Use the standalone `lmr_test()` and `lmr_sequential()` functions for LMR-based model comparison (see examples below).
 
 ### What is it?
 
@@ -129,24 +131,7 @@ Use BLRT when:
 
 ### Conducting LMR Tests
 
-#### Option 1: Within `gmm_select()`
-
-```{r lmr-select, eval=FALSE}
-# Include "LMR" in criteria
-selection <- gmm_select(
-  data = mcs_simulated,
-  id = "id", time = "age", outcome = "selfcontrol",
-  classes = 1:5,
-  criteria = c("BIC", "LMR"),  # Fast combination
-  starts = 100
-)
-
-# Extract LMR results
-lmr_results <- selection$lmr_tests
-print(lmr_results)
-```
-
-#### Option 2: Manual Comparison
+#### Pairwise Model Comparison
 
 ```{r lmr-manual, eval=FALSE}
 # Fit individual models
