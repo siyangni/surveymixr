@@ -263,11 +263,45 @@ setMethod("residuals", "SurveyMixr", function(object, ...) {
     stop("Residuals not available. Re-fit model with keep_data = TRUE")
   }
 
-  observed <- as.matrix(object@data)
+  # Get fitted values (N x T matrix)
   fitted_vals <- fitted(object)
 
-  residuals <- observed - fitted_vals
-  residuals
+  # Extract observed values from data
+  # Data might be in long format, need to reshape to wide
+  id_var <- object@model_info$id_var
+  time_var <- object@model_info$time_var
+  outcome_var <- object@model_info$outcome_var
+  time_scores <- object@model_info$time_scores
+
+  # Reshape data to wide format if needed
+  if (all(c(id_var, time_var, outcome_var) %in% names(object@data))) {
+    # Data is in long format - reshape to wide
+    data_wide <- stats::reshape(
+      object@data[, c(id_var, time_var, outcome_var)],
+      idvar = id_var,
+      timevar = time_var,
+      v.names = outcome_var,
+      direction = "wide"
+    )
+
+    # Extract just the outcome columns in the correct order
+    outcome_cols <- paste0(outcome_var, ".", time_scores)
+    observed <- as.matrix(data_wide[, outcome_cols, drop = FALSE])
+    colnames(observed) <- paste0("Time_", time_scores)
+  } else {
+    # Assume data is already in wide format or extract what we can
+    stop("Unable to extract outcome data. Data structure not recognized.")
+  }
+
+  # Compute residuals
+  if (!identical(dim(observed), dim(fitted_vals))) {
+    stop("Dimension mismatch between observed and fitted values. ",
+         "Observed: ", paste(dim(observed), collapse = "x"),
+         ", Fitted: ", paste(dim(fitted_vals), collapse = "x"))
+  }
+
+  residuals_matrix <- observed - fitted_vals
+  residuals_matrix
 })
 
 

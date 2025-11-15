@@ -318,7 +318,6 @@ test_that("Parameter extraction utilities work", {
 
 test_that("Fitted and residual methods work", {
   skip_on_cran()
-  skip("residuals() method has non-conformable arrays bug - skipping until fixed")
 
   set.seed(711)
   sim_data <- simulate_gmm_survey(

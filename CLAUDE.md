@@ -409,13 +409,19 @@ diagnose_convergence(fit)
 ### Handling Missing Data
 
 **Current approach**:
-- Listwise deletion (complete case analysis)
-- Future: Multiple imputation and FIML
+- **FIML (Full Information Maximum Likelihood)**: Uses all available data for each individual
+- Missing data handled automatically in EM algorithm via response indicator matrix
+- Only observed time points used in likelihood calculation (no listwise deletion)
+
+**Future enhancements**:
+- Multiple imputation support
+- Additional missing data diagnostics
 
 **Best practices**:
 - Check missing patterns with `validate_survey_data()`
-- Document missing data handling in analysis
-- Consider sensitivity analyses
+- FIML assumes MAR (Missing At Random) - verify this assumption
+- Document missing data patterns in analysis
+- Consider sensitivity analyses for MNAR (Missing Not At Random)
 
 ### Outcome Type Validation
 

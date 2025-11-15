@@ -1,5 +1,57 @@
 # surveymixr 0.2.0 (Development Version)
 
+## Critical Bug Fixes (2025-11-13)
+
+Fixed 4 critical bugs that were blocking CRAN submission and preventing core features from working:
+
+* **class_proportions dimension mismatch**: Fixed error when not all classes have assignments by using `factor()` with explicit levels
+* **r3step subscript out of bounds**: Added validation requiring person-level data (one row per individual); updated all tests and provided clear error messages
+* **gmm_select parameter compatibility**: Added support for `min_classes`/`max_classes` and `run_blrt` parameters for backward compatibility
+* **residuals() non-conformable arrays**: Fixed residuals method to properly reshape long-format data to wide format before computing residuals
+
+These fixes enabled 9 previously skipped tests, reducing total skipped tests from 32 to 23.
+
+## Known Limitations
+
+This release has some known limitations that users should be aware of:
+
+### Features Not Yet Implemented
+
+* **ML method for R3STEP**: The Maximum Likelihood method for r3step is not yet implemented. Use `method = "BCH"` (recommended) or `method = "manual"` instead.
+* **Time-varying covariates**: Partial implementation exists (`gmm_survey_tvc()`) but needs further testing and validation
+* **Random effects**: Partial implementation exists (`gmm_survey_re()`) but requires additional development
+* **Multiple imputation**: Missing data is currently handled via FIML (Full Information Maximum Likelihood). Multiple imputation methods are planned for future releases.
+
+### Data Requirements
+
+* **r3step requires person-level data**: The `r3step()` function requires one row per individual (person-level data). If your data is in long format, aggregate to person-level before calling r3step:
+  ```r
+  person_data <- my_data[!duplicated(my_data$id), ]
+  r3step(fit, distal_vars = "outcome", data = person_data)
+  ```
+
+### Missing Data Handling
+
+* **FIML assumes MAR**: Full Information Maximum Likelihood assumes data are Missing At Random (MAR). If you suspect Missing Not At Random (MNAR), conduct sensitivity analyses.
+* **Monotone vs non-monotone patterns**: The `validate_survey_data()` function identifies missing data patterns, but currently all patterns are handled the same way via FIML.
+
+### Testing Status
+
+* **23 tests currently skipped**: Most skipped tests are for unimplemented features (ML method, external dependencies like Mplus). See test files for details.
+* **Vignette updates needed**: Some vignette code examples use outdated parameter names and will be updated in the next release. See `VIGNETTE_FIXES_NEEDED.md` for details.
+
+### Platform Notes
+
+* **Parallel processing on Windows**: Some users may experience issues with parallel processing on Windows. If you encounter errors, set `cores = 1` for sequential processing.
+* **Memory requirements**: Models with many random starts (500-1000+) and large datasets may require substantial RAM. Use `store_data = FALSE` to reduce memory footprint.
+
+### Performance Considerations
+
+* **BLRT is computationally intensive**: Bootstrap Likelihood Ratio Test can take hours for complex models. Consider using the faster LMR test for initial exploration.
+* **Convergence with complex designs**: Models with many strata and clusters may require more random starts or adjusted convergence criteria.
+
+See GitHub issues (https://github.com/siyangni/surveymixr/issues) for currently tracked bugs and feature requests.
+
 ## Major Enhancements
 
 This release significantly expands surveymixr's capabilities with new outcome types, enhanced model selection methods, advanced diagnostics, and interactive visualizations.

@@ -3,7 +3,6 @@
 
 test_that("r3step BCH method works with continuous distal outcome", {
   skip_on_cran()
-  skip("r3step has subscript out of bounds bug - skipping until fixed")
 
   set.seed(401)
   sim_data <- simulate_gmm_survey(
@@ -26,17 +25,20 @@ test_that("r3step BCH method works with continuous distal outcome", {
     cores = 1
   )
 
+  # R3STEP requires person-level data - aggregate
+  person_data <- sim_data[!duplicated(sim_data$id), c("id", "ses")]
+
   # Run R3STEP with BCH method
   r3_result <- r3step(
     gmm_object = fit,
     distal_vars = "ses",
-    data = sim_data,
+    data = person_data,
     method = "BCH"
   )
 
   # Check structure
   expect_s4_class(r3_result, "R3StepResults")
-  expect_equal(nrow(r3_result@class_means), 3)
+  expect_equal(nrow(r3_result@class_means), 1)  # 1 distal variable
 
   # Check results components
   expect_true(!is.null(r3_result@class_means))

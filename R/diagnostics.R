@@ -228,8 +228,8 @@ class_proportions <- function(object, weighted = TRUE, ci_level = 0.95) {
   lower <- pmax(0, props - z_crit * prop_se)
   upper <- pmin(1, props + z_crit * prop_se)
 
-  # Class counts
-  class_counts <- table(object@class_assignments)
+  # Class counts - ensure all classes represented even if count is 0
+  class_counts <- table(factor(object@class_assignments, levels = 1:n_classes))
 
   result <- data.frame(
     class = 1:n_classes,
