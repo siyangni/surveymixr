@@ -16,7 +16,6 @@
 # =============================================================================
 
 test_that("gmm_survey core functionality works", {
-  skip_on_cran()
 
   set.seed(1001)
   sim_data <- simulate_gmm_survey(
@@ -47,7 +46,6 @@ test_that("gmm_survey core functionality works", {
 })
 
 test_that("gmm_select works across class range", {
-  skip_on_cran()
 
   set.seed(1002)
   sim_data <- simulate_gmm_survey(
@@ -80,7 +78,6 @@ test_that("gmm_select works across class range", {
 # =============================================================================
 
 test_that("extract_fit_indices extracts all fit measures", {
-  skip_on_cran()
 
   set.seed(1003)
   sim_data <- simulate_gmm_survey(
@@ -121,7 +118,6 @@ test_that("extract_fit_indices extracts all fit measures", {
 })
 
 test_that("extract_fit_indices handles multiple models", {
-  skip_on_cran()
 
   set.seed(1004)
   sim_data <- simulate_gmm_survey(
@@ -152,7 +148,6 @@ test_that("extract_fit_indices handles multiple models", {
 })
 
 test_that("extract_trajectories produces predicted trajectories", {
-  skip_on_cran()
 
   set.seed(1005)
   sim_data <- simulate_gmm_survey(
@@ -189,7 +184,6 @@ test_that("extract_trajectories produces predicted trajectories", {
 })
 
 test_that("extract_trajectories handles multiple classes", {
-  skip_on_cran()
 
   set.seed(1006)
   sim_data <- simulate_gmm_survey(
@@ -225,7 +219,6 @@ test_that("extract_trajectories handles multiple classes", {
 # =============================================================================
 
 test_that("entropy calculation is accurate", {
-  skip_on_cran()
 
   set.seed(1007)
   sim_data <- simulate_gmm_survey(
@@ -258,7 +251,6 @@ test_that("entropy calculation is accurate", {
 })
 
 test_that("class_proportions provides complete information", {
-  skip_on_cran()
 
   set.seed(1008)
   sim_data <- simulate_gmm_survey(
@@ -290,7 +282,6 @@ test_that("class_proportions provides complete information", {
 })
 
 test_that("classification_quality provides comprehensive metrics", {
-  skip_on_cran()
 
   set.seed(1009)
   sim_data <- simulate_gmm_survey(
@@ -327,7 +318,6 @@ test_that("classification_quality provides comprehensive metrics", {
 })
 
 test_that("diagnose_convergence identifies convergence issues", {
-  skip_on_cran()
 
   set.seed(1010)
   sim_data <- simulate_gmm_survey(
@@ -364,7 +354,6 @@ test_that("diagnose_convergence identifies convergence issues", {
 # =============================================================================
 
 test_that("compare_classes performs statistical comparisons", {
-  skip_on_cran()
   skip("compare_classes requires covariates in @data - functionality needs review")
 
   set.seed(1011)
@@ -400,7 +389,6 @@ test_that("compare_classes performs statistical comparisons", {
 })
 
 test_that("compare_classes works for 2-class model", {
-  skip_on_cran()
   skip("compare_classes requires covariates in @data - functionality needs review")
 
   set.seed(1012)
@@ -471,7 +459,6 @@ test_that("compare_with_mplus validates model equivalence", {
 # =============================================================================
 
 test_that("plot_trajectories creates trajectory plot", {
-  skip_on_cran()
 
   set.seed(1014)
   sim_data <- simulate_gmm_survey(
@@ -498,7 +485,6 @@ test_that("plot_trajectories creates trajectory plot", {
 })
 
 test_that("plot_trajectories handles confidence intervals", {
-  skip_on_cran()
 
   set.seed(1015)
   sim_data <- simulate_gmm_survey(
@@ -524,7 +510,6 @@ test_that("plot_trajectories handles confidence intervals", {
 })
 
 test_that("plot_class_comparison creates comparison plot", {
-  skip_on_cran()
   skip("plot_class_comparison requires covariates in @data - functionality needs review")
 
   set.seed(1016)
@@ -555,7 +540,6 @@ test_that("plot_class_comparison creates comparison plot", {
 })
 
 test_that("plot_model_selection creates selection plot", {
-  skip_on_cran()
 
   set.seed(1017)
   sim_data <- simulate_gmm_survey(
@@ -590,7 +574,6 @@ test_that("plot_model_selection creates selection plot", {
 # =============================================================================
 
 test_that("All S4 methods work correctly", {
-  skip_on_cran()
 
   set.seed(1018)
   sim_data <- simulate_gmm_survey(
@@ -667,7 +650,6 @@ test_that("All S4 methods work correctly", {
 # =============================================================================
 
 test_that("r3step works with all methods", {
-  skip_on_cran()
 
   set.seed(1019)
   sim_data <- simulate_gmm_survey(
@@ -758,7 +740,6 @@ test_that("simulate_gmm_survey produces valid data", {
 # =============================================================================
 
 test_that("Survey designs are properly handled", {
-  skip_on_cran()
 
   set.seed(1021)
 
@@ -817,7 +798,6 @@ test_that("Survey designs are properly handled", {
 # =============================================================================
 
 test_that("Functions handle edge cases gracefully", {
-  skip_on_cran()
 
   set.seed(1023)
 
@@ -890,7 +870,6 @@ test_that("Invalid inputs are properly rejected", {
 # =============================================================================
 
 test_that("Full workflow completes successfully", {
-  skip_on_cran()
 
   set.seed(1025)
 

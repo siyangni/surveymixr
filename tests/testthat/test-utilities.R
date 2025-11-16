@@ -163,7 +163,6 @@ test_that("surveymixr_to_mplus export works", {
 })
 
 test_that("class_proportions extracts correctly", {
-  skip_on_cran()
 
   set.seed(707)
   sim_data <- simulate_gmm_survey(
@@ -199,7 +198,6 @@ test_that("class_proportions extracts correctly", {
 })
 
 test_that("entropy calculation is correct", {
-  skip_on_cran()
 
   set.seed(708)
   sim_data <- simulate_gmm_survey(
@@ -231,7 +229,6 @@ test_that("entropy calculation is correct", {
 })
 
 test_that("classification_quality provides useful metrics", {
-  skip_on_cran()
 
   set.seed(709)
   sim_data <- simulate_gmm_survey(
@@ -273,7 +270,6 @@ test_that("classification_quality provides useful metrics", {
 })
 
 test_that("Parameter extraction utilities work", {
-  skip_on_cran()
 
   set.seed(710)
   sim_data <- simulate_gmm_survey(
@@ -317,7 +313,6 @@ test_that("Parameter extraction utilities work", {
 })
 
 test_that("Fitted and residual methods work", {
-  skip_on_cran()
 
   set.seed(711)
   sim_data <- simulate_gmm_survey(
@@ -394,7 +389,6 @@ test_that("Simulation with custom growth parameters works", {
 })
 
 test_that("Summary method produces useful output", {
-  skip_on_cran()
 
   set.seed(714)
   sim_data <- simulate_gmm_survey(
@@ -428,7 +422,6 @@ test_that("Summary method produces useful output", {
 })
 
 test_that("AIC and BIC methods work correctly", {
-  skip_on_cran()
 
   set.seed(715)
   sim_data <- simulate_gmm_survey(
