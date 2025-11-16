@@ -1466,4 +1466,4 @@ $$\text{aBIC} = -2\log L + p\log\left(\frac{N+2}{24}\right)$$
 
 **End of User Manual**
 
-*For updates and additional resources, visit: https://siyangni.github.io/surveymixr*
+*For updates and additional resources, visit: https://siyangni.github.io/surveymixr/*

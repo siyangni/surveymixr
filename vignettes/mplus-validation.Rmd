@@ -613,10 +613,9 @@ Ongoing validation efforts:
 
 ## Resources
 
-- **surveymixr documentation**: https://siyangni.github.io/surveymixr
+- **surveymixr documentation**: https://siyangni.github.io/surveymixr/
 - **Mplus User's Guide**: https://www.statmodel.com
 - **MplusAutomation**: https://github.com/michaelhallquist/MplusAutomation
-- **Comparison scripts**: https://github.com/siyangni/surveymixr/tree/main/validation
 
 ## References
 
