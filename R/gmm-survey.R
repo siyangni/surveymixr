@@ -36,6 +36,11 @@
 #' @param cores Integer number of CPU cores for parallel processing (default: 1)
 #' @param verbose Logical, print progress messages? (default: TRUE)
 #' @param keep_data Logical, store data in output object? (default: FALSE)
+#' @param skip_validation Logical, skip automatic survey design validation?
+#'   (default: FALSE). When FALSE (recommended), the function automatically
+#'   validates survey design features (nested clusters, singleton strata, etc.)
+#'   before estimation. Set to TRUE only if you've already validated your data
+#'   with \code{\link{validate_survey_data}} or are certain your design is correct.
 #' @param ... Additional arguments (reserved for future use)
 #'
 #' @return An S4 object of class \code{\linkS4class{SurveyMixr}} containing:
@@ -64,6 +69,15 @@
 #' for computational efficiency. Survey weights are normalized to sum to the
 #' sample size.
 #'
+#' \strong{Reproducibility and Random Seeds:}
+#' The EM algorithm uses multiple random starts (controlled by \code{starts}
+#' parameter) to avoid local maxima. Each random start uses a different random
+#' seed for better exploration of the parameter space. To ensure reproducibility,
+#' use \code{set.seed()} before calling \code{gmm_survey()}. The function will
+#' use the R random number generator state to initialize each random start
+#' deterministically. Note that results may vary slightly across different
+#' platforms or R versions due to numerical precision differences.
+#'
 #' For model selection across different numbers of classes, see
 #' \code{\link{gmm_select}}. For analyzing auxiliary variables with
 #' classification uncertainty correction, see \code{\link{r3step}}.
@@ -85,6 +99,9 @@
 #' \dontrun{
 #' # Load simulated data
 #' data(mcs_simulated)
+#'
+#' # Set seed for reproducibility
+#' set.seed(123)
 #'
 #' # Fit 3-class model with survey design
 #' fit <- gmm_survey(
@@ -135,6 +152,7 @@ gmm_survey <- function(data,
                        cores = 1,
                        verbose = TRUE,
                        keep_data = FALSE,
+                       skip_validation = FALSE,
                        ...) {
 
   # Record start time
@@ -168,6 +186,47 @@ gmm_survey <- function(data,
 
   if (outcome_type != "continuous") {
     stop("Only continuous outcomes currently implemented. Other types coming soon.")
+  }
+
+  # ============================================================================
+  # Survey Design Validation
+  # ============================================================================
+  # Auto-validate survey design unless skipped
+  if (!skip_validation && (!is.null(strata) || !is.null(cluster) || !is.null(weights))) {
+    if (verbose) message("Validating survey design...")
+
+    validation <- validate_survey_data(
+      data = data,
+      id = id,
+      time = time,
+      outcome = outcome,
+      strata = strata,
+      cluster = cluster,
+      weights = weights,
+      verbose = FALSE
+    )
+
+    # Stop on errors
+    if (length(validation$errors) > 0) {
+      stop("Survey design validation failed. Errors:\n  ",
+           paste(validation$errors, collapse = "\n  "),
+           "\n\nRun validate_survey_data() for detailed diagnostics, ",
+           "or set skip_validation=TRUE to bypass (not recommended).")
+    }
+
+    # Warn on warnings (show up to 3)
+    if (length(validation$warnings) > 0 && verbose) {
+      n_warn <- min(3, length(validation$warnings))
+      warning("Survey design warnings:\n  ",
+              paste(validation$warnings[1:n_warn], collapse = "\n  "),
+              if (length(validation$warnings) > 3) {
+                paste0("\n  ... and ", length(validation$warnings) - 3, " more warnings")
+              } else {
+                ""
+              },
+              "\n\nRun validate_survey_data() for full details.",
+              call. = FALSE)
+    }
   }
 
   # ============================================================================

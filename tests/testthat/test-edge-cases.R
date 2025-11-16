@@ -523,3 +523,49 @@ test_that("Very low entropy (poor classification)", {
   # Entropy should be low
   expect_true(fit@fit_indices$entropy < 0.7)
 })
+
+test_that("Many time points (T=15) - numerical stability test", {
+  skip_on_cran()
+
+  set.seed(820)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 150,
+    n_times = 15,  # Many time points - tests numerical stability
+    n_classes = 2,
+    design = "srs",
+    seed = 820
+  )
+
+  # This tests that prod(dnorm()) doesn't underflow
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 50,  # Fewer starts for speed
+    cores = 1,
+    verbose = FALSE
+  )
+
+  expect_s4_class(fit, "SurveyMixr")
+  expect_equal(fit@model_info$n_classes, 2)
+  expect_equal(fit@model_info$n_times, 15)
+
+  # Should converge successfully
+  expect_true(fit@convergence_info$converged)
+
+  # Should not have NA or Inf in parameters
+  params <- coef(fit)
+  expect_false(any(is.na(params)))
+  expect_false(any(is.infinite(params)))
+
+  # Log-likelihood should be finite
+  expect_true(is.finite(logLik(fit)))
+  expect_false(is.na(logLik(fit)))
+
+  # Posterior probabilities should be valid
+  expect_false(any(is.na(fit@posterior_probs)))
+  expect_true(all(fit@posterior_probs >= 0 & fit@posterior_probs <= 1))
+  expect_true(all(abs(rowSums(fit@posterior_probs) - 1) < 1e-6))
+})

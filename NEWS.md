@@ -1,5 +1,31 @@
 # surveymixr 0.2.0 (Development Version)
 
+## Pre-CRAN Release Improvements (2025-11-16)
+
+This update addresses critical issues found during final pre-CRAN review and improves package robustness:
+
+### Critical Fixes
+
+* **Fixed vignette build error**: Corrected mplus-validation.Rmd to use proper r3step() parameters (line 282)
+* **Improved numerical stability**: Replaced `prod(dnorm())` with log-space calculations in E-step and likelihood computation to prevent underflow with many time points (T ≥ 10)
+* **Added automatic survey validation**: gmm_survey() now automatically validates survey design (nested clusters, singleton strata, etc.) before estimation. Use `skip_validation=TRUE` to bypass if needed.
+
+### New Features
+
+* **Reproducibility documentation**: Added comprehensive documentation on random seed behavior and reproducibility to gmm_survey()
+* **Test for numerical stability**: Added test with T=15 time points to ensure numerical stability with many waves
+
+### Documentation Improvements
+
+* **Random seed behavior**: Documented how set.seed() ensures reproducibility across multiple random starts
+* **FIML status**: Clarified that FIML is implemented (was incorrectly listed as future feature in roadmap)
+* **Survey validation**: New skip_validation parameter documented with clear guidance
+
+### Technical Improvements
+
+* **E-step numerical stability**: Changed from product of normal densities to sum of log-densities for better numerical properties
+* **Automatic validation**: Survey design validation now runs by default to catch common errors (non-nested clusters, singleton strata, invalid weights)
+
 ## Test Coverage Improvements - v0.2.1 Target (2025-11-16)
 
 **Progress toward 60-65% coverage target:**
@@ -74,7 +100,7 @@ This release has some known limitations that users should be aware of:
 ### Testing Status
 
 * **23 tests currently skipped**: Most skipped tests are for unimplemented features (ML method, external dependencies like Mplus). See test files for details.
-* **Vignette updates needed**: Some vignette code examples use outdated parameter names and will be updated in the next release. See `VIGNETTE_FIXES_NEEDED.md` for details.
+* **All vignettes now up-to-date**: All vignette code examples have been updated to use current function signatures and parameters.
 
 ### Platform Notes
 
