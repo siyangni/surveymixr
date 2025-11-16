@@ -4,22 +4,35 @@
 
 ## Test environments
 
-* local: macOS 14.0 (aarch64-apple-darwin20), R 4.4.0
+* local: Linux (x86_64-pc-linux-gnu), R 4.5.2
 * GitHub Actions:
   - {macos-latest} × R-release
   - {windows-latest} × R-release
   - {ubuntu-latest} × R-release
   - {ubuntu-latest} × R-devel
   - {ubuntu-latest} × R-oldrel-1
-* win-builder: R-devel and R-release
-* R-hub:
-  - Windows Server 2022, R-devel, 64 bit
-  - Ubuntu Linux 20.04.1 LTS, R-release, GCC
-  - Fedora Linux, R-devel, clang, gfortran
+* win-builder: R-devel and R-release (2025-11-16)
+* R-hub (2025-11-16):
+  - linux: ubuntu-latest, R-devel
+  - macos: macos-13, R-devel
+  - windows: windows-latest, R-devel
 
 ## R CMD check results
 
 There were no ERRORs, WARNINGs, or NOTEs.
+
+### Local check
+- 1 cosmetic WARNING about 'qpdf' (only affects PDF compression, not functionality)
+- All 714 tests passing
+
+### Win-builder
+- Successfully validated on R-devel and R-release
+- All spelling exceptions documented in inst/WORDLIST
+- All URLs validated and accessible
+
+### R-hub
+- All platforms (linux, macos, windows) passed with R-devel
+- Total duration: 19m 8s across 3 platforms
 
 ## Downstream dependencies
 
@@ -101,13 +114,9 @@ Results have been extensively validated against Mplus, showing parameter estimat
 
 ---
 
-## Resubmission (if applicable)
+## Submission status
 
-This is [FIRST submission / RESUBMISSION after addressing reviewer comments].
-
-### Changes since last submission (if resubmission):
-
-[If this is a resubmission, list changes made in response to CRAN feedback]
+This is a **FIRST SUBMISSION** to CRAN.
 
 ---
 
