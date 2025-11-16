@@ -775,6 +775,7 @@ Based on NEWS.md and CONTRIBUTING.md:
 - [x] Advanced diagnostics (influence, separation, residuals)
 - [x] Data validation framework
 - [x] Interactive visualization
+- [x] FIML for missing data (Full Information Maximum Likelihood)
 - [ ] Random effects (partial implementation, needs expansion)
 - [ ] Time-varying covariates (partial implementation)
 
@@ -785,7 +786,6 @@ Based on NEWS.md and CONTRIBUTING.md:
 - [ ] Causal inference integration
 - [ ] Machine learning methods (ensemble approaches)
 - [ ] Multiple imputation for missing data
-- [ ] FIML estimation
 
 ### Infrastructure
 

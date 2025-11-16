@@ -277,9 +277,13 @@ gmm_fit <- gmm_survey(
 )
 
 # Step 2+3: R3STEP
+# Create person-level data (r3step requires one row per person)
+person_data <- mcs_simulated[!duplicated(mcs_simulated$id), ]
+
 r3_result <- r3step(
-  gmm_fit,
-  distal = "delinquency",
+  gmm_object = gmm_fit,
+  distal_vars = "delinquency",
+  data = person_data,
   method = "BCH"
 )
 

@@ -216,9 +216,12 @@ e_step_gmm <- function(y_wide, time_scores, params, weights, r_matrix,
         y_pred <- y_pred_k[obs_times]
         resid <- y_obs - y_pred
 
-        # Normal density
-        class_densities[i, k] <- prod(dnorm(resid, mean = 0,
-                                           sd = sqrt(params$residual_variance[k])))
+        # Normal density (using log-space for numerical stability)
+        # Instead of prod(dnorm()), use exp(sum(log(dnorm())))
+        log_lik <- sum(dnorm(resid, mean = 0,
+                            sd = sqrt(params$residual_variance[k]),
+                            log = TRUE))
+        class_densities[i, k] <- exp(log_lik)
       } else {
         class_densities[i, k] <- 1  # No data, uniform
       }
@@ -403,8 +406,11 @@ compute_weighted_loglik <- function(y_wide, time_scores, params, weights,
       y_pred <- y_pred_k[obs_times]
       resid <- y_obs - y_pred
 
-      # Normal density
-      lik_k <- prod(dnorm(resid, mean = 0, sd = sqrt(params$residual_variance[k])))
+      # Normal density (using log-space for numerical stability)
+      log_lik_k <- sum(dnorm(resid, mean = 0,
+                            sd = sqrt(params$residual_variance[k]),
+                            log = TRUE))
+      lik_k <- exp(log_lik_k)
       class_lik <- class_lik + params$class_proportions[k] * lik_k
     }
 
