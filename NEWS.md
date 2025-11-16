@@ -1,5 +1,14 @@
 # surveymixr 0.2.0 (Development Version)
 
+## Test Coverage Improvements (2025-11-16)
+
+* **Dramatically improved test coverage**: Removed 76 of 114 unnecessary `skip_on_cran()` calls from test suite
+* **Previous coverage**: 6.83% (almost all tests skipped during coverage runs)
+* **Expected coverage**: 60-70% (most tests now run on CRAN and in coverage analysis)
+* **Strategy**: Removed skips from lightweight tests (n=100-300, starts=10-50) that run in seconds
+* **Retained skips**: Kept 38 skips for genuinely expensive tests (BLRT bootstrap, high-start convergence tests, extreme edge cases)
+* All tests now provide meaningful validation while maintaining reasonable computation time
+
 ## Documentation Fixes (2025-11-15)
 
 * **Fixed r3step-analysis.Rmd vignette**: Corrected all r3step() function calls to use proper parameters (`distal_vars` instead of `distal`, added `data` parameter, added person-level data extraction). All 13 r3step() calls now use correct function signatures.
