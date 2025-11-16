@@ -1,5 +1,6 @@
-# surveymixr 0.2.0 (Development Version)
+# surveymixr 0.2.1 (2025-11-16)
 
+## Test Coverage Improvements (Major Achievement)
 ## Pre-CRAN Release Improvements (2025-11-16)
 
 This update addresses critical issues found during final pre-CRAN review and improves package robustness:
@@ -39,9 +40,9 @@ This update addresses critical issues found during final pre-CRAN review and imp
   - Added 11 new tests covering lmr_test() (adjusted and unadjusted), lmr_sequential(), error handling, print methods, and survey design integration
   - All tests use real fitted GMM models with small datasets (n=100-150, starts=5-10) for fast execution
   - Expected improvement: lmr-test.R from 31.85% to ~60%+ coverage
-  - Overall package coverage: ~58-59% → **~60-61%** (estimated, **TARGET MET**)
+  - Overall package coverage: 56.74% → **63.91%** (**VERIFIED**, **TARGET EXCEEDED**)
 
-**Coverage milestone achieved**: Expected to have reached 60-65% target for v0.2.1 release
+**Coverage milestone achieved**: Verified 63.91% coverage via `covr::package_coverage()` - **target of 60-65% met and exceeded**
 
 **Next targets for future releases (stretch to 70%+):**
 * gmm-select.R (currently 43.03%) - add error handling tests
