@@ -19,7 +19,14 @@
 
 ## R CMD check results
 
-There were no ERRORs, WARNINGs, or NOTEs.
+0 errors | 0 warnings | 1 note
+
+* This is a new release.
+
+* Possibly misspelled words in DESCRIPTION:
+  All flagged terms are valid technical terms, author names, or statistical
+  acronyms (Asparouhov, BLRT, ECLS, GMM, LMR, Mendell, Mplus, NLSY, Vermunt).
+  These have been added to inst/WORDLIST.
 
 ## Downstream dependencies
 
