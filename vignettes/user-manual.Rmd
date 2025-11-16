@@ -1381,7 +1381,7 @@ browseVignettes("surveymixr")
 
 ### Online Resources
 
-- **Website**: https://siyangni.github.io/surveymixr
+- **Website**: https://siyangni.github.io/surveymixr/
 - **GitHub**: https://github.com/siyangni/surveymixr
 - **Issues**: https://github.com/siyangni/surveymixr/issues
 
