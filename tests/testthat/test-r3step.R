@@ -2,7 +2,6 @@
 # Part of Week 2 testing expansion (ACTION-PLAN-PHASE1.md)
 
 test_that("r3step BCH method works with continuous distal outcome", {
-  skip_on_cran()
 
   set.seed(401)
   sim_data <- simulate_gmm_survey(
@@ -47,7 +46,6 @@ test_that("r3step BCH method works with continuous distal outcome", {
 })
 
 test_that("r3step ML method works", {
-  skip_on_cran()
   skip("ML method not yet implemented in r3step")
 
   set.seed(402)
@@ -83,7 +81,6 @@ test_that("r3step ML method works", {
 })
 
 test_that("r3step manual 3-step method works", {
-  skip_on_cran()
 
   set.seed(403)
   sim_data <- simulate_gmm_survey(
@@ -120,7 +117,6 @@ test_that("r3step manual 3-step method works", {
 })
 
 test_that("r3step handles survey design correctly", {
-  skip_on_cran()
   skip("r3step has subscript out of bounds bug - skipping until fixed")
 
   set.seed(404)
@@ -159,7 +155,6 @@ test_that("r3step handles survey design correctly", {
 })
 
 test_that("r3step omnibus test detects differences", {
-  skip_on_cran()
   skip("r3step has subscript out of bounds bug - skipping until fixed")
 
   set.seed(405)
@@ -196,7 +191,6 @@ test_that("r3step omnibus test detects differences", {
 })
 
 test_that("r3step pairwise comparisons work", {
-  skip_on_cran()
   skip("r3step has subscript out of bounds bug - skipping until fixed")
 
   set.seed(406)
@@ -234,7 +228,6 @@ test_that("r3step pairwise comparisons work", {
 })
 
 test_that("r3step calculates effect sizes", {
-  skip_on_cran()
   skip("r3step has subscript out of bounds bug - skipping until fixed")
 
   set.seed(407)
@@ -268,7 +261,6 @@ test_that("r3step calculates effect sizes", {
 })
 
 test_that("r3step can be plotted", {
-  skip_on_cran()
   skip("r3step has subscript out of bounds bug - skipping until fixed")
 
   set.seed(408)
@@ -303,7 +295,6 @@ test_that("r3step can be plotted", {
 })
 
 test_that("r3step handles missing data in distal outcome", {
-  skip_on_cran()
   skip("r3step has subscript out of bounds bug - skipping until fixed")
 
   set.seed(409)
@@ -343,7 +334,6 @@ test_that("r3step handles missing data in distal outcome", {
 })
 
 test_that("r3step with binary distal outcome works", {
-  skip_on_cran()
   skip("Binary distal outcomes require special handling - implement in v0.3.0")
 
   set.seed(410)
@@ -381,7 +371,6 @@ test_that("r3step with binary distal outcome works", {
 })
 
 test_that("r3step methods produce similar results", {
-  skip_on_cran()
   skip("r3step has subscript out of bounds bug - skipping until fixed")
 
   set.seed(411)

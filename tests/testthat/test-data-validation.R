@@ -16,7 +16,6 @@ valid_data <- data.frame(
   covariate2 = rnorm(500)
 )
 
-skip_on_cran()
 
 test_that("validate_survey_data accepts valid data", {
   result <- validate_survey_data(

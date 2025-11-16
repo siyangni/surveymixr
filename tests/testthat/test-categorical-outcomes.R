@@ -31,7 +31,6 @@ test_data_count <- data.frame(
   weight = runif(400, 0.5, 2)
 )
 
-skip_on_cran()
 
 test_that("Link functions return correct structure", {
   # Continuous

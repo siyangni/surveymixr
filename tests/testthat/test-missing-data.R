@@ -2,7 +2,6 @@
 # Part of Week 2 testing expansion (ACTION-PLAN-PHASE1.md)
 
 test_that("FIML handles MCAR data correctly", {
-  skip_on_cran()
 
   set.seed(501)
   sim_data <- simulate_gmm_survey(
@@ -34,7 +33,6 @@ test_that("FIML handles MCAR data correctly", {
 })
 
 test_that("FIML handles MAR data correctly", {
-  skip_on_cran()
 
   set.seed(502)
   sim_data <- simulate_gmm_survey(
@@ -66,7 +64,6 @@ test_that("FIML handles MAR data correctly", {
 })
 
 test_that("Different missing rates are handled", {
-  skip_on_cran()
 
   set.seed(503)
 
@@ -125,7 +122,6 @@ test_that("Different missing rates are handled", {
 })
 
 test_that("Missing data patterns are handled correctly", {
-  skip_on_cran()
 
   set.seed(505)
   sim_data <- simulate_gmm_survey(
@@ -161,7 +157,6 @@ test_that("Missing data patterns are handled correctly", {
 })
 
 test_that("Intermittent missing data is handled", {
-  skip_on_cran()
 
   set.seed(506)
   sim_data <- simulate_gmm_survey(
@@ -194,7 +189,6 @@ test_that("Intermittent missing data is handled", {
 })
 
 test_that("Complete cases vs FIML produces different results", {
-  skip_on_cran()
 
   set.seed(507)
   sim_data <- simulate_gmm_survey(
@@ -244,7 +238,6 @@ test_that("Complete cases vs FIML produces different results", {
 })
 
 test_that("All observations missing for some individuals", {
-  skip_on_cran()
 
   set.seed(508)
   sim_data <- simulate_gmm_survey(
@@ -275,7 +268,6 @@ test_that("All observations missing for some individuals", {
 })
 
 test_that("Missing in covariates is handled", {
-  skip_on_cran()
 
   set.seed(509)
   sim_data <- simulate_gmm_survey(
@@ -305,7 +297,6 @@ test_that("Missing in covariates is handled", {
 })
 
 test_that("Missing data diagnostic functions work", {
-  skip_on_cran()
 
   set.seed(510)
   sim_data <- simulate_gmm_survey(
@@ -333,7 +324,6 @@ test_that("Missing data diagnostic functions work", {
 })
 
 test_that("Monotone vs non-monotone missing patterns", {
-  skip_on_cran()
 
   set.seed(511)
 
@@ -391,7 +381,6 @@ test_that("Monotone vs non-monotone missing patterns", {
 })
 
 test_that("FIML log-likelihood is calculated correctly with missing data", {
-  skip_on_cran()
 
   set.seed(513)
   sim_data <- simulate_gmm_survey(
@@ -421,7 +410,6 @@ test_that("FIML log-likelihood is calculated correctly with missing data", {
 })
 
 test_that("Extreme missing rates are handled", {
-  skip_on_cran()
 
   set.seed(514)
 
@@ -454,7 +442,6 @@ test_that("Extreme missing rates are handled", {
 })
 
 test_that("Missing data with survey weights", {
-  skip_on_cran()
 
   set.seed(515)
   sim_data <- simulate_gmm_survey(

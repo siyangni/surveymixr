@@ -2,7 +2,6 @@
 # Part of Week 2 testing expansion (ACTION-PLAN-PHASE1.md)
 
 test_that("linear growth model works correctly", {
-  skip_on_cran()
 
   # Simulate simple linear growth data
   set.seed(123)
@@ -48,7 +47,6 @@ test_that("linear growth model works correctly", {
 })
 
 test_that("quadratic growth model works correctly", {
-  skip_on_cran()
   skip("Quadratic growth model parameter naming needs verification")
 
   set.seed(124)
@@ -89,7 +87,6 @@ test_that("quadratic growth model works correctly", {
 })
 
 test_that("free basis growth model works correctly", {
-  skip_on_cran()
 
   set.seed(125)
   sim_data <- simulate_gmm_survey(
@@ -119,7 +116,6 @@ test_that("free basis growth model works correctly", {
 })
 
 test_that("nonlinear growth model works correctly", {
-  skip_on_cran()
   skip("nonlinear growth model not yet implemented")
 
   set.seed(126)
@@ -149,7 +145,6 @@ test_that("nonlinear growth model works correctly", {
 })
 
 test_that("growth models with covariates work", {
-  skip_on_cran()
 
   set.seed(127)
   sim_data <- simulate_gmm_survey(
@@ -184,7 +179,6 @@ test_that("growth models with covariates work", {
 })
 
 test_that("model comparison across growth types works", {
-  skip_on_cran()
 
   set.seed(128)
   sim_data <- simulate_gmm_survey(

@@ -14,7 +14,6 @@ test_data <- data.frame(
   weight = runif(600, 0.8, 1.5)
 )
 
-skip_on_cran()
 
 # Note: These tests check structure and functionality
 # Full model fitting tests require more computation time
