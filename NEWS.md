@@ -10,6 +10,7 @@ This update addresses critical issues found during final pre-CRAN review and imp
 * **Fixed vignette build error**: Corrected mplus-validation.Rmd to use proper r3step() parameters (line 282)
 * **Improved numerical stability**: Replaced `prod(dnorm())` with log-space calculations in E-step and likelihood computation to prevent underflow with many time points (T ≥ 10)
 * **Added automatic survey validation**: gmm_survey() now automatically validates survey design (nested clusters, singleton strata, etc.) before estimation. Use `skip_validation=TRUE` to bypass if needed.
+* **Fixed S4 slot access bug**: Corrected validation code to use `@` operator for S4 objects instead of `$` (caused test failures)
 
 ### New Features
 

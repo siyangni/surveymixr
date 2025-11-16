@@ -207,20 +207,20 @@ gmm_survey <- function(data,
     )
 
     # Stop on errors
-    if (length(validation$errors) > 0) {
+    if (length(validation@errors) > 0) {
       stop("Survey design validation failed. Errors:\n  ",
-           paste(validation$errors, collapse = "\n  "),
+           paste(validation@errors, collapse = "\n  "),
            "\n\nRun validate_survey_data() for detailed diagnostics, ",
            "or set skip_validation=TRUE to bypass (not recommended).")
     }
 
     # Warn on warnings (show up to 3)
-    if (length(validation$warnings) > 0 && verbose) {
-      n_warn <- min(3, length(validation$warnings))
+    if (length(validation@warnings) > 0 && verbose) {
+      n_warn <- min(3, length(validation@warnings))
       warning("Survey design warnings:\n  ",
-              paste(validation$warnings[1:n_warn], collapse = "\n  "),
-              if (length(validation$warnings) > 3) {
-                paste0("\n  ... and ", length(validation$warnings) - 3, " more warnings")
+              paste(validation@warnings[1:n_warn], collapse = "\n  "),
+              if (length(validation@warnings) > 3) {
+                paste0("\n  ... and ", length(validation@warnings) - 3, " more warnings")
               } else {
                 ""
               },
