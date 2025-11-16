@@ -16,3 +16,5 @@ Meta
 *.tar.gz
 *.tgz
 archives/build-artifacts/
+/doc/
+/Meta/

@@ -27,6 +27,7 @@ gmm_survey(
   cores = 1,
   verbose = TRUE,
   keep_data = FALSE,
+  skip_validation = FALSE,
   ...
 )
 }
@@ -83,6 +84,12 @@ membership prediction}
 
 \item{keep_data}{Logical, store data in output object? (default: FALSE)}
 
+\item{skip_validation}{Logical, skip automatic survey design validation?
+(default: FALSE). When FALSE (recommended), the function automatically
+validates survey design features (nested clusters, singleton strata, etc.)
+before estimation. Set to TRUE only if you've already validated your data
+with \code{\link{validate_survey_data}} or are certain your design is correct.}
+
 \item{...}{Additional arguments (reserved for future use)}
 }
 \value{
@@ -118,6 +125,15 @@ The function automatically converts data from long to wide format internally
 for computational efficiency. Survey weights are normalized to sum to the
 sample size.
 
+\strong{Reproducibility and Random Seeds:}
+The EM algorithm uses multiple random starts (controlled by \code{starts}
+parameter) to avoid local maxima. Each random start uses a different random
+seed for better exploration of the parameter space. To ensure reproducibility,
+use \code{set.seed()} before calling \code{gmm_survey()}. The function will
+use the R random number generator state to initialize each random start
+deterministically. Note that results may vary slightly across different
+platforms or R versions due to numerical precision differences.
+
 For model selection across different numbers of classes, see
 \code{\link{gmm_select}}. For analyzing auxiliary variables with
 classification uncertainty correction, see \code{\link{r3step}}.
@@ -126,6 +142,9 @@ classification uncertainty correction, see \code{\link{r3step}}.
 \dontrun{
 # Load simulated data
 data(mcs_simulated)
+
+# Set seed for reproducibility
+set.seed(123)
 
 # Fit 3-class model with survey design
 fit <- gmm_survey(
