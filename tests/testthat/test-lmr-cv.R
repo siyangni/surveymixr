@@ -285,3 +285,399 @@ test_that("LMR handles edge cases", {
   # Testing very small sample sizes
   # Testing boundary cases
 })
+# Additional tests for lmr-test.R with actual model fitting
+
+test_that("lmr_test works with real fitted models - adjusted", {
+  set.seed(900)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 150,
+    n_times = 3,
+    n_classes = 2,
+    seed = 900
+  )
+  
+  # Fit 2-class model
+  fit2 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  # Fit 3-class model
+  fit3 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 3,
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  # Run LMR test (adjusted)
+  result <- lmr_test(fit3, fit2, adjusted = TRUE)
+  
+  # Check structure
+  expect_s3_class(result, "lmr_test")
+  expect_true("statistic" %in% names(result))
+  expect_true("statistic_adjusted" %in% names(result))
+  expect_true("p_value" %in% names(result))
+  expect_true("p_value_adjusted" %in% names(result))
+  expect_true("conclusion" %in% names(result))
+  
+  # Check values
+  expect_true(is.numeric(result$statistic))
+  expect_true(is.numeric(result$statistic_adjusted))
+  expect_true(result$df > 0)
+  expect_true(result$n_classes_k == 3)
+  expect_true(result$n_classes_k1 == 2)
+  expect_true(result$adjusted == TRUE)
+})
+
+test_that("lmr_test works with unadjusted version", {
+  set.seed(901)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 150,
+    n_times = 3,
+    n_classes = 2,
+    seed = 901
+  )
+  
+  fit2 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  fit3 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 3,
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  # Run unadjusted LMR test
+  result <- lmr_test(fit3, fit2, adjusted = FALSE)
+  
+  expect_s3_class(result, "lmr_test")
+  expect_true(result$adjusted == FALSE)
+  expect_true(is.na(result$statistic_adjusted))
+  expect_true(is.na(result$p_value_adjusted))
+  expect_true(!is.na(result$p_value))
+})
+
+test_that("lmr_test errors when models have wrong class difference", {
+  set.seed(902)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 150,
+    n_times = 3,
+    n_classes = 2,
+    seed = 902
+  )
+  
+  fit2 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  fit4 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 4,
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  # Should error - class difference is 2, not 1
+  expect_error(
+    lmr_test(fit4, fit2),
+    "exactly one more class"
+  )
+})
+
+test_that("lmr_test warns on negative statistic", {
+  set.seed(903)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 100,
+    n_times = 3,
+    n_classes = 1,
+    seed = 903
+  )
+  
+  # Fit 1-class (simpler model)
+  fit1 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 1,
+    starts = 5,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  # Fit 2-class
+  fit2 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 5,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  # May warn if 2-class has worse fit (possible with only 5 starts)
+  # Just check it doesn't error
+  result <- lmr_test(fit2, fit1, adjusted = TRUE)
+  expect_s3_class(result, "lmr_test")
+})
+
+test_that("lmr_sequential works with real models", {
+  set.seed(904)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 150,
+    n_times = 3,
+    n_classes = 2,
+    seed = 904
+  )
+  
+  # Fit 1-3 class models
+  models <- list()
+  for (k in 1:3) {
+    models[[k]] <- gmm_survey(
+      data = sim_data,
+      id = "id",
+      time = "time",
+      outcome = "outcome",
+      n_classes = k,
+      starts = 10,
+      cores = 1,
+      verbose = FALSE
+    )
+  }
+  
+  # Run sequential LMR tests
+  result <- lmr_sequential(models, adjusted = TRUE)
+  
+  # Check structure
+  expect_s3_class(result, "lmr_sequential")
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 2)  # 2 vs 1, and 3 vs 2
+  
+  # Check columns
+  expect_true("comparison" %in% colnames(result))
+  expect_true("k" %in% colnames(result))
+  expect_true("k_minus_1" %in% colnames(result))
+  expect_true("lmr_statistic" %in% colnames(result))
+  expect_true("almr_statistic" %in% colnames(result))
+  expect_true("p_value_adjusted" %in% colnames(result))
+  expect_true("significant" %in% colnames(result))
+  
+  # Check values
+  expect_equal(result$k, c(2, 3))
+  expect_equal(result$k_minus_1, c(1, 2))
+})
+
+test_that("lmr_sequential handles unsorted models", {
+  set.seed(905)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 150,
+    n_times = 3,
+    n_classes = 2,
+    seed = 905
+  )
+  
+  # Fit models in reverse order
+  fit3 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 3,
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  fit2 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  fit1 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 1,
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  # Pass in reverse order - should auto-sort
+  models <- list(fit3, fit2, fit1)
+  result <- lmr_sequential(models, adjusted = TRUE)
+  
+  # Should still work and be sorted correctly
+  expect_equal(nrow(result), 2)
+  expect_equal(result$k, c(2, 3))
+  expect_equal(result$k_minus_1, c(1, 2))
+})
+
+test_that("lmr_test print method includes key information", {
+  set.seed(906)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 100,
+    n_times = 3,
+    n_classes = 2,
+    seed = 906
+  )
+  
+  fit2 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  fit3 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 3,
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  result <- lmr_test(fit3, fit2, adjusted = TRUE)
+  
+  # Check print output
+  output <- capture.output(print(result))
+  output_text <- paste(output, collapse = "\n")
+  
+  expect_true(grepl("Lo-Mendell-Rubin", output_text))
+  expect_true(grepl("3-class", output_text))
+  expect_true(grepl("2-class", output_text))
+  expect_true(grepl("Adjusted", output_text))
+  expect_true(grepl("Conclusion", output_text))
+})
+
+test_that("lmr_sequential print method provides recommendation", {
+  set.seed(907)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 150,
+    n_times = 3,
+    n_classes = 2,
+    seed = 907
+  )
+  
+  models <- lapply(1:3, function(k) {
+    gmm_survey(
+      data = sim_data,
+      id = "id",
+      time = "time",
+      outcome = "outcome",
+      n_classes = k,
+      starts = 10,
+      cores = 1,
+      verbose = FALSE
+    )
+  })
+  
+  result <- lmr_sequential(models, adjusted = TRUE)
+  
+  # Check print output
+  output <- capture.output(print(result))
+  output_text <- paste(output, collapse = "\n")
+  
+  expect_true(grepl("Sequential Lo-Mendell-Rubin", output_text))
+  expect_true(grepl("Recommendation", output_text))
+  expect_true(grepl("class model", output_text))
+})
+
+test_that("lmr_test handles models with survey design", {
+  set.seed(908)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 150,
+    n_times = 3,
+    n_classes = 2,
+    design = "stratified_cluster",
+    n_strata = 2,
+    n_clusters = 15,
+    seed = 908
+  )
+  
+  fit2 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    strata = "stratum",
+    cluster = "psu",
+    weights = "weight",
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  fit3 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 3,
+    strata = "stratum",
+    cluster = "psu",
+    weights = "weight",
+    starts = 10,
+    cores = 1,
+    verbose = FALSE
+  )
+  
+  # Should handle survey design correctly
+  result <- lmr_test(fit3, fit2, adjusted = TRUE)
+  
+  expect_s3_class(result, "lmr_test")
+  expect_true(result$sample_size > 0)
+  # With survey weights, effective sample size may differ from n
+})

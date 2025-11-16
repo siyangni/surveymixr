@@ -455,3 +455,222 @@ test_that("AIC and BIC methods work correctly", {
   # BIC > AIC typically (stronger penalty)
   expect_true(bic_val > aic_val)
 })
+# New tests to add to test-utilities.R to improve coverage
+
+test_that("extract_fit_indices works with SurveyMixr object", {
+  set.seed(800)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 100,
+    n_times = 3,
+    n_classes = 2,
+    seed = 800
+  )
+  
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 10,
+    cores = 1
+  )
+  
+  indices <- extract_fit_indices(fit)
+  
+  expect_s3_class(indices, "data.frame")
+  expect_true("n_classes" %in% colnames(indices))
+  expect_true("loglik" %in% colnames(indices))
+  expect_true("aic" %in% colnames(indices))
+  expect_true("bic" %in% colnames(indices))
+  expect_true("entropy" %in% colnames(indices))
+  expect_equal(indices$n_classes, 2)
+})
+
+test_that("extract_fit_indices errors on invalid object", {
+  expect_error(
+    extract_fit_indices("not a valid object"),
+    "must be SurveyMixr or SurveyMixrSelect"
+  )
+})
+
+test_that("surveymixr_to_mplus generates output", {
+  set.seed(801)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 100,
+    n_times = 3,
+    n_classes = 2,
+    seed = 801
+  )
+  
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 10,
+    cores = 1
+  )
+  
+  # Capture output
+  output <- capture.output(
+    result <- surveymixr_to_mplus(fit)
+  )
+  
+  # Should return character string invisibly
+  expect_type(result, "character")
+  
+  # Should contain key Mplus sections
+  expect_true(grepl("MODEL FIT INFORMATION", result))
+  expect_true(grepl("Information Criteria", result))
+  expect_true(grepl("FINAL CLASS COUNTS", result))
+  expect_true(grepl("Entropy", result))
+})
+
+test_that("surveymixr_to_mplus writes to file", {
+  set.seed(802)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 100,
+    n_times = 3,
+    n_classes = 2,
+    seed = 802
+  )
+  
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 10,
+    cores = 1
+  )
+  
+  temp_file <- tempfile(fileext = ".txt")
+  surveymixr_to_mplus(fit, file = temp_file)
+  
+  expect_true(file.exists(temp_file))
+  
+  content <- readLines(temp_file)
+  expect_true(length(content) > 0)
+  expect_true(any(grepl("MODEL FIT", content)))
+  
+  unlink(temp_file)
+})
+
+test_that("surveymixr_to_mplus errors on invalid object", {
+  expect_error(
+    surveymixr_to_mplus("not a valid object"),
+    "must be a SurveyMixr object"
+  )
+})
+
+test_that("mplus_to_surveymixr parses basic Mplus syntax", {
+  temp_file <- tempfile(fileext = ".inp")
+  
+  mplus_code <- "
+VARIABLE:
+  NAMES = id time y stratum psu weight;
+  USEVAR = y;
+  CLASSES = c(3);
+  CLUSTER = psu;
+  STRATIFICATION = stratum;
+  WEIGHT = weight;
+
+ANALYSIS:
+  TYPE = MIXTURE;
+  STARTS = 500 100;
+
+MODEL:
+  %OVERALL%
+  i s | y@0 y@1 y@2 y@3;
+"
+  
+  writeLines(mplus_code, temp_file)
+  
+  r_code <- mplus_to_surveymixr(temp_file)
+  
+  expect_type(r_code, "character")
+  expect_true(grepl("gmm_survey", r_code))
+  expect_true(grepl("n_classes = 3", r_code))
+  expect_true(grepl('cluster = "psu"', r_code))
+  expect_true(grepl('strata = "stratum"', r_code))
+  expect_true(grepl('weights = "weight"', r_code))
+  expect_true(grepl("starts = 500", r_code))
+  
+  unlink(temp_file)
+})
+
+test_that("mplus_to_surveymixr errors on missing file", {
+  expect_error(
+    mplus_to_surveymixr("nonexistent_file.inp"),
+    "File not found"
+  )
+})
+
+test_that("compare_with_mplus returns message", {
+  set.seed(803)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 100,
+    n_times = 3,
+    n_classes = 2,
+    seed = 803
+  )
+  
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 10,
+    cores = 1
+  )
+  
+  expect_message(
+    result <- compare_with_mplus(fit, "dummy.out"),
+    "manual parsing"
+  )
+  
+  expect_null(result)
+})
+
+test_that("wide_to_long handles missing outcome_vars", {
+  wide_data <- data.frame(
+    id = 1:10,
+    y1 = rnorm(10),
+    y2 = rnorm(10)
+  )
+  
+  expect_error(
+    wide_to_long(wide_data, "id", c("y1", "y2", "y3")),
+    "Not all outcome_vars found"
+  )
+})
+
+test_that("wide_to_long handles mismatched time_values length", {
+  wide_data <- data.frame(
+    id = 1:10,
+    y1 = rnorm(10),
+    y2 = rnorm(10)
+  )
+  
+  expect_error(
+    wide_to_long(wide_data, "id", c("y1", "y2"), time_values = c(0, 1, 2)),
+    "time_values length must match"
+  )
+})
+
+test_that("wide_to_long uses default time_values", {
+  wide_data <- data.frame(
+    id = 1:10,
+    y1 = rnorm(10),
+    y2 = rnorm(10),
+    y3 = rnorm(10)
+  )
+  
+  long_data <- wide_to_long(wide_data, "id", c("y1", "y2", "y3"))
+  
+  expect_equal(unique(long_data$time), c(0, 1, 2))
+})
