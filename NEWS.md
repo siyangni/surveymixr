@@ -1,6 +1,6 @@
-# surveymixr 0.2.0 (Development Version)
+# surveymixr 0.2.1 (2025-11-16)
 
-## Test Coverage Improvements - v0.2.1 Target (2025-11-16)
+## Test Coverage Improvements (Major Achievement)
 
 **Progress toward 60-65% coverage target:**
 

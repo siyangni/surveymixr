@@ -1,8 +1,8 @@
 Package: surveymixr
 Type: Package
 Title: Growth Mixture Models with Complex Survey Design
-Version: 0.2.0
-Date: 2025-11-08
+Version: 0.2.1
+Date: 2025-11-16
 Authors@R: c(
     person("Siyang", "Ni", email = "johnni.nj@gmail.com",
            role = c("aut", "cre"))
