@@ -1,0 +1,154 @@
+SURVEYMIXR TEST SUITE QUICK REFERENCE
+======================================
+
+ABSOLUTE FILE PATHS TO KEY TEST FILES:
+/home/user/surveymixr/tests/testthat/test-basic-estimation.R
+/home/user/surveymixr/tests/testthat/test-categorical-outcomes.R
+/home/user/surveymixr/tests/testthat/test-comprehensive.R
+/home/user/surveymixr/tests/testthat/test-convergence.R
+/home/user/surveymixr/tests/testthat/test-data-validation.R
+/home/user/surveymixr/tests/testthat/test-diagnostics.R
+/home/user/surveymixr/tests/testthat/test-edge-cases.R
+/home/user/surveymixr/tests/testthat/test-growth-models.R
+/home/user/surveymixr/tests/testthat/test-lmr-cv.R
+/home/user/surveymixr/tests/testthat/test-missing-data.R
+/home/user/surveymixr/tests/testthat/test-model-selection.R
+/home/user/surveymixr/tests/testthat/test-r3step.R
+/home/user/surveymixr/tests/testthat/test-simulate.R
+/home/user/surveymixr/tests/testthat/test-survey-designs.R
+/home/user/surveymixr/tests/testthat/test-utilities.R
+
+SOURCE FILES NEEDING TESTS:
+/home/user/surveymixr/R/random-effects.R (UNTESTED - 0 tests)
+/home/user/surveymixr/R/time-varying-covariates.R (UNTESTED - 0 tests)
+/home/user/surveymixr/R/diagnostics-advanced.R (UNTESTED - 0 tests)
+/home/user/surveymixr/R/plotting-interactive.R (UNTESTED - 0 tests)
+
+TEST FILES WITH ISSUES:
+/home/user/surveymixr/tests/testthat/test-convergence.R (100% skip_on_cran!)
+/home/user/surveymixr/tests/testthat/test-model-selection.R (100% skip_on_cran!)
+/home/user/surveymixr/tests/testthat/test-edge-cases.R (83% skip_on_cran)
+/home/user/surveymixr/tests/testthat/test-lmr-cv.R (many skip() statements)
+
+---
+
+CRITICAL UNTESTED FUNCTIONS (by priority):
+
+URGENT - Advanced Features:
+1. gmm_survey_re() [random-effects.R]
+2. gmm_survey_tvc() [time-varying-covariates.R]
+3. get_random_effects() [random-effects.R]
+4. calculate_icc() [random-effects.R]
+5. variance_components() [random-effects.R]
+6. extract_tvc_effects() [time-varying-covariates.R]
+7. test_tvc_effects() [time-varying-covariates.R]
+
+HIGH - Advanced Diagnostics:
+1. diagnose_influence() [diagnostics-advanced.R]
+2. diagnose_separation() [diagnostics-advanced.R]
+3. residual_diagnostics() [diagnostics-advanced.R]
+
+MEDIUM - Plotting:
+1. plot_interactive() [plotting-interactive.R]
+2. plot_model_selection_interactive() [plotting-interactive.R]
+3. plot_posterior_dist() [plotting-interactive.R]
+4. plot_entropy_distribution() [plotting.R]
+5. plot_convergence() [plotting.R]
+6. plot_random_effects() [plotting.R]
+7. plot_tvc_effects() [plotting.R]
+
+---
+
+KNOWN BUGS DOCUMENTED IN TESTS:
+(See test-comprehensive.R lines 5-12)
+
+1. gmm_select: BLRT computation bug when run_blrt=FALSE
+   Location: test-comprehensive.R
+
+2. class_proportions: Differing number of rows error
+   Location: test-comprehensive.R
+
+3. r3step: Subscript out of bounds error
+   Location: test-comprehensive.R
+
+4. residuals method: Non-conformable arrays bug
+   Location: test-comprehensive.R
+
+5. plot_class_comparison/compare_classes: Covariates not stored in @data slot
+   Location: test-comprehensive.R (lines 513, 357, 392)
+
+---
+
+COVERAGE STATISTICS:
+- Total tests: 196 test_that blocks
+- Total test files: 15
+- Exported functions: 49
+- Functions with 0 tests: 15+
+- Skip_on_cran directives: 40
+- Estimated coverage: 72%
+- Target coverage: 90%
+
+---
+
+RECOMMENDATIONS SUMMARY:
+
+IMMEDIATE (Blocking CRAN):
+- Fix test-convergence.R (100% skip_on_cran)
+- Fix test-model-selection.R (100% skip_on_cran)
+- Create test-random-effects.R (8-12 tests)
+- Create test-time-varying-covariates.R (8-12 tests)
+- Fix known bugs in test-comprehensive.R
+
+SHORT TERM (Next sprint):
+- Create test-diagnostics-advanced.R (6-8 tests)
+- Add interactive plotting tests (4-6 tests)
+- Refactor test-lmr-cv.R (implement vs document)
+
+MEDIUM TERM:
+- Add edge case tests (10-15 tests)
+- Add integration tests (15-20 tests)
+- Reorganize large test files
+
+---
+
+SPECIFIC TEST FILES TO EXAMINE:
+
+test-convergence.R:
+Line 4: "test_that("Multiple random starts find global maximum", {" - skip_on_cran() at line 5
+Issue: ALL 14 tests skip on CRAN - convergence never validated on CRAN
+
+test-comprehensive.R:
+Lines 5-12: Documented bugs that need fixing
+Line 357: plot_class_comparison test skipped - covariate storage bug
+Line 513: skip("plot_class_comparison requires covariates in @data")
+
+test-model-selection.R:
+Line 5: skip_on_cran() on ALL tests
+Line 76: Skip with note "BLRT is computationally intensive"
+
+test-lmr-cv.R:
+Many tests (lines 22, 43, 56, 70) marked as skip()
+Issue: Placeholder tests rather than actual implementation
+
+---
+
+TEST QUALITY ASSESSMENT:
+
+EXCELLENT (maintain):
+/home/user/surveymixr/tests/testthat/test-data-validation.R (19 tests, comprehensive)
+
+GOOD (expand):
+/home/user/surveymixr/tests/testthat/test-utilities.R (25 tests, but very large)
+/home/user/surveymixr/tests/testthat/test-comprehensive.R (25 tests, but some skipped)
+
+NEEDS IMPROVEMENT (refactor):
+/home/user/surveymixr/tests/testthat/test-convergence.R (14 tests, 100% skip_on_cran)
+/home/user/surveymixr/tests/testthat/test-model-selection.R (10 tests, 100% skip_on_cran)
+/home/user/surveymixr/tests/testthat/test-lmr-cv.R (23 tests, many skipped)
+/home/user/surveymixr/tests/testthat/test-edge-cases.R (18 tests, 83% skip_on_cran)
+
+MINIMAL (expand):
+/home/user/surveymixr/tests/testthat/test-basic-estimation.R (4 tests - only happy path)
+/home/user/surveymixr/tests/testthat/test-diagnostics.R (4 tests - only basic)
+/home/user/surveymixr/tests/testthat/test-simulate.R (4 tests - only structure)
+
