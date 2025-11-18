@@ -1,6 +1,181 @@
 # Tests for model selection procedures
 # Part of Week 2 testing expansion (ACTION-PLAN-PHASE1.md)
 
+# =============================================================================
+# Lightweight tests (run on CRAN)
+# =============================================================================
+
+test_that("gmm_select basic functionality with minimal models", {
+  # Lightweight test: compare just 1-2 classes
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 60,
+    n_times = 3,
+    n_classes = 2,
+    seed = 801
+  )
+
+  result <- gmm_select(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    classes = 1:2,  # Just 2 models
+    starts = 5,      # Minimal starts
+    criteria = c("BIC", "entropy"),  # No BLRT
+    verbose = FALSE
+  )
+
+  # Check basic structure
+  expect_s4_class(result, "SurveyMixrSelect")
+  expect_equal(nrow(result@comparison_table), 2)
+  expect_equal(length(result@fitted_models), 2)
+
+  # Check fit indices are present
+  expect_true("bic" %in% colnames(result@comparison_table))
+  expect_true("entropy" %in% colnames(result@comparison_table))
+})
+
+test_that("Information criteria are calculated for fitted models", {
+  # Test that AIC, BIC are computed correctly
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 50,
+    n_times = 3,
+    n_classes = 2,
+    seed = 802
+  )
+
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 5,
+    verbose = FALSE
+  )
+
+  # Check fit indices exist and are finite
+  expect_true(is.finite(AIC(fit)))
+  expect_true(is.finite(BIC(fit)))
+  expect_true(is.finite(fit@fit_indices$abic))
+  expect_true(is.finite(fit@fit_indices$entropy))
+
+  # BIC should be larger than AIC (stronger penalty)
+  expect_true(BIC(fit) > AIC(fit))
+})
+
+test_that("Entropy is in valid range [0, 1]", {
+  # Test entropy calculation
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 50,
+    n_times = 3,
+    n_classes = 2,
+    seed = 803
+  )
+
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 5,
+    verbose = FALSE
+  )
+
+  # Entropy must be between 0 and 1
+  expect_true(fit@fit_indices$entropy >= 0)
+  expect_true(fit@fit_indices$entropy <= 1)
+
+  # entropy() function should match slot
+  ent <- entropy(fit)
+  expect_equal(ent, fit@fit_indices$entropy)
+})
+
+test_that("Single class model fits correctly", {
+  # Test 1-class model as baseline
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 50,
+    n_times = 3,
+    n_classes = 1,
+    seed = 804
+  )
+
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 1,
+    starts = 3,  # Minimal for 1-class
+    verbose = FALSE
+  )
+
+  expect_s4_class(fit, "SurveyMixr")
+  expect_equal(fit@model_info$n_classes, 1)
+
+  # Entropy should be 1 or NA for single class (no uncertainty)
+  expect_true(is.na(fit@fit_indices$entropy) || fit@fit_indices$entropy == 1)
+})
+
+test_that("plot_model_selection works without error", {
+  # Test plotting functionality
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 50,
+    n_times = 3,
+    n_classes = 2,
+    seed = 805
+  )
+
+  result <- gmm_select(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    classes = 1:2,
+    starts = 5,
+    criteria = c("BIC"),
+    verbose = FALSE
+  )
+
+  # Should not error when plotting
+  expect_error(plot_model_selection(result), NA)
+  expect_error(plot_model_selection(result, criterion = "bic"), NA)
+})
+
+test_that("SurveyMixrSelect class has proper structure", {
+  # Test S4 class definition
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 50,
+    n_times = 3,
+    n_classes = 2,
+    seed = 806
+  )
+
+  result <- gmm_select(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    classes = 1:2,
+    starts = 5,
+    criteria = c("BIC"),
+    verbose = FALSE
+  )
+
+  # Check slots exist
+  expect_true(all(c("comparison_table", "fitted_models", "criteria") %in%
+                    slotNames(result)))
+
+  # Check show/print methods work
+  expect_error(show(result), NA)
+  expect_error(print(result), NA)
+})
+
+# =============================================================================
+# Comprehensive tests (skip on CRAN for speed)
+# =============================================================================
+
 test_that("gmm_select compares models across different class numbers", {
   skip_on_cran()
 
