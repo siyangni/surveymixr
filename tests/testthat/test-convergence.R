@@ -82,7 +82,7 @@ test_that("Convergence info is properly stored in object", {
   expect_true("converged" %in% names(fit@convergence_info))
   expect_true("iterations" %in% names(fit@convergence_info))
   expect_type(fit@convergence_info$converged, "logical")
-  expect_type(fit@convergence_info$iterations, "double")
+  expect_type(fit@convergence_info$iterations, "integer")
 })
 
 test_that("Multiple starts with small n converge to similar solutions", {
