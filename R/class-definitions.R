@@ -106,7 +106,33 @@ setClass("SurveyMixrSelect",
     blrt_results = list(),
     recommended_classes = integer(),
     criteria = character()
-  )
+  ),
+  validity = function(object) {
+    errors <- character()
+
+    # Validate recommended_classes is within range of fitted_models
+    if (length(object@recommended_classes) > 0 && length(object@fitted_models) > 0) {
+      max_classes <- length(object@fitted_models)
+      if (any(object@recommended_classes < 1 | object@recommended_classes > max_classes)) {
+        errors <- c(errors,
+          sprintf("recommended_classes must be between 1 and %d", max_classes))
+      }
+    }
+
+    # Validate fitted_models list structure
+    if (length(object@fitted_models) > 0) {
+      if (!all(sapply(object@fitted_models, function(x) inherits(x, "SurveyMixr")))) {
+        errors <- c(errors, "All elements of fitted_models must be SurveyMixr objects")
+      }
+    }
+
+    # Validate criteria is non-empty if comparison_table has data
+    if (nrow(object@comparison_table) > 0 && length(object@criteria) == 0) {
+      errors <- c(errors, "criteria must be specified when comparison_table is populated")
+    }
+
+    if (length(errors) == 0) TRUE else errors
+  }
 )
 
 
@@ -145,7 +171,38 @@ setClass("R3StepResults",
     standard_errors = matrix(),
     test_results = data.frame(),
     effect_sizes = matrix()
-  )
+  ),
+  validity = function(object) {
+    errors <- character()
+
+    # Validate method is one of the allowed values
+    if (length(object@method) > 0) {
+      allowed_methods <- c("BCH", "ML", "manual")
+      if (!object@method %in% allowed_methods) {
+        errors <- c(errors,
+          sprintf("method must be one of: %s", paste(allowed_methods, collapse = ", ")))
+      }
+    }
+
+    # Validate consistency between class_means and standard_errors dimensions
+    if (length(object@class_means) > 0 && length(object@standard_errors) > 0) {
+      if (!all(dim(object@class_means) == dim(object@standard_errors))) {
+        errors <- c(errors,
+          "class_means and standard_errors must have same dimensions")
+      }
+    }
+
+    # Validate distal_vars matches class_means columns
+    if (length(object@distal_vars) > 0 && ncol(object@class_means) > 0) {
+      if (length(object@distal_vars) != ncol(object@class_means)) {
+        errors <- c(errors,
+          sprintf("Number of distal_vars (%d) must match class_means columns (%d)",
+                  length(object@distal_vars), ncol(object@class_means)))
+      }
+    }
+
+    if (length(errors) == 0) TRUE else errors
+  }
 )
 
 
@@ -175,5 +232,38 @@ setClass("ConvergenceDiagnostics",
     convergence_plot = "ANY",  # ggplot object
     warnings = "character",
     recommendations = "character"
-  )
+  ),
+  prototype = list(
+    loglik_table = data.frame(),
+    best_loglik = -Inf,
+    n_replications = 0L,
+    local_maxima = data.frame(),
+    convergence_plot = NULL,
+    warnings = character(0),
+    recommendations = character(0)
+  ),
+  validity = function(object) {
+    errors <- character()
+
+    # Validate n_replications
+    if (length(object@n_replications) > 0 && object@n_replications < 0) {
+      errors <- c(errors, "n_replications must be non-negative")
+    }
+
+    # Validate best_loglik
+    if (length(object@best_loglik) > 0 && is.finite(object@best_loglik) && object@best_loglik > 0) {
+      errors <- c(errors, "best_loglik should be negative or -Inf")
+    }
+
+    # Validate consistency between components
+    if (nrow(object@loglik_table) > 0 && object@n_replications > 0) {
+      if (object@n_replications != nrow(object@loglik_table)) {
+        errors <- c(errors,
+          sprintf("n_replications (%d) does not match loglik_table rows (%d)",
+                  object@n_replications, nrow(object@loglik_table)))
+      }
+    }
+
+    if (length(errors) == 0) TRUE else errors
+  }
 )
