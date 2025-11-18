@@ -428,6 +428,48 @@ setMethod("summary", "R3StepResults", function(object, ...) {
 
 
 # =============================================================================
+# Show Method for ConvergenceDiagnostics
+# =============================================================================
+
+#' @rdname surveymixr-methods
+#' @export
+setMethod("show", "ConvergenceDiagnostics", function(object) {
+  cat("Convergence Diagnostics\n")
+  cat("=======================\n\n")
+
+  cat(sprintf("Number of random starts: %d\n", object@n_replications))
+  cat(sprintf("Best log-likelihood: %.4f\n", object@best_loglik))
+
+  if (nrow(object@local_maxima) > 0) {
+    cat(sprintf("\nLocal maxima detected: %d\n", nrow(object@local_maxima)))
+    cat("Top 5 solutions:\n")
+    print(head(object@local_maxima, 5))
+  }
+
+  if (length(object@warnings) > 0) {
+    cat("\nWarnings:\n")
+    for (w in object@warnings) {
+      cat(sprintf("  - %s\n", w))
+    }
+  }
+
+  if (length(object@recommendations) > 0) {
+    cat("\nRecommendations:\n")
+    for (r in object@recommendations) {
+      cat(sprintf("  - %s\n", r))
+    }
+  }
+})
+
+
+#' @rdname surveymixr-methods
+#' @export
+setMethod("print", "ConvergenceDiagnostics", function(x, ...) {
+  show(x)
+})
+
+
+# =============================================================================
 # Plot Method for SurveyMixr
 # =============================================================================
 

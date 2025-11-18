@@ -1,6 +1,157 @@
 # Tests for convergence and random starts
 # Part of Week 2 testing expansion (ACTION-PLAN-PHASE1.md)
 
+# =============================================================================
+# Lightweight tests (run on CRAN)
+# =============================================================================
+
+test_that("Basic convergence works with minimal data", {
+  # Lightweight test: small n, few starts, simple model
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 50,
+    n_times = 3,
+    n_classes = 2,
+    seed = 701
+  )
+
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 5,  # Minimal starts
+    verbose = FALSE
+  )
+
+  expect_s4_class(fit, "SurveyMixr")
+  expect_true(fit@convergence_info$converged)
+  expect_true(is.finite(logLik(fit)))
+  expect_true(fit@convergence_info$iterations > 0)
+})
+
+test_that("diagnose_convergence returns valid ConvergenceDiagnostics object", {
+  # Lightweight test for convergence diagnostics
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 60,
+    n_times = 3,
+    n_classes = 2,
+    seed = 702
+  )
+
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 5,
+    verbose = FALSE
+  )
+
+  diag <- diagnose_convergence(fit)
+
+  # Check class and basic structure
+  expect_s4_class(diag, "ConvergenceDiagnostics")
+  expect_true(is.finite(diag@best_loglik))
+  expect_true(diag@best_loglik < 0)
+  expect_true(diag@n_replications >= 1)
+})
+
+test_that("Convergence info is properly stored in object", {
+  # Test that convergence information is captured
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 50,
+    n_times = 3,
+    n_classes = 2,
+    seed = 703
+  )
+
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 5,
+    verbose = FALSE
+  )
+
+  # Check convergence_info slot
+  expect_true(!is.null(fit@convergence_info))
+  expect_true("converged" %in% names(fit@convergence_info))
+  expect_true("iterations" %in% names(fit@convergence_info))
+  expect_type(fit@convergence_info$converged, "logical")
+  expect_type(fit@convergence_info$iterations, "double")
+})
+
+test_that("Multiple starts with small n converge to similar solutions", {
+  # Test that even with few starts, convergence is stable
+  set.seed(704)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 50,
+    n_times = 3,
+    n_classes = 2,
+    seed = 704
+  )
+
+  # Two fits with same data but different random initializations
+  fit1 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 5,
+    seed = 100,
+    verbose = FALSE
+  )
+
+  fit2 <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 5,
+    seed = 200,
+    verbose = FALSE
+  )
+
+  # Should find similar solutions (within reasonable tolerance)
+  expect_equal(logLik(fit1), logLik(fit2), tolerance = 1)
+})
+
+test_that("ConvergenceDiagnostics show method works", {
+  # Test the new show method for ConvergenceDiagnostics
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 50,
+    n_times = 3,
+    n_classes = 2,
+    seed = 705
+  )
+
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 5,
+    verbose = FALSE
+  )
+
+  diag <- diagnose_convergence(fit)
+
+  # Should not error when printing
+  expect_error(show(diag), NA)
+  expect_error(print(diag), NA)
+})
+
+# =============================================================================
+# Comprehensive tests (skip on CRAN for speed)
+# =============================================================================
+
 test_that("Multiple random starts find global maximum", {
   skip_on_cran()
 
