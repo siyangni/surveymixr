@@ -1,3 +1,31 @@
+#' Log-Sum-Exp Trick for Numerical Stability
+#'
+#' @description
+#' Computes log(sum(exp(x))) in a numerically stable way by avoiding underflow.
+#' Uses the identity: log(sum(exp(x))) = max(x) + log(sum(exp(x - max(x))))
+#'
+#' @param log_x Vector of log-probabilities
+#' @return Scalar, the log of the sum of exponentials
+#' @keywords internal
+#' @noRd
+log_sum_exp <- function(log_x) {
+  # Handle edge cases
+  if (length(log_x) == 0) return(-Inf)
+  if (all(is.infinite(log_x) & log_x < 0)) return(-Inf)
+
+  # Use max-trick for numerical stability
+  max_log_x <- max(log_x[is.finite(log_x)])
+
+  # If all values are -Inf except one, return that value
+  if (all(is.infinite(log_x[log_x != max_log_x]) & log_x[log_x != max_log_x] < 0)) {
+    return(max_log_x)
+  }
+
+  # Standard log-sum-exp computation
+  max_log_x + log(sum(exp(log_x - max_log_x)))
+}
+
+
 #' Core EM Algorithm for Growth Mixture Models with Survey Weights
 #'
 #' @description
@@ -193,6 +221,10 @@ initialize_parameters_gmm <- function(y_wide, time_scores, n_classes,
 
 #' E-Step: Compute Posterior Probabilities
 #'
+#' @description
+#' Computes posterior class probabilities using Bayes' theorem.
+#' All computations done in log-space for numerical stability.
+#'
 #' @keywords internal
 #' @noRd
 e_step_gmm <- function(y_wide, time_scores, params, weights, r_matrix,
@@ -200,15 +232,15 @@ e_step_gmm <- function(y_wide, time_scores, params, weights, r_matrix,
 
   n <- nrow(y_wide)
 
-  # Compute class-specific densities
-  class_densities <- matrix(0, nrow = n, ncol = n_classes)
+  # Compute log class-specific densities (stay in log-space throughout!)
+  log_class_densities <- matrix(-Inf, nrow = n, ncol = n_classes)
 
   for (k in 1:n_classes) {
     # Predicted trajectory for class k
     y_pred_k <- predict_trajectory(time_scores, params$growth_parameters[[k]],
                                   growth_model)
 
-    # Likelihood for each person in class k (handling missing data)
+    # Log-likelihood for each person in class k (handling missing data)
     for (i in 1:n) {
       obs_times <- which(r_matrix[i, ])
       if (length(obs_times) > 0) {
@@ -216,24 +248,37 @@ e_step_gmm <- function(y_wide, time_scores, params, weights, r_matrix,
         y_pred <- y_pred_k[obs_times]
         resid <- y_obs - y_pred
 
-        # Normal density (using log-space for numerical stability)
-        # Instead of prod(dnorm()), use exp(sum(log(dnorm())))
-        log_lik <- sum(dnorm(resid, mean = 0,
-                            sd = sqrt(params$residual_variance[k]),
-                            log = TRUE))
-        class_densities[i, k] <- exp(log_lik)
+        # Normal log-density (STAY IN LOG-SPACE - no exp()!)
+        # Sum of log-densities across observed time points
+        log_class_densities[i, k] <- sum(dnorm(resid, mean = 0,
+                                               sd = sqrt(params$residual_variance[k]),
+                                               log = TRUE))
       } else {
-        class_densities[i, k] <- 1  # No data, uniform
+        # No data for this person: log(1) = 0 (uniform density)
+        log_class_densities[i, k] <- 0
       }
     }
   }
 
-  # Posterior probabilities (Bayes' theorem)
-  numerator <- sweep(class_densities, 2, params$class_proportions, "*")
-  denominator <- rowSums(numerator)
-  denominator[denominator < 1e-300] <- 1e-300  # Avoid division by zero
+  # Posterior probabilities (Bayes' theorem) - all in log-space
+  # log P(k|y_i) = log[P(y_i|k) * P(k)] - log[sum_k P(y_i|k) * P(k)]
+  #              = log P(y_i|k) + log P(k) - log_sum_exp[log P(y_i|k) + log P(k)]
 
-  posterior_probs <- numerator / denominator
+  log_class_props <- log(pmax(params$class_proportions, 1e-300))
+  log_numerator <- sweep(log_class_densities, 2, log_class_props, "+")
+
+  # Compute log denominator using log-sum-exp for numerical stability
+  log_denominator <- apply(log_numerator, 1, log_sum_exp)
+
+  # Log posterior probabilities
+  log_posterior <- sweep(log_numerator, 1, log_denominator, "-")
+
+  # Convert to probability scale only at the very end
+  posterior_probs <- exp(log_posterior)
+
+  # Handle any remaining numerical issues (shouldn't happen with log-sum-exp, but be safe)
+  posterior_probs[!is.finite(posterior_probs)] <- 1 / n_classes
+  posterior_probs <- sweep(posterior_probs, 1, rowSums(posterior_probs), "/")
 
   # Weighted posterior probabilities (for M-step with survey weights)
   weighted_posterior <- sweep(posterior_probs, 1, weights, "*")
@@ -381,6 +426,10 @@ predict_trajectory <- function(time_scores, growth_params, growth_model) {
 
 #' Compute Weighted Log-Likelihood
 #'
+#' @description
+#' Computes the weighted log-likelihood for the mixture model.
+#' All computations done in log-space for numerical stability.
+#'
 #' @keywords internal
 #' @noRd
 compute_weighted_loglik <- function(y_wide, time_scores, params, weights,
@@ -396,8 +445,8 @@ compute_weighted_loglik <- function(y_wide, time_scores, params, weights,
       next  # No data for this person
     }
 
-    # Sum across classes
-    class_lik <- 0
+    # Compute log-likelihood contribution from each class (stay in log-space!)
+    log_class_lik <- numeric(n_classes)
 
     for (k in 1:n_classes) {
       y_pred_k <- predict_trajectory(time_scores, params$growth_parameters[[k]],
@@ -406,16 +455,20 @@ compute_weighted_loglik <- function(y_wide, time_scores, params, weights,
       y_pred <- y_pred_k[obs_times]
       resid <- y_obs - y_pred
 
-      # Normal density (using log-space for numerical stability)
+      # Log-density for class k (STAY IN LOG-SPACE!)
       log_lik_k <- sum(dnorm(resid, mean = 0,
                             sd = sqrt(params$residual_variance[k]),
                             log = TRUE))
-      lik_k <- exp(log_lik_k)
-      class_lik <- class_lik + params$class_proportions[k] * lik_k
+
+      # log[pi_k * f(y_i | k)] = log(pi_k) + log f(y_i | k)
+      log_class_lik[k] <- log(pmax(params$class_proportions[k], 1e-300)) + log_lik_k
     }
 
+    # log(sum_k pi_k * f(y_i | k)) using log-sum-exp trick
+    log_mixture_lik <- log_sum_exp(log_class_lik)
+
     # Weighted contribution to log-likelihood
-    loglik <- loglik + weights[i] * log(pmax(class_lik, 1e-300))
+    loglik <- loglik + weights[i] * log_mixture_lik
   }
 
   loglik

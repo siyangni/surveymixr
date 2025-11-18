@@ -117,3 +117,52 @@ test_that("S4 methods work correctly", {
   expect_true(length(coeffs) > 0)
   expect_true(!is.null(names(coeffs)))
 })
+
+test_that("gmm_survey handles many time points without numerical underflow", {
+  # Test numerical stability fix for log-sum-exp implementation
+  # With T=15 time points, old implementation would have underflow issues
+
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 150,
+    n_times = 15,  # Many time points - tests numerical stability
+    n_classes = 2,
+    seed = 999
+  )
+
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 2,
+    starts = 10,
+    verbose = FALSE
+  )
+
+  # Should converge successfully despite many time points
+  expect_s4_class(fit, "SurveyMixr")
+  expect_true(fit@convergence_info$converged)
+
+  # Log-likelihood should be finite (not -Inf or NaN)
+  expect_true(is.finite(fit@fit_indices$loglik))
+  expect_true(fit@fit_indices$loglik < 0)  # Log-lik should be negative
+
+  # Posterior probabilities should be valid (no NaN or extreme values)
+  expect_true(all(is.finite(fit@posterior_probs)))
+  expect_true(all(fit@posterior_probs >= 0 & fit@posterior_probs <= 1))
+
+  # Row sums of posterior probs should be 1 (within tolerance)
+  row_sums <- rowSums(fit@posterior_probs)
+  expect_true(all(abs(row_sums - 1) < 1e-10))
+
+  # Class proportions should sum to 1
+  expect_equal(sum(fit@parameters$class_proportions), 1, tolerance = 1e-10)
+
+  # Fit indices should all be finite
+  expect_true(is.finite(fit@fit_indices$aic))
+  expect_true(is.finite(fit@fit_indices$bic))
+  expect_true(is.finite(fit@fit_indices$entropy))
+
+  # Entropy should be in valid range
+  expect_true(fit@fit_indices$entropy >= 0 && fit@fit_indices$entropy <= 1)
+})
