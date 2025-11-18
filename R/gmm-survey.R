@@ -362,7 +362,7 @@ gmm_survey <- function(data,
     # Export necessary functions and data
     clusterExport(cl, c("em_algorithm_gmm", "e_step_gmm", "m_step_gmm",
                        "initialize_parameters_gmm", "predict_trajectory",
-                       "compute_weighted_loglik"),
+                       "compute_weighted_loglik", "log_sum_exp"),
                  envir = environment())
 
     results_all <- parLapply(cl, 1:starts, run_single_start)

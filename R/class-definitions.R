@@ -192,12 +192,12 @@ setClass("R3StepResults",
       }
     }
 
-    # Validate distal_vars matches class_means columns
-    if (length(object@distal_vars) > 0 && ncol(object@class_means) > 0) {
-      if (length(object@distal_vars) != ncol(object@class_means)) {
+    # Validate distal_vars matches class_means rows
+    if (length(object@distal_vars) > 0 && nrow(object@class_means) > 0) {
+      if (length(object@distal_vars) != nrow(object@class_means)) {
         errors <- c(errors,
-          sprintf("Number of distal_vars (%d) must match class_means columns (%d)",
-                  length(object@distal_vars), ncol(object@class_means)))
+          sprintf("Number of distal_vars (%d) must match class_means rows (%d)",
+                  length(object@distal_vars), nrow(object@class_means)))
       }
     }
 
@@ -255,11 +255,11 @@ setClass("ConvergenceDiagnostics",
       errors <- c(errors, "best_loglik should be negative or -Inf")
     }
 
-    # Validate consistency between components
+    # Validate n_replications doesn't exceed total starts
     if (nrow(object@loglik_table) > 0 && object@n_replications > 0) {
-      if (object@n_replications != nrow(object@loglik_table)) {
+      if (object@n_replications > nrow(object@loglik_table)) {
         errors <- c(errors,
-          sprintf("n_replications (%d) does not match loglik_table rows (%d)",
+          sprintf("n_replications (%d) cannot exceed loglik_table rows (%d)",
                   object@n_replications, nrow(object@loglik_table)))
       }
     }
