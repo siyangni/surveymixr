@@ -1,0 +1,183 @@
+---
+title: "Quick Reference Guide"
+author: "Siyang Ni"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick Reference Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+# Quick Reference: surveymixr Cheatsheet
+
+This guide provides quick examples for the most common tasks in `surveymixr`.
+
+## Installation
+
+```r
+# Install from CRAN (when available)
+# install.packages("surveymixr")
+
+# Or install from GitHub
+devtools::install_github("siyangni/surveymixr")
+```
+
+## Basic Workflow
+
+### 1. Load Package and Data
+
+```r
+library(surveymixr)
+data(mcs_simulated)
+
+# Verify data structure
+head(mcs_simulated)
+```
+
+### 2. Fit GMM Model
+
+**Basic continuous outcome:**
+
+```r
+# 3-class linear growth model
+fit_3class <- gmm_survey(
+  data      = mcs_simulated,
+  id        = "id",
+  time      = "age",
+  outcome   = "selfcontrol",
+  n_classes = 3,
+  growth_model = "linear",
+  starts    = 500,
+  cores     = 4
+)
+
+summary(fit_3class)
+```
+
+**With survey design:**
+
+```r
+fit_3class_survey <- gmm_survey(
+  data      = mcs_simulated,
+  id        = "id",
+  time      = "age",
+  outcome   = "selfcontrol",
+  n_classes = 3,
+  growth_model = "linear",
+  strata    = "stratum",    # Stratification
+  cluster   = "cluster",    # PSU/cluster
+  weights   = "weight",     # Sampling weights
+  starts    = 500,
+  cores     = 4
+)
+```
+
+**Binary outcome:**
+
+```r
+fit_binary <- gmm_survey_binary(
+  data    = mcs_simulated,
+  id      = "id",
+  time    = "age",
+  outcome = "delinquency_bin",  # 0/1 variable
+  n_classes = 3,
+  starts  = 500
+)
+```
+
+### 3. Model Selection
+
+**Compare multiple models:**
+
+```r
+# Compare 1-5 class models
+selection <- gmm_select(
+  data      = mcs_simulated,
+  id        = "id",
+  time      = "age",
+  outcome   = "selfcontrol",
+  classes   = 1:5,
+  criteria  = c("BIC", "entropy", "BLRT"),
+  starts    = 200,
+  cores     = 4
+)
+
+# View results
+print(selection)
+plot(selection)
+```
+
+### 4. Extract Class Assignments
+
+```r
+# Posterior probabilities
+posterior_probs <- fit_3class@posterior_probs
+
+# Most likely class
+most_likely_class <- apply(posterior_probs, 1, which.max)
+
+# Class proportions
+table(most_likely_class)
+```
+
+### 5. Analyze Distal Outcomes (R3STEP)
+
+**Create person-level data:**
+
+```r
+# Extract one row per individual
+person_data <- mcs_simulated[!duplicated(mcs_simulated$id), ]
+```
+
+**Analyze distal outcome:**
+
+```r
+# Test if classes differ on academic achievement
+r3_result <- r3step(
+  gmm_object  = fit_3class_survey,
+  distal_vars = "academic_achievement",
+  data        = person_data,
+  method      = "BCH"  # Recommended
+)
+
+summary(r3_result)
+```
+
+## Common Parameters
+
+### Main Functions
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `data` | Data frame | `mcs_simulated` |
+| `id` | Person identifier | `"id"` |
+| `time` | Time variable | `"age"` |
+| `outcome` | Outcome variable | `"selfcontrol"` |
+| `n_classes` | Number of classes | `3` |
+| `growth_model` | Type of growth | `"linear"`, `"quadratic"`, `"latent_basis"` |
+| `starts` | Random starts | `500` (production), `200` (exploration) |
+| `cores` | Parallelization | `4`, `detectCores() - 1` |
+
+### Survey Design (Optional but Important)
+
+| Parameter | Description |
+|-----------|-------------|
+| `strata` | Stratification variable |
+| `cluster` | PSU/cluster variable |
+| `weights` | Sampling weight variable |
+
+### Model Selection
+
+| Criterion | Description |
+|-----------|-------------|
+| `

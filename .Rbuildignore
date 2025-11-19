@@ -22,5 +22,6 @@
 ^cran-comments\.md$
 ^archives$
 ^CLAUDE\.md$
-^CRAN_READINESS_REPORT\.md$
+^v0\..*\.md$
 ^VIGNETTE_FIXES_NEEDED\.md$
+^CRAN-SUBMISSION$

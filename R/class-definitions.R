@@ -160,7 +160,7 @@ setClass("R3StepResults",
     method = "character",
     class_means = "matrix",
     standard_errors = "matrix",
-    test_results = "data.frame",
+    test_results = "list",
     effect_sizes = "matrix"
   ),
   prototype = list(
@@ -169,7 +169,7 @@ setClass("R3StepResults",
     method = character(),
     class_means = matrix(),
     standard_errors = matrix(),
-    test_results = data.frame(),
+    test_results = list(),
     effect_sizes = matrix()
   ),
   validity = function(object) {

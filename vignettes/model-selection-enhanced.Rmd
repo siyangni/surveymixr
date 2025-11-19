@@ -89,7 +89,7 @@ selection <- gmm_select(
   strata = "stratum",
   cluster = "cluster",
   weights = "weight",
-  criteria = c("BIC", "aBIC", "entropy", "BLRT"),  # Multiple criteria
+  criteria = c("BIC", "entropy", "BLRT"),  # Multiple criteria
   blrt_samples = 100,
   starts = 200,
   cores = 4

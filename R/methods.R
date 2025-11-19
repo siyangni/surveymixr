@@ -402,7 +402,54 @@ setMethod("show", "R3StepResults", function(object) {
   print(round(object@standard_errors, 3))
 
   cat("\nOmnibus Tests:\n")
-  print(object@test_results, row.names = FALSE)
+  # Handle both single variable (flat structure) and multiple variables (nested)
+  if (length(object@test_results) > 0) {
+    # Check if this is a single variable with flat structure
+    if ("omnibus_test" %in% names(object@test_results)) {
+      # Single variable - print directly
+      cat(sprintf("F(%.1f, %.1f) = %.3f, p = %.3f\n",
+                  object@test_results$omnibus_test$df1,
+                  object@test_results$omnibus_test$df2,
+                  object@test_results$omnibus_test$statistic,
+                  object@test_results$omnibus_test$p_value))
+
+      if (!is.null(object@test_results$pairwise_tests)) {
+        cat("\nPairwise Comparisons:\n")
+        pairwise_df <- do.call(rbind, lapply(object@test_results$pairwise_tests, function(p) {
+          data.frame(
+            Comparison = paste0("Class ", p$class1, " vs Class ", p$class2),
+            Diff = p$diff,
+            SE = p$se,
+            t = p$t,
+            p = p$p,
+            stringsAsFactors = FALSE
+          )
+        }))
+        print(pairwise_df, row.names = FALSE)
+      }
+    } else {
+      # Multiple variables - create summary table
+      omnibus_df <- do.call(rbind, lapply(object@test_results, function(x) {
+        data.frame(
+          variable = x$variable,
+          F_stat = x$omnibus_test$statistic,
+          df1 = x$omnibus_test$df1,
+          df2 = x$omnibus_test$df2,
+          p_value = x$omnibus_test$p_value,
+          stringsAsFactors = FALSE
+        )
+      }))
+      print(omnibus_df, row.names = FALSE)
+
+      # Check if any pairwise tests exist
+      has_pairwise <- any(sapply(object@test_results, function(x) !is.null(x$pairwise)))
+      if (has_pairwise) {
+        cat("\n(Pairwise comparisons available, view with: r3step_result@test_results[['var']]$pairwise)\n")
+      }
+    }
+  } else {
+    cat("  No test results available\n")
+  }
 
   cat("\n---\n")
   cat("Use summary() for detailed results including pairwise comparisons\n")
@@ -425,6 +472,52 @@ setMethod("summary", "R3StepResults", function(object, ...) {
   cat("-------------------------\n")
   print(round(object@effect_sizes, 2))
 })
+
+
+#' Plot R3STEP Results
+#'
+#' Creates bar plots of class-specific means for distal variables.
+#'
+#' @param x An object of class \code{R3StepResults}
+#' @param type Character string, currently only "means" is supported
+#' @param ... Additional arguments passed to plotting functions
+#'
+#' @rdname surveymixr-methods
+#' @export
+setMethod("plot", "R3StepResults", function(x, y, type = "means", ...) {
+  if (type == "means") {
+    # Create bar plot of class means
+    means <- x@class_means
+    distal_vars <- rownames(means) %||% paste("Variable", 1:nrow(means))
+    n_vars <- nrow(means)
+    n_classes <- ncol(means)
+
+    if (requireNamespace("graphics", quietly = TRUE)) {
+      # Simple bar plot using base graphics
+      graphics::barplot(
+        t(means),
+        beside = TRUE,
+        legend = distal_vars,
+        main = "Distal Variable Means by Class",
+        xlab = "Class",
+        ylab = "Mean",
+        col = c("steelblue", "tomato", "seagreen", "gold")[seq_len(n_vars)],
+        ...
+      )
+    } else {
+      # Text-based output if graphics not available
+      cat("R3STEP Class Means:\n")
+      cat("==================\n\n")
+      for (i in seq_len(n_vars)) {
+        cat(sprintf("%s:\n", distal_vars[i]))
+        cat(sprintf("  Class %d: %.3f\n", 1:n_classes, means[i, ]))
+      }
+    }
+  } else {
+    stop("Unknown plot type for R3StepResults. Use type = 'means'.")
+  }
+})
+
 
 
 # =============================================================================

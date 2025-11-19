@@ -36,6 +36,11 @@
 #' @param cores Integer number of CPU cores for parallel processing (default: 1)
 #' @param verbose Logical, print progress messages? (default: TRUE)
 #' @param keep_data Logical, store data in output object? (default: FALSE)
+#' @param store_all_starts Logical, store results from all random starts?
+#'   (default: TRUE). When TRUE (recommended for research), stores all random
+#'   start results for convergence diagnostics with \code{diagnose_convergence()}.
+#'   When FALSE (recommended for large N > 1000), only stores the best solution
+#'   to reduce memory usage.
 #' @param skip_validation Logical, skip automatic survey design validation?
 #'   (default: FALSE). When FALSE (recommended), the function automatically
 #'   validates survey design features (nested clusters, singleton strata, etc.)
@@ -152,6 +157,7 @@ gmm_survey <- function(data,
                        cores = 1,
                        verbose = TRUE,
                        keep_data = FALSE,
+                       store_all_starts = TRUE,
                        skip_validation = FALSE,
                        ...) {
 
@@ -526,10 +532,14 @@ gmm_survey <- function(data,
       n_replications = n_replications,
       best_loglik = best_loglik
     ),
-    random_starts = list(
-      logliks = logliks,
-      converged = converged_flags
-    ),
+    random_starts = if (store_all_starts) {
+      list(
+        logliks = logliks,
+        converged = converged_flags
+      )
+    } else {
+      list()  # Empty list to satisfy S4 slot requirement
+    },
     survey_design = list(
       has_weights = !is.null(weights),
       has_strata = !is.null(strata),

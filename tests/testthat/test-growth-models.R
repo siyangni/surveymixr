@@ -47,8 +47,6 @@ test_that("linear growth model works correctly", {
 })
 
 test_that("quadratic growth model works correctly", {
-  skip("Quadratic growth model parameter naming needs verification")
-
   set.seed(124)
   sim_data <- simulate_gmm_survey(
     n_individuals = 200,

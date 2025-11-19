@@ -18,6 +18,8 @@
 \alias{show,R3StepResults-method}
 \alias{print,R3StepResults-method}
 \alias{summary,R3StepResults-method}
+\alias{show,ConvergenceDiagnostics-method}
+\alias{print,ConvergenceDiagnostics-method}
 \alias{plot,SurveyMixr-method}
 \title{S4 Methods for SurveyMixr Objects}
 \usage{
@@ -52,6 +54,10 @@
 \S4method{print}{R3StepResults}(x, ...)
 
 \S4method{summary}{R3StepResults}(object, ...)
+
+\S4method{show}{ConvergenceDiagnostics}(object)
+
+\S4method{print}{ConvergenceDiagnostics}(x, ...)
 
 \S4method{plot}{SurveyMixr}(x, y, type = "trajectories", ...)
 }

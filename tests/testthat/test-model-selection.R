@@ -378,6 +378,91 @@ test_that("Model selection with survey design works", {
   }
 })
 
+test_that("gmm_select error handling for invalid classes parameter", {
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 50,
+    n_times = 3,
+    n_classes = 2,
+    seed = 901
+  )
+
+  # Should error on invalid classes specification
+  expect_error(
+    gmm_select(
+      data = sim_data,
+      id = "id",
+      time = "time",
+      outcome = "outcome",
+      classes = c(3, 2, 1),  # Not sequential
+      starts = 5,
+      verbose = FALSE
+    ),
+    "classes must be in ascending order"
+  )
+})
+
+test_that("gmm_select handles single class model correctly", {
+  skip_on_cran()
+
+  set.seed(902)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 100,
+    n_times = 4,
+    n_classes = 1,
+    design = "srs",
+    seed = 902
+  )
+
+  result <- gmm_select(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    classes = 1:2,  # Compare 1 vs 2 classes
+    starts = 10,
+    criteria = c("BIC", "entropy"),
+    cores = 1
+  )
+
+  expect_s4_class(result, "SurveyMixrSelect")
+
+  # 1-class model should be in fitted models
+  expect_equal(min(result@comparison_table$n_classes), 1)
+  expect_equal(max(result@comparison_table$n_classes), 2)
+})
+
+test_that("gmm_select with quadratic growth models compares correctly", {
+  skip_on_cran()
+
+  set.seed(903)
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 200,
+    n_times = 5,
+    n_classes = 2,
+    design = "srs",
+    seed = 903
+  )
+
+  result <- gmm_select(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    classes = 1:3,
+    growth_model = "quadratic",
+    starts = 10,
+    criteria = c("BIC", "entropy"),
+    cores = 1
+  )
+
+  expect_s4_class(result, "SurveyMixrSelect")
+
+  # All fitted models should be quadratic
+  for (i in 1:length(result@fitted_models)) {
+    expect_equal(result@fitted_models[[i]]@model_info$growth_model, "quadratic")
+  }
+})
+
 test_that("Model selection can be plotted", {
   skip_on_cran()
 

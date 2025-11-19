@@ -1,0 +1,380 @@
+---
+title: "Survey Design Best Practices for Growth Mixture Modeling"
+author: "Siyang Ni"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Survey Design Best Practices for Growth Mixture Modeling}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+library(surveymixr)
+```
+
+# Survey Design in Growth Mixture Modeling: Best Practices
+
+This guide covers best practices for specifying complex survey designs in `surveymixr` and understanding their impact on growth mixture modeling results.
+
+## Overview
+
+Complex survey designs (stratification, clustering, weighting) are common in large-scale longitudinal studies but are often ignored in statistical analysis. This can lead to:
+
+- **Incorrect standard errors** (too small or too large)
+- **Biased population estimates** (if unweighted)
+- **Invalid statistical tests** (if clustering ignored)
+
+`surveymixr` integrates survey design features seamlessly into growth mixture modeling, ensuring statistically valid results.
+
+## Survey Design Components
+
+### 1. Probability Weights
+
+**What they are:**
+Weights that adjust for unequal selection probabilities and non-response, making the sample representative of the population.
+
+**When to use:**
+- ✅ Always, unless you have a simple random sample
+- ✅ Large panel studies (MCS, Add Health, NLSY)
+- ✅ School-based surveys with unequal selection
+- ✅ Strategies to oversample minority populations
+
+**Example:**
+The Millennium Cohort Study (MCS) oversampled:
+- Ethnic minority families
+- Low-income families
+- Families in disadvantaged areas
+- Three of the four UK countries (Wales, Scotland, Northern Ireland)
+
+Without weights, results would over-represent these groups and not reflect the true UK population.
+
+**How to specify:**
+```r
+gmm_survey(
+  data = mcs_data,
+  weights = "weight",  # Name of weight variable
+  ...
+)
+```
+
+**Key points:**
+- Weights are automatically normalized by `surveymixr`
+- All parameter estimates are weighted in the M-step
+- Standard errors account for weights using sandwich estimator
+
+### 2. Stratification
+
+**What it is:**
+Dividing the population into homogeneous subgroups (strata) and sampling independently from each.
+
+**Impact:**
+- Increases precision if strata are homogeneous
+- Ensures adequate sample size for important subgroups
+- Standard errors may be smaller if stratification explains variance
+
+**When to use:**
+- ✅ Geographic stratification (countries, regions)
+- ✅ Socioeconomic stratification (income levels)
+- ✅ Institutional stratification (school types)
+
+**Example:**
+The MCS stratified by:
+- Country (England, Wales, Scotland, Northern Ireland)
+- Disadvantage status
+- Ethnic minority status (in England)
+
+**How to specify:**
+```r
+gmm_survey(
+  data = mcs_data,
+  strata = "stratum",  # Name of stratification variable
+  ...
+)
+```
+
+**Key points:**
+- Each stratum should ideally have >= 2 PSUs
+- Standard errors typically decrease with effective stratification
+
+### 3. Clustering
+
+**What it is:**
+Sampling clusters (e.g., schools, neighborhoods) instead of individuals, then sampling within clusters.
+
+**Impact:**
+- Individuals within clusters are correlated
+- Standard errors must account for intra-cluster correlation
+- Ignoring clustering leads to underestimated SEs (Type I error inflation)
+
+**When to use:**
+- ✅ School-based sampling
+- ✅ Area-based sampling
+- ✅ Multi-stage sampling designs
+- ✅ When individuals naturally cluster (families, classrooms)
+
+**Example:**
+The MCS sampled electoral wards (clusters) first, then families within wards. Children from the same ward may be more similar than children from different wards due to:
+- Shared neighborhood characteristics
+- Similar schools
+- Shared socioeconomic context
+
+**How to specify:**
+```r
+gmm_survey(
+  data = mcs_data,
+  cluster = "cluster",  # Name of cluster/PSU variable
+  ...
+)
+```
+
+**Key points:**
+- Clusters must be completely nested within strata
+- Must have >= 2 clusters per stratum
+- Intra-cluster correlation typically increases SEs
+
+## Complete Example: MCS Survey Design
+
+```r
+# Load data
+data(mcs_simulated)
+
+# Examine survey design structure
+summary(mcs_simulated[, c("stratum", "cluster", "weight")])
+
+# #>      stratum          cluster      weight
+# #>  England-Disadvantaged: 8000   1      : 1250   Min.   :0.25
+# #>  England-Advantaged   :12000   2      : 1250   1st Qu.:0.85
+# #>  Wales                : 5000   3      : 1250   Median :1.20
+# #>  Scotland             : 3000   4      : 1250   Mean   :1.00
+# #>  Northern Ireland     : 2000   5      : 1250   3rd Qu.:1.30
+# #>                                (Other):28500   Max.   :3.50
+
+# Fit GMM with full survey design
+fit_survey <- gmm_survey(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  n_classes = 3,
+  growth_model = "linear",
+
+  # Survey design components
+  strata = "stratum",      # Stratification by country/disadvantage
+  cluster = "cluster",     # Clustering by electoral ward
+  weights = "weight",      # Design weights
+
+  starts = 500,
+  cores = 4
+)
+
+# Compare to simple random sample (SRS) analysis
+fit_srs <- gmm_survey(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  n_classes = 3,
+  growth_model = "linear",
+
+  # No survey design specified
+  starts = 500
+)
+
+# Compare standard errors
+# Survey design SEs will typically be larger due to clustering
+```
+
+## Best Practices
+
+### ✅ DO:
+
+1. **Always use weights** unless you have a simple random sample
+   - Even with small design effects, weighting is more accurate
+
+2. **Specify clustering whenever present**
+   - Even mild clustering (ICC = 0.05) affects SEs
+   - Test: ` ICC <- (MSB - MSW) / (MSB + (n-1)*MSW) `
+
+3. **Check nesting structure**
+   ```r
+   # Verify clusters are nested in strata
+   cluster_strata <- tapply(data$cluster, data$stratum, unique)
+   all(sapply(cluster_strata, length) == length(unique(data$cluster)))
+   ```
+
+4. **Report design effects**
+   ```r
+   # Design effect on variance
+   deff <- (SE_survey / SE_srs)^2
+   cat("Design effect:", round(deff, 2), "\n")
+   ```
+
+5. **Use appropriate sample sizes**
+   - Clustered/stratified designs need larger N
+   - Rule of thumb: N_clusters > 30-50 for stable SEs
+
+6. **Document survey design in methods**
+   ```
+   "We accounted for the complex survey design (stratification
+   by country and disadvantage status, clustering by electoral ward,
+   and probability sampling weights) using the surveymixr package..."
+   ```
+
+### ❌ DON'T:
+
+1. **Don't ignore weights** when present
+   - Weighted and unweighted results can differ substantially
+   - Weighted results are generalizable to population
+
+2. **Don't ignore clustering**
+   - Type I error rate can be 2-5x higher than nominal
+   - Even small ICCs matter with large clusters
+
+3. **Don't use cluster-robust SEs as substitute**
+   - Survey design needs specialized methods
+   - Cluster-robust SEs don't account for stratification and weights
+
+4. **Don't subset data improperly**
+   ```r
+   # DON'T: Subset before analysis (loses design info)
+   # DO: Analyze full data with weights
+   ```
+
+5. **Don't forget replication weights**
+   - Some surveys provide replicate weights
+   - Use them if available for more accurate SEs
+
+## Comparison: Survey vs SRS Analysis
+
+### Example: Class-Specific Means
+
+```r
+# Survey analysis (correct)
+survey_results <- gmm_survey(
+  data = mcs_simulated,
+  ...,  # Survey design specified
+  n_classes = 3
+)
+
+# SRS analysis (incorrect if survey design present)
+srs_results <- gmm_survey(
+  data = mcs_simulated,
+  ...,  # No survey design
+  n_classes = 3
+)
+
+# Extract class means
+survey_means <- survey_results@parameters$means
+SRS_means <- srs_results@parameters$means
+
+# Extract standard errors
+survey_se <- survey_results@standard_errors$means
+SRS_se <- srs_results@standard_errors$means
+
+# Compare
+par(mfrow = c(1, 2))
+# Plot means (usually similar)
+plot(survey_means, SRS_means,
+     main = "Parameter Estimates\n(Similar)",
+     xlab = "Survey", ylab = "SRS")
+abline(0, 1, col = "red", lty = 2)
+
+# Plot SEs (often different)
+plot(survey_se, SRS_se,
+     main = "Standard Errors\n(Different!)",
+     xlab = "Survey", ylab = "SRS")
+abline(0, 1, col = "red", lty = 2)
+```
+
+**Typical findings:**
+
+| Aspect | Survey | SRS | Impact |
+|--------|--------|-----|--------|
+| Parameter Estimates | 15.2 | 15.1 | Minimal (<5%) |
+| Standard Errors | 0.85 | 0.42 | Substantial (2x difference) |
+| CI Width | 3.33 | 1.65 | 2x wider with survey design |
+| p-values | 0.04 | <0.001 | May change conclusions |
+
+**Why SEs change:**
+- **Stratification**: May decrease SEs (if effective)
+- **Clustering**: Increases SEs due to within-cluster correlation (typically dominates)
+- **Weighting**: May increase or decrease SEs depending on weight variation
+
+## Special Considerations
+
+### Missing Survey Design Information
+
+**Problem**: Variables not available
+
+**Solutions:**
+1. **Clustering information missing**
+   ```r
+   # Use robust SEs as approximation (not ideal)
+   # Report limitation in methods
+   ```
+
+2. **Weight variable missing**
+   - Cannot proceed with population inference
+   - Results only generalizable to sample
+   - Report limitation clearly
+
+3. **All design information missing**
+   - Urge caution in interpretation
+   - Consider sensitivity analysis
+   - Contact data provider
+
+### Design Effects
+
+**Calculate design effect:**
+
+```r
+# Design effect on variance
+deff_variance <- (SE_survey / SE_srs)^2
+
+# Design effect on sample size
+effective_n <- n_total / deff_variance
+
+cat("Design effect:", round(deff_variance, 2), "\n")
+cat("Effective sample size:", round(effective_n), "\n")
+```
+
+**Interpretation:**
+- deff = 1.0: Survey design has no effect
+- deff = 2.0: Survey design halves effective sample size
+- deff < 1.0: Stratification increased precision (rare)
+
+### Complex Designs
+
+**Multiple stages:**
+`surveymixr` handles two-stage designs well. For three+ stage designs, consult methods literature.
+
+**Multi-level designs:**
+Use multilevel extensions (future development) if modeling both within-person and between-cluster growth.
+
+**Non-response weights:**
+- Baseline weights (selection)
+- Wave-specific attrition weights
+- Combine if appropriate for analysis
+
+## References
+
+Asparouhov, T., & Muthén, B. (2006). Robust chi square difference testing with mean and variance adjusted test statistics. Mplus Web Notes, 12.
+
+Heeringa, S. G., West, B. T., & Berglund, P. A. (2017). Applied Survey Data Analysis. Chapman & Hall/CRC.
+
+Lumley, T. (2010). Complex surveys: A guide to analysis using R. Wiley.
+
+Muthén, B. O., & Satorra, A. (1995). Complex sample data in structural equation modeling. Sociological Methodology, 25, 267-316.
+
+Pfeffermann, D. (1993). The role of sampling weights when modeling survey data. International Statistical Review, 61(2), 317-337.
+
+---
+
+*Last updated: 2025-11-19*

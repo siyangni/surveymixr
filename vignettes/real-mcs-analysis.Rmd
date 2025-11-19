@@ -1,0 +1,658 @@
+---
+title: "Real-World Analysis: Millennium Cohort Study Self-Control Trajectories"
+author: "Siyang Ni"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Real-World Analysis: Millennium Cohort Study Self-Control Trajectories}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  eval = TRUE
+)
+```
+
+# Introduction
+
+This vignette demonstrates a complete real-world analysis using **surveymixr** with Millennium Cohort Study (MCS) data. We will analyze developmental trajectories of self-control from age 3 to 17, examining how adolescent outcomes (delinquency and academic achievement) vary across trajectory classes.
+
+## Study Context
+
+**Research Question**: Do children follow distinct developmental trajectories of self-control from early childhood to late adolescence, and are these trajectories associated with later adolescent outcomes?
+
+**Data Source**: Millennium Cohort Study (MCS) - UK longitudinal birth cohort
+- **Sample**: Approximately 19,000 children born 2000-2002
+- **Design**: Complex survey with stratification and clustering
+- **Time Points**: Ages 3, 5, 7, 11, 14, and 17 years
+
+## Key Variables
+
+- **Self-Control**: Parent-reported measure of child's ability to control impulses and follow rules
+- **Delinquency**: Self-reported antisocial behaviors at age 17
+- **Academic Achievement**: Standardized test scores
+- **SES**: Socioeconomic status (continuous measure)
+- **Survey Design**: Nota Bene: This is simulated data based on real MCS structure
+
+# Load Packages and Data
+
+```{r}
+# Load surveymixr and supporting packages
+library(surveymixr)
+library(ggplot2)
+library(knitr)  # For nice tables
+
+data(mcs_simulated)
+
+cat("Dataset dimensions:", dim(mcs_simulated), "\n")
+head(mcs_simulated)
+```
+
+## Understanding the Data Structure
+
+```{r}
+# Data structure
+str(mcs_simulated)
+
+# Summary statistics
+summary(mcs_simulated[, c("age", "selfcontrol", "delinquency", "academic_achievement", "ses")])
+```
+
+# Phase 1: Exploratory Analysis
+
+## Step 1.1: Data Validation
+
+Before fitting models, validate data structure and survey design:
+
+```{r}
+validation <- validate_survey_data(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight",
+  min_observations = 2,  # Allow at least 2 time points
+  verbose = TRUE
+)
+
+print(validation)
+```
+
+## Step 1.2: Trajectory Visualization
+
+Visualize raw trajectories to understand patterns:
+
+```{r}
+# Randomly sample 100 individuals for cleaner spaghetti plot
+set.seed(42)
+sample_ids <- sample(unique(mcs_simulated$id), 100)
+plot_data <- mcs_simulated[mcs_simulated$id %in% sample_ids, ]
+
+# Create simple line plot
+library(ggplot2)
+ggplot(plot_data, aes(x = age, y = selfcontrol, group = id)) +
+  geom_line(alpha = 0.3, color = "steelblue") +
+  geom_smooth(aes(group = 1), method = "loess", color = "red", se = TRUE, size = 1) +
+  labs(
+    title = "Self-Control Trajectories (Random Sample of 100 Individuals)",
+    x = "Age (years)",
+    y = "Self-Control Score"
+  ) +
+  theme_minimal()
+```
+
+## Step 1.3: Survey Design Summary
+
+Understand the survey design structure:
+
+```{r}
+cat("Number of strata:", length(unique(mcs_simulated$stratum)), "\n")
+cat("Number of PSUs:", length(unique(mcs_simulated$psu)), "\n")
+cat("Sample size:", length(unique(mcs_simulated$id)), "individuals\n")
+cat("Individual observations:", nrow(mcs_simulated), "\n")
+```
+
+# Phase 2: Model Selection
+
+## Step 2.1: Fit Alternative Class Solutions
+
+We test 1-5 class models using multiple criteria:
+
+```{r}
+# Note: Using fewer starts for demonstration; use 500+ for publication
+selection_results <- gmm_select(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  classes = 1:5,                    # Test 1-5 class models
+  growth_model = "linear",
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight",
+  criteria = c("BIC", "aBIC", "entropy"),  # Skip BLRT for speed
+  starts = 100,                      # Use 500+ in practice
+  cores = 4,
+  verbose = TRUE
+)
+
+print(selection_results)
+```
+
+## Step 2.2: Visualize Model Selection
+
+```{r}
+# Plot fit indices comparison
+plot_model_selection(
+  selection_results,
+  criteria = c("bic", "entropy", "aic"),
+  show_best = TRUE
+)
+```
+
+## Step 2.3: Classification Quality Check
+
+```{r}
+# Extract and compare classification quality across models
+quality_stats <- sapply(
+  selection_results@fitted_models,
+  function(fit) {
+    quality <- classification_quality(fit)
+    return(
+      c(
+        entropy = fit@fit_indices$entropy,
+        ave_pp = quality$ave_pp,
+        occ = quality$occ
+      )
+    )
+  }
+)
+
+# Create comparison table
+quality_df <- data.frame(
+  n_classes = 1:5,
+  t(quality_stats)
+)
+
+knitr::kable(quality_df, digits = 3, caption = "Classification Quality by Number of Classes")
+```
+
+## Step 2.4: Selection Decision
+
+Based on:
+- Minimum BIC at 3 classes
+- High entropy (>0.80)
+- Theoretical interpretability
+
+```{r}
+# Extract recommended classes
+recommended <- selection_results@recommended_classes
+print(recommended)
+```
+
+# Phase 3: Fit Final Model
+
+## Step 3.1: Fit 3-Class Linear Growth Model
+
+```{r}
+# Fit final model with more starts (500-1000 recommended)
+final_model <- gmm_survey(
+  data = mcs_simulated,
+  id = "id",
+  time = "age",
+  outcome = "selfcontrol",
+  growth_model = "linear",
+  n_classes = 3,                    # Based on model selection
+  strata = "stratum",
+  cluster = "psu",
+  weights = "weight",
+  nest = TRUE,                      # PSUs nested within strata
+  starts = 200,                     # Use 500+ for publication
+  max_iter = 1000,
+  convergence = 1e-6,
+  cores = 4,
+  keep_data = TRUE,                 # For diagnostics
+  verbose = TRUE
+)
+
+cat("\nModel fitting complete!\n")
+summary(final_model)
+```
+
+## Step 3.2: Check Convergence Quality
+
+```{r}
+# Diagnose convergence
+convergence_diag <- diagnose_convergence(final_model)
+print(convergence_diag)
+
+# Visualize log-likelihood distribution
+plot(convergence_diag)
+```
+
+**Important**: Check that:
+- Log-likelihood distribution is unimodal (no multiple local maxima)
+- Best solution is well-replicated (>10% of starts)
+- Technical error < 5%
+
+## Step 3.3: Visualize Class Trajectories
+
+```{r}
+# Plot class trajectories with confidence intervals
+plot_trajectories(
+  final_model,
+  show_ci = TRUE,
+  palette = "Set1",
+  title = "Three-Class Trajectories of Self-Control (Ages 3-17)"
+)
+```
+
+**Interpretation**:
+- **Class 1**: High starting point, stable trajectory (High Self-Control)
+- **Class 2**: Moderate starting point, stable trajectory (Moderate Self-Control)
+- **Class 3**: Low starting point, improving trajectory (Low-Improving Self-Control)
+
+## Step 3.4: Classification Quality
+
+```{r}
+# Detailed classification diagnostics
+cat("Classification Quality:\n")
+cat("========================\n\n")
+
+classification <- classification_quality(final_model)
+print(classification)
+
+cat("\n\nEntropy:", entropy(final_model), "\n")
+cat("(Range: 0-1, >0.80 = good separation)\n")
+```
+
+# Phase 4: R3STEP Analysis (Auxiliary Variables)
+
+## Step 4.1: Prepare Person-Level Data
+
+R3STEP requires one row per individual:
+
+```{r}
+# Create person-level dataset
+person_data <- mcs_simulated[!duplicated(mcs_simulated$id), ]
+
+cat("Person-level data dimensions:", dim(person_data), "\n")
+head(person_data[, c("id", "delinquency", "academic_achievement", "ses")])
+```
+
+## Step 4.2: Run R3STEP for Delinquency
+
+```{r}
+# Analyze delinquency differences across self-control trajectories
+delinquency_r3step <- r3step(
+  gmm_object = final_model,
+  distal_vars = "delinquency",
+  data = person_data,
+  method = "BCH",        # Bolck-Croon-Hagenaars method
+  test_pairwise = TRUE,  # Pairwise comparisons
+  weight_distal = TRUE   # Account for survey weights
+)
+
+cat("Delinquency R3STEP Results:\n")
+cat("============================\n\n")
+print(delinquency_r3step@class_means)
+```
+
+## Step 4.3: Run R3STEP for Academic Achievement
+
+```{r}
+# Analyze academic achievement differences
+academic_r3step <- r3step(
+  gmm_object = final_model,
+  distal_vars = "academic_achievement",
+  data = person_data,
+  method = "BCH",
+  test_pairwise = TRUE,
+  weight_distal = TRUE
+)
+
+cat("Academic Achievement R3STEP Results:\n")
+cat("====================================\n\n")
+print(academic_r3step@class_means)
+```
+
+## Step 4.4: Statistical Tests and Effect Sizes
+
+```{r}
+# Function to display comprehensive R3STEP results
+display_r3step_results <- function(r3step_obj, outcome_name) {
+  cat("\n\n", outcome_name, "\n", paste(rep("=", nchar(outcome_name)), collapse = ""), "\n\n", sep = "")
+
+  # Omnibus test
+  cat("Omnibus Test (Are there overall differences?\n")
+  cat("--------------------------------------------\n")
+  omni <- r3step_obj@test_results$omnibus_test
+  cat(sprintf("Statistic: %.3f\n", omni$statistic))
+  cat(sprintf("p-value: %.3f\n", omni$p_value))
+  cat(sprintf("Significance: %s\n
+", if(omni$p_value < 0.05) "SIGNIFICANT" else "NON-SIGNIFICANT"))
+
+  # Pairwise comparisons
+  cat("Pairwise Comparisons:\n")
+  cat("---------------------\n")
+  pairwise <- r3step_obj@test_results$pairwise_tests
+  print(pairwise)
+  cat("\n")
+
+  # Effect sizes (Cohen's d)
+  cat("Effect Sizes (Cohen's d):\n")
+  cat("--------------------------\n")
+  cat("Interpretation: 0.2 = small, 0.5 = medium, 0.8 = large\n\n")
+  print(r3step_obj@effect_sizes)
+}
+
+# Display results
+display_r3step_results(delimquency_r3step, "DELINQUENCY")
+display_r3step_results(academic_r3step, "ACADEMIC ACHIEVEMENT")
+```
+
+**Interpreting Results**:
+- **Delinquency**: Often shows that low self-control class has significantly higher delinquency
+- **Academic Achievement**: Usually shows that high self-control class has better academic outcomes
+- **Effect sizes**: Indicate magnitude of differences (d > 0.5 = practically meaningful)
+
+## Step 4.5: Plot R3STEP Results
+
+```{r}
+# Create bar plots showing class differences
+par(mfrow = c(1, 2))
+
+# Plot delinquency differences
+plot(delimquency_r3step, type = "means",
+     main = "Delinquency by Self-Control Class",
+     ylab = "Delinquency Score",
+     xlab = "Class (based on self-control trajectories)")
+
+# Plot academic achievement differences
+plot(academic_r3step, type = "means",
+     main = "Academic Achievement by Self-Control Class",
+     ylab = "Achievement Score",
+     xlab = "Class (based on self-control trajectories)")
+```
+
+# Phase 5: Model Diagnostics
+
+## Step 5.1: Influence Diagnostics
+
+Identify influential cases that might affect results:
+
+```{r}
+# Check for influential observations
+influence_diag <- diagnose_influence(final_model, measure = "all")
+
+# Number of influential cases
+influential_count <- length(influence_diag@influential_ids)
+cat("Number of influential cases:", influential_count, "\n")
+cat("(out of", length(unique(mcs_simulated$id)), "total individuals)\n")
+
+# Summary statistics
+print(summary(influence_diag@influence_measures))
+```
+
+## Step 5.2: Residual Diagnostics
+
+Check model assumptions:
+
+```{r}
+residuals <- residual_diagnostics(final_model)
+print(residuals)
+```
+
+## Step 5.3: Separation Check
+
+Ensure classes are not perfectly separated:
+
+```{r}
+separation <- diagnose_separation(final_model)
+print(separation)
+```
+
+# Phase 6: Interpretation and Reporting
+
+## Step 6.1: Class Characteristics Summary
+
+```{r}
+# Create summary table of class characteristics
+cat("CLASS CHARACTERISTICS SUMMARY\n")
+cat("===============================\n\n")
+
+# Class sizes and proportions
+sizes <- class_proportions(final_model, weighted = TRUE)
+for (i in 1:final_model@model_info$n_classes) {
+  cat(sprintf("CLASS %d:\n", i))
+  cat(sprintf("  Proportion: %.1f%%\n", sizes[i] * 100))
+
+  # Growth parameters
+  params <- coef(final_model)[[i]]
+  cat(sprintf("  Intercept: %.2f (SE = %.2f)\n",
+              params["Intercept"], params["Intercept_SE"]))
+  cat(sprintf("  Slope: %.2f (SE = %.2f)\n",
+              params["Slope"], params["Slope_SE"]))
+  cat("\n")
+}
+```
+
+## Step 6.2: Theoretical Interpretation
+
+Based on the trajectory shapes and auxiliary variable associations:
+
+**Class 1: High Self-Control (High-Stable)**
+- 30-40% of sample (varies by simulation)
+- High initial levels maintained across adolescence
+- Associated with: Lower delinquency, higher academic achievement
+- Characteristics: High impulse control, rule-following
+
+**Class 2: Moderate Self-Control (Moderate-Stable)**
+- 40-50% of sample
+- Moderate levels maintained across development
+- Associated with: Average outcomes across domains
+- Characteristics: Typical self-regulation development
+
+**Class 3: Low-Improving Self-Control**
+- 20-30% of sample
+- Low initial levels but gradual improvement
+- Associated with: Higher delinquency, lower academic achievement (but improving)
+- Characteristics: Delayed self-regulation development
+
+## Step 6.3: Key Findings
+
+```{r}
+cat("KEY FINDINGS:\n")
+cat("=============\n\n")
+
+cat("1. TRAJECTORY CLASSES:\n")
+cat("   Three distinct trajectories of self-control identified:\n")
+cat("   - High-stable (best outcomes)\n")
+cat("   - Moderate-stable (typical outcomes)\n")
+cat("   - Low-improving (poorer outcomes but catching up)\n\n")
+
+# Get entropy for reporting
+cat("2. CLASSIFICATION QUALITY:\n")
+cat(sprintf("   Entropy = %.3f (good separation)\n\n", entropy(final_model)))
+
+significance_test <- function(p_value) {
+  if (p_value < 0.001) return("***")
+  if (p_value < 0.01) return("**")
+  if (p_value < 0.05) return("*")
+  return("ns")
+}
+
+delinquency_p <- delinquency_r3step@test_results$omnibus_test$p_value
+academic_p <- academic_r3step@test_results$omnibus_test$p_value
+
+cat("3. AUXILIARY OUTCOMES:\n")
+cat(sprintf("   a) Delinquency: Class differences %s (p = %.3f)\n",
+            significance_test(delinquent_p), delinquency_p))
+cat(sprintf("   b) Academic Achievement: Class differences %s (p = %.3f)\n",
+            significance_test(academic_p), academic_p))
+```
+
+# Phase 7: Publication-Ready Tables and Figures
+
+## Step 7.1: Parameter Estimates Table
+
+```{r}
+# Extract parameter estimates for publication table
+extract_parameters <- function(fit) {
+  all_coefs <- coef(fit)
+  params <- do.call(rbind, lapply(all_coefs, function(x) {
+    data.frame(
+      Class = x["Class"],
+      Intercept = x["Intercept"],
+      Intercept_SE = x["Intercept_SE"],
+      Slope = x["Slope"],
+      Slope_SE = x["Slope_SE"],
+      Proportion = x["Class_Proportion"]
+    )
+  }))
+  return(params)
+}
+
+# Create publication-ready table
+par_table <- extract_parameters(final_model)
+knitr::kable(
+  par_table,
+  digits = 3,
+  caption = "Growth Parameters by Self-Control Trajectory Class"
+)
+```
+
+## Step 7.2: Fit Indices Table
+
+```{r}
+# Create fit indices table
+fit_table <- data.frame(
+  Model = paste0(1:5, "-Class"),
+  LogLik = sapply(selection_results@fitted_models, logLik),
+  AIC = sapply(selection_results@fitted_models, AIC),
+  BIC = sapply(selection_results@fitted_models, BIC),
+  Entropy = sapply(selection_results@fitted_models, function(x) x@fit_indices$entropy)
+)
+
+knitr::kable(
+  fit_table,
+  digits = 2,
+  caption = "Model Fit Statistics for Alternative Class Solutions"
+)
+```
+
+## Step 7.3: R3STEP Results Table
+
+```{r}
+# Create comprehensive R3STEP results table
+extract_r3step_all <- function(r3step_obj) {
+  means <- r3step_obj@class_means
+  pairwise <- r3step_obj@test_results$pairwise_tests
+  effects <- r3step_obj@effect_sizes
+
+  # Combine into comprehensive table
+  results <- data.frame(
+    Class = 1:nrow(means),
+    Mean = means$mean,
+    SE = means$se,
+    Comparison = paste0("vs ", effects$comparison_class),
+    Effect_Size = effects$cohens_d,
+    Effect_Interpretation = ifelse(
+      abs(effects$cohens_d) < 0.5, "Small",
+      ifelse(abs(effects$cohens_d) < 0.8, "Medium", "Large")
+    )
+  )
+  return(results)
+}
+
+cat("DELINQUENCY R3STEP RESULTS:\n")
+knitr::kable(
+  extract_r3step_all(delinquent_r3step),
+  digits = 3,
+  caption = "Delinquency Differences Across Self-Control Classes"
+)
+
+cat("\n\nACADEMIC ACHIEVEMENT R3STEP RESULTS:\n")
+knitr::kable(
+  extract_r3step_all(academic_r3step),
+  digits = 3,
+  caption = "Academic Achievement Differences Across Self-Control Classes"
+)
+```
+
+# Summary and Best Practices
+
+## Key Takeaways
+
+1. **Always validate your data** before fitting models
+2. **Use multiple criteria** for model selection (never rely on just one!)
+3. **Check convergence thoroughly** - inadequate starts can miss true solution
+4. **Validate classification quality** with entropy, AvePP, and other metrics
+5. **Use R3STEP for auxiliary variables** to avoid classification bias
+6. **Run comprehensive diagnostics** before interpreting results
+
+## Recommended Workflow
+
+For your own research:
+
+1. **Data Preparation**
+   - Validate data structure
+   - Check survey design variables
+   - Examine missing patterns
+
+2. **Exploratory Analysis**
+   - Visualize trajectories
+   - Estimate 2-5 class models
+
+3. **Model Selection**
+   - Compare information criteria
+   - Check classification quality
+   - Validate with BLRT
+
+4. **Final Model**
+   - Fit selected model with many starts
+   - Check convergence
+   - Thorough diagnostics
+
+5. **Auxiliary Analysis**
+   - R3STEP for distal outcomes
+   - R3STEP for predictors
+   - Compare across classes
+
+6. **Reporting**
+   - Document all decisions
+   - Include diagnostics
+   - Archive analysis scripts
+
+## Next Steps
+
+- **Cross-validation** to assess stability of classes
+- **Sensitivity analyses** with different growth models
+- **Multiple imputation** if missing data concerns
+- **Subgroup analyses** (e.g., by gender, SES)
+- **Longitudinal prediction** of later adult outcomes
+
+## Citing This Analysis
+
+If you use this analysis in your research:
+
+```{r}
+citation("surveymixr")
+```
+
+---
+
+**End of Vignette**
+
+*This vignette demonstrates a complete real-world application of surveymixr. For questions, visit: https://github.com/siyangni/surveymixr*

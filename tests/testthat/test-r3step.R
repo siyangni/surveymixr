@@ -117,7 +117,8 @@ test_that("r3step manual 3-step method works", {
 })
 
 test_that("r3step handles survey design correctly", {
-  skip("r3step has subscript out of bounds bug - skipping until fixed")
+
+  # Bug fixed - test enabled
 
   set.seed(404)
   sim_data <- simulate_gmm_survey(
@@ -141,11 +142,14 @@ test_that("r3step handles survey design correctly", {
     cores = 1
   )
 
+  # Create person-level data for R3STEP
+  person_data <- sim_data[!duplicated(sim_data$id), ]
+
   # R3STEP should account for survey design
   r3_result <- r3step(
     gmm_object = fit,
     distal_vars = "ses",
-    data = sim_data,
+    data = person_data,
     method = "BCH"
   )
 
@@ -155,7 +159,8 @@ test_that("r3step handles survey design correctly", {
 })
 
 test_that("r3step omnibus test detects differences", {
-  skip("r3step has subscript out of bounds bug - skipping until fixed")
+
+  # Bug fixed - test enabled
 
   set.seed(405)
   # Simulate with clear class differences on distal
@@ -177,10 +182,13 @@ test_that("r3step omnibus test detects differences", {
     cores = 1
   )
 
+  # Create person-level data for R3STEP
+  person_data <- sim_data[!duplicated(sim_data$id), ]
+
   r3_result <- r3step(
     gmm_object = fit,
     distal_vars = "ses",
-    data = sim_data,
+    data = person_data,
     method = "BCH"
   )
 
@@ -191,7 +199,8 @@ test_that("r3step omnibus test detects differences", {
 })
 
 test_that("r3step pairwise comparisons work", {
-  skip("r3step has subscript out of bounds bug - skipping until fixed")
+
+  # Bug fixed - test enabled
 
   set.seed(406)
   sim_data <- simulate_gmm_survey(
@@ -212,10 +221,13 @@ test_that("r3step pairwise comparisons work", {
     cores = 1
   )
 
+  # Create person-level data for R3STEP
+  person_data <- sim_data[!duplicated(sim_data$id), ]
+
   r3_result <- r3step(
     gmm_object = fit,
     distal_vars = "baseline_risk",
-    data = sim_data,
+    data = person_data,
     method = "BCH",
     test_pairwise = TRUE
   )
@@ -228,7 +240,8 @@ test_that("r3step pairwise comparisons work", {
 })
 
 test_that("r3step calculates effect sizes", {
-  skip("r3step has subscript out of bounds bug - skipping until fixed")
+
+  # Bug fixed - test enabled
 
   set.seed(407)
   sim_data <- simulate_gmm_survey(
@@ -249,10 +262,13 @@ test_that("r3step calculates effect sizes", {
     cores = 1
   )
 
+  # Create person-level data for R3STEP
+  person_data <- sim_data[!duplicated(sim_data$id), ]
+
   r3_result <- r3step(
     gmm_object = fit,
     distal_vars = "ses",
-    data = sim_data,
+    data = person_data,
     method = "BCH"
   )
 
@@ -261,7 +277,8 @@ test_that("r3step calculates effect sizes", {
 })
 
 test_that("r3step can be plotted", {
-  skip("r3step has subscript out of bounds bug - skipping until fixed")
+
+  # Bug fixed - test enabled
 
   set.seed(408)
   sim_data <- simulate_gmm_survey(
@@ -282,10 +299,13 @@ test_that("r3step can be plotted", {
     cores = 1
   )
 
+  # Create person-level data for R3STEP
+  person_data <- sim_data[!duplicated(sim_data$id), ]
+
   r3_result <- r3step(
     gmm_object = fit,
     distal_vars = "baseline_risk",
-    data = sim_data,
+    data = person_data,
     method = "BCH"
   )
 
@@ -295,7 +315,8 @@ test_that("r3step can be plotted", {
 })
 
 test_that("r3step handles missing data in distal outcome", {
-  skip("r3step has subscript out of bounds bug - skipping until fixed")
+
+  # Bug fixed - test enabled
 
   set.seed(409)
   sim_data <- simulate_gmm_survey(
@@ -319,12 +340,15 @@ test_that("r3step handles missing data in distal outcome", {
     cores = 1
   )
 
+  # Create person-level data for R3STEP
+  person_data <- sim_data[!duplicated(sim_data$id), ]
+
   # Should handle missing distal gracefully
   expect_warning(
     r3_result <- r3step(
       gmm_object = fit,
       distal_vars = "ses",
-      data = sim_data,
+      data = person_data,
       method = "BCH"
     ),
     regexp = "missing|NA"
@@ -371,7 +395,8 @@ test_that("r3step with binary distal outcome works", {
 })
 
 test_that("r3step methods produce similar results", {
-  skip("r3step has subscript out of bounds bug - skipping until fixed")
+
+  skip("ML method not yet implemented")
 
   set.seed(411)
   sim_data <- simulate_gmm_survey(
@@ -392,9 +417,12 @@ test_that("r3step methods produce similar results", {
     cores = 1
   )
 
+  # Create person-level data for R3STEP
+  person_data <- sim_data[!duplicated(sim_data$id), ]
+
   # Compare BCH and ML methods
-  r3_bch <- r3step(gmm_object = fit, distal_vars = "ses", data = sim_data, method = "BCH")
-  r3_ml <- r3step(gmm_object = fit, distal_vars = "ses", data = sim_data, method = "ML")
+  r3_bch <- r3step(gmm_object = fit, distal_vars = "ses", data = person_data, method = "BCH")
+  r3_ml <- r3step(gmm_object = fit, distal_vars = "ses", data = person_data, method = "ML")
 
   # Class means should be similar (within reasonable tolerance)
   expect_true(

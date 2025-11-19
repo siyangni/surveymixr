@@ -141,6 +141,14 @@ r3step <- function(gmm_object,
          paste(missing_vars, collapse = ", "))
   }
 
+  # Check for missing values in distal variables
+  missing_count <- sum(is.na(data[distal_vars]))
+  if (missing_count > 0) {
+    warning("Missing values detected in distal variables (", missing_count, " total). ",
+            "Individuals with missing values will be excluded from analysis.",
+            call. = FALSE)
+  }
+
   # Validate data dimensions
   n_individuals <- nrow(posterior_probs)
   if (nrow(data) != n_individuals) {
@@ -226,10 +234,12 @@ r3step <- function(gmm_object,
 
     test_results_list[[var_name]] <- list(
       variable = var_name,
-      omnibus_F = omnibus$F_stat,
-      omnibus_df1 = omnibus$df1,
-      omnibus_df2 = omnibus$df2,
-      omnibus_pval = omnibus$p_value
+      omnibus_test = list(
+        statistic = omnibus$F_stat,
+        df1 = omnibus$df1,
+        df2 = omnibus$df2,
+        p_value = omnibus$p_value
+      )
     )
 
     # Pairwise comparisons
@@ -242,21 +252,9 @@ r3step <- function(gmm_object,
         adjust = adjust_multiple
       )
 
-      test_results_list[[var_name]]$pairwise <- pairwise
+      test_results_list[[var_name]]$pairwise_tests <- pairwise
     }
   }
-
-  # Convert to data frame
-  test_df <- do.call(rbind, lapply(test_results_list, function(x) {
-    data.frame(
-      variable = x$variable,
-      omnibus_F = x$omnibus_F,
-      df1 = x$omnibus_df1,
-      df2 = x$omnibus_df2,
-      p_value = x$omnibus_pval,
-      stringsAsFactors = FALSE
-    )
-  }))
 
   # ============================================================================
   # Compute Effect Sizes (Cohen's d)
@@ -271,13 +269,22 @@ r3step <- function(gmm_object,
   # ============================================================================
   # Create Output Object
   # ============================================================================
+
+  # For single variable, store test results directly in test_results slot
+  # For multiple variables, store as list with variable names
+  if (n_distal == 1) {
+    test_results_final <- test_results_list[[distal_vars[1]]]
+  } else {
+    test_results_final <- test_results_list
+  }
+
   output <- new("R3StepResults",
     gmm_object = gmm_object,
     distal_vars = distal_vars,
     method = method,
     class_means = results$class_means,
     standard_errors = results$standard_errors,
-    test_results = test_df,
+    test_results = test_results_final,
     effect_sizes = effect_sizes
   )
 
@@ -518,7 +525,24 @@ compute_pairwise_comparisons <- function(class_means, class_ses, class_ns,
     }
   }
 
-  comparisons
+  # Convert list to data frame for easier handling
+  if (length(comparisons) > 0) {
+    comparisons_df <- do.call(rbind, lapply(comparisons, function(x) {
+      data.frame(
+        class1 = x$class1,
+        class2 = x$class2,
+        diff = unname(x$diff),
+        se = unname(x$se),
+        t = unname(x$t),
+        p = unname(x$p),
+        p_adjusted = if (!is.null(x$p_adjusted)) unname(x$p_adjusted) else NA,
+        stringsAsFactors = FALSE
+      )
+    }))
+    return(comparisons_df)
+  } else {
+    return(data.frame())
+  }
 }
 
 
