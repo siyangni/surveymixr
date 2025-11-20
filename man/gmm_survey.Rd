@@ -27,6 +27,7 @@ gmm_survey(
   cores = 1,
   verbose = TRUE,
   keep_data = FALSE,
+  store_all_starts = TRUE,
   skip_validation = FALSE,
   ...
 )
@@ -83,6 +84,12 @@ membership prediction}
 \item{verbose}{Logical, print progress messages? (default: TRUE)}
 
 \item{keep_data}{Logical, store data in output object? (default: FALSE)}
+
+\item{store_all_starts}{Logical, store results from all random starts?
+(default: TRUE). When TRUE (recommended for research), stores all random
+start results for convergence diagnostics with \code{diagnose_convergence()}.
+When FALSE (recommended for large N > 1000), only stores the best solution
+to reduce memory usage.}
 
 \item{skip_validation}{Logical, skip automatic survey design validation?
 (default: FALSE). When FALSE (recommended), the function automatically

@@ -9,6 +9,9 @@
 \arguments{
 \item{object}{An InfluenceDiagnostics object}
 }
+\value{
+No return value, called for side effects (displays influence diagnostics summary)
+}
 \description{
 Print Method for Influence Diagnostics
 }

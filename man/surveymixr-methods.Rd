@@ -18,6 +18,7 @@
 \alias{show,R3StepResults-method}
 \alias{print,R3StepResults-method}
 \alias{summary,R3StepResults-method}
+\alias{plot,R3StepResults-method}
 \alias{show,ConvergenceDiagnostics-method}
 \alias{print,ConvergenceDiagnostics-method}
 \alias{plot,SurveyMixr-method}
@@ -55,6 +56,8 @@
 
 \S4method{summary}{R3StepResults}(object, ...)
 
+\S4method{plot}{R3StepResults}(x, y, type = "means", ...)
+
 \S4method{show}{ConvergenceDiagnostics}(object)
 
 \S4method{print}{ConvergenceDiagnostics}(x, ...)
@@ -64,9 +67,9 @@
 \arguments{
 \item{object}{A \code{SurveyMixr} object}
 
-\item{x}{A \code{SurveyMixr} object}
+\item{x}{An object of class \code{R3StepResults}}
 
-\item{...}{Additional arguments passed to plotting or summary functions}
+\item{...}{Additional arguments passed to plotting functions}
 
 \item{k}{Integer specifying class number (for class-specific methods)}
 
@@ -77,4 +80,26 @@
 }
 \description{
 Standard methods for objects returned by surveymixr functions.
+
+Creates bar plots of class-specific means for distal variables.
 }
+\section{Value}{
+
+The \code{show}, \code{print}, and \code{plot} methods are called for their side effects
+(displaying or plotting results) and return the object invisibly. The \code{summary} method
+returns an enhanced summary of the model invisibly. Other methods return specific values:
+\describe{
+  \item{\code{show()}}{No return value, called for side effects (displays object summary)}
+  \item{\code{print()}}{No return value, called for side effects (prints object summary)}
+  \item{\code{summary()}}{No return value, called for side effects (prints detailed summary)}
+  \item{\code{coef()}}{Named vector of all model parameters (class proportions and growth parameters)}
+  \item{\code{vcov()}}{Variance-covariance matrix of parameter estimates}
+  \item{\code{fitted()}}{Matrix of fitted trajectories (rows = individuals, columns = time points)}
+  \item{\code{residuals()}}{Matrix of residuals (observed - fitted values)}
+  \item{\code{logLik()}}{Log-likelihood value with attributes for degrees of freedom and sample size}
+  \item{\code{AIC()}}{Akaike Information Criterion value}
+  \item{\code{BIC()}}{Bayesian Information Criterion value}
+  \item{\code{plot()}}{No return value, called for side effects (generates plots)}
+}
+}
+

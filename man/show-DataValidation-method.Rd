@@ -9,6 +9,9 @@
 \arguments{
 \item{object}{DataValidation object}
 }
+\value{
+No return value, called for side effects (displays validation summary)
+}
 \description{
 Print Method for DataValidation
 }

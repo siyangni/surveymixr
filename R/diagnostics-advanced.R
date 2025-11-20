@@ -482,6 +482,7 @@ setClass("InfluenceDiagnostics",
 #' Print Method for Influence Diagnostics
 #'
 #' @param object An InfluenceDiagnostics object
+#' @return No return value, called for side effects (displays influence diagnostics summary)
 #' @export
 setMethod("show", "InfluenceDiagnostics", function(object) {
   cat("\nInfluence Diagnostics for Growth Mixture Model\n")

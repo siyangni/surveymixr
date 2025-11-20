@@ -512,6 +512,7 @@ setClass("DataValidation",
 #' Print Method for DataValidation
 #'
 #' @param object DataValidation object
+#' @return No return value, called for side effects (displays validation summary)
 #' @export
 setMethod("show", "DataValidation", function(object) {
   .print_validation_summary(object)
