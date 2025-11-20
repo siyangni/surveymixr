@@ -10,7 +10,7 @@
 
 **surveymixr** implements growth mixture modeling (GMM) for longitudinal data with full integration of complex survey design features including stratification, clustering, and probability weights. This package fills a critical gap in R's statistical capabilities by enabling analyses of large-scale longitudinal surveys (e.g., Millennium Cohort Study, Add Health, NLSY) that were previously only possible in proprietary software like Mplus.
 
-📖 **[Read the complete User Manual](https://siyangni.github.io/surveymixr/articles/user-manual.html)** for comprehensive documentation covering all features, workflows, and best practices.
+**[Read the complete User Manual](https://siyangni.github.io/surveymixr/articles/user-manual.html)** for comprehensive documentation covering all features, workflows, and best practices.
 
 ## Key Features
 
