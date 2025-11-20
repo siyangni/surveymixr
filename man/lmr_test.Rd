@@ -59,7 +59,7 @@ where c is a scaling factor based on sample size and model complexity.
 - May be anti-conservative
 }
 \examples{
-\dontrun{
+\donttest{
 # Full example (slow - use for actual analysis):
 data(mcs_simulated)
 

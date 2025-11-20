@@ -100,7 +100,7 @@ The function can generate various missing data patterns to test robustness
 of analyses.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simple 3-class example
 sim_data <- simulate_gmm_survey(
   n_individuals = 1000,

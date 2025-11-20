@@ -101,7 +101,7 @@ get_link_function <- function(outcome_type = "continuous") {
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate binary outcome data
 #' set.seed(123)
 #' binary_data <- simulate_gmm_survey(
@@ -220,7 +220,7 @@ gmm_survey_binary <- function(data,
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate ordinal outcome (e.g., Likert scale: 0-4)
 #' ordinal_data <- simulate_gmm_survey(
 #'   n_individuals = 1000,
@@ -336,7 +336,7 @@ gmm_survey_ordinal <- function(data,
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate count outcome data (e.g., number of delinquent acts)
 #' count_data <- simulate_gmm_survey(
 #'   n_individuals = 1500,

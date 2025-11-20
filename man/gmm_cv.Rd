@@ -92,7 +92,7 @@ Class labels may differ across folds. The algorithm attempts to align
 labels based on trajectory patterns.
 }
 \examples{
-\dontrun{
+\donttest{
 data(mcs_simulated)
 
 # 3-fold CV comparing 1-2 class models (lighter for examples)

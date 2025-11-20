@@ -69,7 +69,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(mcs_simulated)
 #'
 #' # 3-fold CV comparing 1-2 class models (lighter for examples)

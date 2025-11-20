@@ -16,7 +16,7 @@ Data frame with information criteria
 Extracts all information criteria from a fitted model or model selection object.
 }
 \examples{
-\dontrun{
+\donttest{
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
                   outcome = "selfcontrol", n_classes = 3)
 extract_fit_indices(fit)

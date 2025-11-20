@@ -82,7 +82,7 @@ For zero-inflated models:
 \deqn{P(Y_{it} = y | C_i = k) = (1 - \pi_k) \times Poisson(y; \lambda_{itk}), \quad y > 0}
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate count outcome data (e.g., number of delinquent acts)
 count_data <- simulate_gmm_survey(
   n_individuals = 1500,

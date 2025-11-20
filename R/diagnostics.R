@@ -37,7 +37,7 @@
 #' growth mixture models. \emph{Psychological Methods, 11}(1), 36-53.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
 #'                   outcome = "selfcontrol", n_classes = 3, starts = 500)
 #'
@@ -195,7 +195,7 @@ diagnose_convergence <- function(gmm_object, tolerance = 1e-4, plot = TRUE) {
 #' intervals account for survey design (clustering, stratification).
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
 #'                   outcome = "selfcontrol", n_classes = 3,
 #'                   weights = "weight")
@@ -281,7 +281,7 @@ class_proportions <- function(object, weighted = TRUE, ci_level = 0.95) {
 #' variables not included in the analysis. Unpublished manuscript.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
 #'                   outcome = "selfcontrol", n_classes = 3)
 #'
@@ -373,7 +373,7 @@ classification_quality <- function(object) {
 #' @return Data frame with time and predicted values
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
 #'                   outcome = "selfcontrol", n_classes = 3)
 #'
@@ -423,7 +423,7 @@ extract_trajectories <- function(object, class = 1, time_range = NULL) {
 #' @return List containing test results
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
 #'                   outcome = "selfcontrol", n_classes = 3,
 #'                   keep_data = TRUE)

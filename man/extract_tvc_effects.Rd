@@ -20,7 +20,7 @@ Data frame with TVC effect estimates, standard errors, and p-values
 Extracts estimated effects of time-varying covariates from a fitted model.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate data with covariates
 set.seed(789)
 sim_data <- simulate_gmm_survey(

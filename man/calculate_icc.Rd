@@ -33,7 +33,7 @@ where \eqn{\psi^2_{0k}} is the random intercept variance and
 - Typical range: 0.1-0.5 for longitudinal data
 }
 \examples{
-\dontrun{
+\donttest{
 # Note: Random effects functionality is under development
 fit <- gmm_survey_re(
   data = mcs_simulated,

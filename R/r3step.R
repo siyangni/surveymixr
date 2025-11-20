@@ -77,7 +77,7 @@
 #' three-step approaches. \emph{Political Analysis, 18}(4), 450-469.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Fit GMM
 #' fit <- gmm_survey(
 #'   data = mcs_simulated,

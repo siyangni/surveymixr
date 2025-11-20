@@ -174,7 +174,7 @@ compute_weighted_entropy <- function(posterior_probs, weights) {
 #' PIMS data. \emph{Marketing Science, 12}(1), 103-124.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # From fitted model
 #' entropy(fit)
 #'

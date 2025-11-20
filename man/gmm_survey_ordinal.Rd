@@ -79,7 +79,7 @@ where \eqn{\tau_1 < \tau_2 < ... < \tau_{K-1}} are threshold parameters
 and \eqn{\eta_{itk}} is the linear predictor.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate ordinal outcome (e.g., Likert scale: 0-4)
 ordinal_data <- simulate_gmm_survey(
   n_individuals = 1000,

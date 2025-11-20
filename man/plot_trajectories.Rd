@@ -47,7 +47,7 @@ Creates a publication-ready plot of estimated growth trajectories for each
 latent class with optional confidence intervals.
 }
 \examples{
-\dontrun{
+\donttest{
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
                   outcome = "selfcontrol", n_classes = 3)
 plot_trajectories(fit)

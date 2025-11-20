@@ -101,7 +101,7 @@
 #' John Wiley & Sons.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load simulated data
 #' data(mcs_simulated)
 #'

@@ -42,7 +42,7 @@ Values range from 0 (complete uncertainty, uniform classification) to 1
 separation.
 }
 \examples{
-\dontrun{
+\donttest{
 # From fitted model
 entropy(fit)
 

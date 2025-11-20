@@ -22,7 +22,7 @@ Data frame in long format
 Helper function to reshape data for gmm_survey if in wide format.
 }
 \examples{
-\dontrun{
+\donttest{
 # Wide format data
 wide_data <- data.frame(
   id = 1:100,

@@ -25,7 +25,7 @@ Extracts estimated variance-covariance matrices for random effects
 and residual variances from a fitted model.
 }
 \examples{
-\dontrun{
+\donttest{
 # Note: Random effects functionality is under development
 fit <- gmm_survey_re(
   data = mcs_simulated,

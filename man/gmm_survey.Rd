@@ -146,7 +146,7 @@ For model selection across different numbers of classes, see
 classification uncertainty correction, see \code{\link{r3step}}.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load simulated data
 data(mcs_simulated)
 

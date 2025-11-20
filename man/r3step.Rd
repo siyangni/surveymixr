@@ -85,7 +85,7 @@ The output provides:
 }
 }
 \examples{
-\dontrun{
+\donttest{
 # Fit GMM
 fit <- gmm_survey(
   data = mcs_simulated,

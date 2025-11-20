@@ -31,7 +31,7 @@ NULL
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Create example Mplus file
 #' mplus_code <- '
 #' VARIABLE:
@@ -355,7 +355,7 @@ compare_with_mplus <- function(surveymixr_object, mplus_output) {
 #' @return Data frame with information criteria
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
 #'                   outcome = "selfcontrol", n_classes = 3)
 #' extract_fit_indices(fit)
@@ -398,7 +398,7 @@ extract_fit_indices <- function(object) {
 #' @return Data frame in long format
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Wide format data
 #' wide_data <- data.frame(
 #'   id = 1:100,

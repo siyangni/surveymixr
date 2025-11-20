@@ -25,7 +25,7 @@ are used, weighted proportions better represent the population. Confidence
 intervals account for survey design (clustering, stratification).
 }
 \examples{
-\dontrun{
+\donttest{
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
                   outcome = "selfcontrol", n_classes = 3,
                   weights = "weight")

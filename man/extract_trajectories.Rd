@@ -20,7 +20,7 @@ Data frame with time and predicted values
 Extracts predicted trajectories for a specific latent class.
 }
 \examples{
-\dontrun{
+\donttest{
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
                   outcome = "selfcontrol", n_classes = 3)
 

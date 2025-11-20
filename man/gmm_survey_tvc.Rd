@@ -140,7 +140,7 @@ Set \code{tvc_lag > 0} to examine lagged effects of TVCs:
 - \code{tvc_lag = 2}: Two time points back predicts current outcome
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate data with covariates
 set.seed(999)
 sim_data <- simulate_gmm_survey(

@@ -63,7 +63,7 @@ Creates interactive visualizations with the following features:
 - **spaghetti**: All individual trajectories overlaid
 }
 \examples{
-\dontrun{
+\donttest{
 # Full example (requires plotly package)
 data(mcs_simulated)
 
@@ -73,14 +73,18 @@ fit <- gmm_survey(
   n_classes = 3, starts = 100
 )
 
-# Interactive trajectory plot
-plot_interactive(fit, type = "trajectories")
+if (requireNamespace("plotly", quietly = TRUE)) {
+  # Interactive trajectory plot
+  plot_interactive(fit, type = "trajectories")
 
-# Spaghetti plot showing individual trajectories
-plot_interactive(fit, type = "spaghetti", n_individuals = 50)
+  # Spaghetti plot showing individual trajectories
+  plot_interactive(fit, type = "spaghetti", n_individuals = 50)
 
-# Save to HTML file
-p <- plot_interactive(fit)
-htmlwidgets::saveWidget(p, "gmm_trajectories.html")
+  # Save to HTML file (requires htmlwidgets)
+  if (requireNamespace("htmlwidgets", quietly = TRUE)) {
+    p <- plot_interactive(fit)
+    htmlwidgets::saveWidget(p, "gmm_trajectories.html")
+  }
+}
 }
 }

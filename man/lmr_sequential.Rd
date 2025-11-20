@@ -20,7 +20,7 @@ Performs sequential LMR tests to compare models with 1 to K classes.
 This is integrated into \code{\link{gmm_select}} but can be called separately.
 }
 \examples{
-\dontrun{
+\donttest{
 # Fit models with 1-4 classes (slow - use for actual analysis)
 data(mcs_simulated)
 models <- lapply(1:4, function(k) {

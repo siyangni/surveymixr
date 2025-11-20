@@ -86,7 +86,7 @@ Survey weights, clustering, and stratification are incorporated in both
 the EM algorithm and standard error calculation.
 }
 \examples{
-\dontrun{
+\donttest{
 # Simulate binary outcome data
 set.seed(123)
 binary_data <- simulate_gmm_survey(

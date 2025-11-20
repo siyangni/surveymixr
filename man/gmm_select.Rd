@@ -110,7 +110,7 @@ reliable test for class enumeration.
 }
 }
 \examples{
-\dontrun{
+\donttest{
 # Compare 1-5 class models
 selection <- gmm_select(
   data = mcs_simulated,

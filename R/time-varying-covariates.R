@@ -98,7 +98,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate data with covariates
 #' set.seed(999)
 #' sim_data <- simulate_gmm_survey(
@@ -364,7 +364,7 @@ gmm_survey_tvc <- function(data,
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simulate data with covariates
 #' set.seed(789)
 #' sim_data <- simulate_gmm_survey(
@@ -425,7 +425,7 @@ extract_tvc_effects <- function(object, effect_type = "all", class = "all") {
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' fit <- gmm_survey_tvc(
 #'   data = mcs_simulated,
 #'   id = "id", time = "age", outcome = "selfcontrol",

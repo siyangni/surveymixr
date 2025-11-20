@@ -73,7 +73,7 @@ validation and teaching. In real applications, true class membership is
 unknown and must be estimated.
 }
 \examples{
-\dontrun{
+\donttest{
 # Load data
 data(mcs_simulated)
 

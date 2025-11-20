@@ -28,7 +28,7 @@ Supported Mplus features:
 }
 }
 \examples{
-\dontrun{
+\donttest{
 # Create example Mplus file
 mplus_code <- '
 VARIABLE:

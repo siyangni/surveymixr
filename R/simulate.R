@@ -65,7 +65,7 @@
 #' 630-647.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Simple 3-class example
 #' sim_data <- simulate_gmm_survey(
 #'   n_individuals = 1000,

@@ -20,7 +20,7 @@ List containing test results
 Conducts statistical tests comparing latent classes on a specific variable.
 }
 \examples{
-\dontrun{
+\donttest{
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
                   outcome = "selfcontrol", n_classes = 3,
                   keep_data = TRUE)

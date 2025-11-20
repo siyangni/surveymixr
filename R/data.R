@@ -65,7 +65,7 @@
 #' Service: \url{https://ukdataservice.ac.uk/}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load data
 #' data(mcs_simulated)
 #'
@@ -182,7 +182,7 @@ mcs_simulated <- NULL
 #' Service: \url{https://ukdataservice.ac.uk/}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Load data
 #' data(mcs_simulated)
 #'

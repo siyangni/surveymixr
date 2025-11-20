@@ -43,7 +43,7 @@ assess whether the best solution is trustworthy by:
 }
 }
 \examples{
-\dontrun{
+\donttest{
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
                   outcome = "selfcontrol", n_classes = 3, starts = 500)
 
