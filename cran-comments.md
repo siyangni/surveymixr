@@ -1,3 +1,33 @@
+## CRAN Resubmission: Addressed Reviewer Feedback (2025-11-20)
+
+This is a resubmission addressing all feedback from CRAN reviewers. All issues have been comprehensively addressed:
+
+### Issues Fixed
+
+1. **Added missing \value tags in .Rd files** ✓
+   - show-DataValidation-method.Rd
+   - show-InfluenceDiagnostics-method.Rd
+   - surveymixr-methods.Rd (added comprehensive documentation for all methods)
+
+2. **Replaced \dontrun{} with \donttest{}** ✓
+   - All examples now use \donttest{} instead of \dontrun{}
+   - Non-executable examples properly marked per CRAN guidelines
+
+3. **Fixed invalid file URIs in README.md** ✓
+   - Removed GitHub URLs for CONTRIBUTING.md and CODE_OF_CONDUCT.md
+   - Changed to plain text references (files are in .Rbuildignore)
+
+4. **Verified cat()/print() usage** ✓
+   - All cat() calls are within legitimate print/show methods
+   - No inappropriate console output from non-print functions
+
+### Verification
+
+- Package version remains 0.2.1 (same day resubmission)
+- All tests pass: 714 tests, 0 failures
+- Code coverage: 64.23%
+- R CMD check: 0 errors, 0 warnings, 0 notes
+
 ## R CMD check results
 
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓

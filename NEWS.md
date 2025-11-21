@@ -1,4 +1,32 @@
-# surveymixr 0.2.1 (2025-11-16)
+# surveymixr 0.2.1 (2025-11-20)
+
+## CRAN Resubmission - Addressed Reviewer Feedback (2025-11-20)
+
+This update addresses all feedback from CRAN reviewers to comply with CRAN policies:
+
+### Documentation Fixes for CRAN Compliance
+
+* **Added missing \value tags in .Rd files** (per CRAN requirements):
+  - Added to `show-DataValidation-method.Rd`
+  - Added to `show-InfluenceDiagnostics-method.Rd`
+  - Added comprehensive \value section to `surveymixr-methods.Rd` documenting all method return values
+  - All methods now properly document their return values and output structure
+
+* **Replaced \dontrun{} with \donttest{}** (per CRAN guidelines):
+  - Changed all instances of `\dontrun{}` to `\donttest{}` in documentation examples
+  - Examples that cannot run or take >5 seconds now use proper \donttest{} wrapping
+  - Follows CRAN recommendation for indicating non-executable examples
+
+* **Fixed invalid file URIs in README.md**:
+  - Changed GitHub URLs for CONTRIBUTING.md and CODE_OF_CONDUCT.md to plain text references
+  - These files are excluded from the package build (in .Rbuildignore)
+  - Now uses "CONTRIBUTING.md (available in the GitHub repository)" format
+  - Prevents CRAN warnings about invalid URIs pointing to excluded files
+
+* **Verified cat()/print() usage** (per CRAN best practices):
+  - All `cat()` calls are within legitimate print/show methods (show.SurveyMixr, print.lmr_test, etc.)
+  - No inappropriate console output from non-print functions
+  - Follows R best practices for method output
 
 ## Test Coverage Improvements (Major Achievement)
 ## Pre-CRAN Release Improvements (2025-11-16)
