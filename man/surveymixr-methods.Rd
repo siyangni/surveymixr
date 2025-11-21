@@ -78,13 +78,7 @@
 \item{type}{Character string: "trajectories" (default), "entropy",
 "convergence", or "class_sizes"}
 }
-\description{
-Standard methods for objects returned by surveymixr functions.
-
-Creates bar plots of class-specific means for distal variables.
-}
-\section{Value}{
-
+\value{
 The \code{show}, \code{print}, and \code{plot} methods are called for their side effects
 (displaying or plotting results) and return the object invisibly. The \code{summary} method
 returns an enhanced summary of the model invisibly. Other methods return specific values:
@@ -102,4 +96,8 @@ returns an enhanced summary of the model invisibly. Other methods return specifi
   \item{\code{plot()}}{No return value, called for side effects (generates plots)}
 }
 }
+\description{
+Standard methods for objects returned by surveymixr functions.
 
+Creates bar plots of class-specific means for distal variables.
+}

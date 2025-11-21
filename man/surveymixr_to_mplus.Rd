@@ -12,7 +12,10 @@ surveymixr_to_mplus(object, file = NULL)
 \item{file}{Optional file path to write output (default: print to console)}
 }
 \value{
-Character string with Mplus-style output (invisibly)
+Character string with Mplus-style output (returned invisibly).
+  The function does not print to the console by default; use
+  \code{cat()} or \code{writeLines()} on the returned value to display
+  or save the output.
 }
 \description{
 Generates Mplus-style output summary from a surveymixr object.
