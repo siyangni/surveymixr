@@ -66,9 +66,8 @@ Growth mixture models (GMM) identify latent subgroups with different development
 
 ### Examples
 
-All examples run in < 5 seconds or are wrapped in `\donttest{}` or `\dontrun{}`:
-- `\donttest{}`: Used for examples requiring > 5 seconds (e.g., model selection with BLRT)
-- `\dontrun{}`: Used for examples requiring external data or illustrative code snippets
+All examples run in < 5 seconds or are wrapped in `\donttest{}` when they may take
+longer on some systems (e.g., model selection with BLRT or multiple random starts).
 
 ### Tests
 
@@ -131,7 +130,7 @@ This is a **FIRST SUBMISSION** to CRAN.
 
 ### Performance
 
-- Examples: All complete in < 5 seconds (or marked `\donttest{}`)
+- Examples: All complete in < 5 seconds (or marked `\donttest{}` when potentially slower)
 - Tests: CRAN tests complete in < 60 seconds
 - Memory: Tested with datasets up to n=10,000; no memory issues
 
