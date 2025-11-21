@@ -199,7 +199,10 @@ print(selection)
 #' @param object A \code{SurveyMixr} object
 #' @param file Optional file path to write output (default: print to console)
 #'
-#' @return Character string with Mplus-style output (invisibly)
+#' @return Character string with Mplus-style output (returned invisibly).
+#'   The function does not print to the console by default; use
+#'   \code{cat()} or \code{writeLines()} on the returned value to display
+#'   or save the output.
 #'
 #' @export
 surveymixr_to_mplus <- function(object, file = NULL) {
@@ -305,8 +308,6 @@ sandwich estimator.
   if (!is.null(file)) {
     writeLines(output, file)
     message(sprintf("Mplus-style output written to: %s", file))
-  } else {
-    cat(output)
   }
 
   invisible(output)

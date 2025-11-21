@@ -9,7 +9,7 @@
 #' @param k Integer specifying class number (for class-specific methods)
 #' @param ... Additional arguments passed to plotting or summary functions
 #'
-#' @section Value:
+#' @return
 #' The \code{show}, \code{print}, and \code{plot} methods are called for their side effects
 #' (displaying or plotting results) and return the object invisibly. The \code{summary} method
 #' returns an enhanced summary of the model invisibly. Other methods return specific values:
