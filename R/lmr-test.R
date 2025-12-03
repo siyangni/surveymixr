@@ -68,29 +68,28 @@
 #'
 #' @examples
 #' \donttest{
-#' # Full example (slow - use for actual analysis):
+#' # Quick example (reduced starts for speed)
 #' data(mcs_simulated)
+#' set.seed(123)
 #'
-#' # Fit 2-class and 3-class models
+#' # Fit 1-class and 2-class models
+#' fit1 <- gmm_survey(
+#'   data = mcs_simulated,
+#'   id = "id", time = "age", outcome = "selfcontrol",
+#'   n_classes = 1, starts = 5, verbose = FALSE
+#' )
+#'
 #' fit2 <- gmm_survey(
 #'   data = mcs_simulated,
 #'   id = "id", time = "age", outcome = "selfcontrol",
-#'   n_classes = 2, starts = 100
+#'   n_classes = 2, starts = 5, verbose = FALSE
 #' )
 #'
-#' fit3 <- gmm_survey(
-#'   data = mcs_simulated,
-#'   id = "id", time = "age", outcome = "selfcontrol",
-#'   n_classes = 3, starts = 100
-#' )
-#'
-#' # LMR test: Is 3-class better than 2-class?
-#' lmr_result <- lmr_test(fit3, fit2)
+#' # LMR test: Is 2-class better than 1-class?
+#' lmr_result <- lmr_test(fit2, fit1, adjusted = TRUE)
 #' print(lmr_result)
 #'
-#' # Adjusted LMR (recommended)
-#' almr_result <- lmr_test(fit3, fit2, adjusted = TRUE)
-#' print(almr_result)
+#' # For production analysis, use starts = 500
 #' }
 lmr_test <- function(model_k, model_k1, adjusted = TRUE) {
 
@@ -266,19 +265,23 @@ print.lmr_test <- function(x, ...) {
 #'
 #' @examples
 #' \donttest{
-#' # Fit models with 1-4 classes (slow - use for actual analysis)
+#' # Quick example with 1-2 classes (reduced starts for speed)
 #' data(mcs_simulated)
-#' models <- lapply(1:4, function(k) {
+#' set.seed(123)
+#'
+#' models <- lapply(1:2, function(k) {
 #'   gmm_survey(
 #'     data = mcs_simulated,
 #'     id = "id", time = "age", outcome = "selfcontrol",
-#'     n_classes = k, starts = 50
+#'     n_classes = k, starts = 5, verbose = FALSE
 #'   )
 #' })
 #'
 #' # Run LMR tests
 #' lmr_results <- lmr_sequential(models, adjusted = TRUE)
 #' print(lmr_results)
+#'
+#' # For production analysis, use classes 1:5 and starts = 200
 #' }
 lmr_sequential <- function(model_list, adjusted = TRUE) {
 

@@ -21,18 +21,22 @@ This is integrated into \code{\link{gmm_select}} but can be called separately.
 }
 \examples{
 \donttest{
-# Fit models with 1-4 classes (slow - use for actual analysis)
+# Quick example with 1-2 classes (reduced starts for speed)
 data(mcs_simulated)
-models <- lapply(1:4, function(k) {
+set.seed(123)
+
+models <- lapply(1:2, function(k) {
   gmm_survey(
     data = mcs_simulated,
     id = "id", time = "age", outcome = "selfcontrol",
-    n_classes = k, starts = 50
+    n_classes = k, starts = 5, verbose = FALSE
   )
 })
 
 # Run LMR tests
 lmr_results <- lmr_sequential(models, adjusted = TRUE)
 print(lmr_results)
+
+# For production analysis, use classes 1:5 and starts = 200
 }
 }

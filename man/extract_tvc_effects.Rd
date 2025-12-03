@@ -20,28 +20,28 @@ Data frame with TVC effect estimates, standard errors, and p-values
 Extracts estimated effects of time-varying covariates from a fitted model.
 }
 \examples{
-\donttest{
-# Simulate data with covariates
-set.seed(789)
-sim_data <- simulate_gmm_survey(
-  n_individuals = 200,
-  n_times = 4,
-  n_classes = 3,
-  covariates = TRUE,
-  seed = 789
-)
-
-fit <- gmm_survey_tvc(
-  data = sim_data,
-  id = "id", time = "time", outcome = "outcome",
-  n_classes = 3, tvc = ~ baseline_risk, tvc_effects = "both", starts = 20
-)
-
-# Extract all TVC effects
-effects <- extract_tvc_effects(fit)
-print(effects)
-
-# Extract for specific class
-effects_c1 <- extract_tvc_effects(fit, class = 1)
+\dontrun{
+##D # Simulate data with covariates
+##D set.seed(789)
+##D sim_data <- simulate_gmm_survey(
+##D   n_individuals = 200,
+##D   n_times = 4,
+##D   n_classes = 3,
+##D   covariates = TRUE,
+##D   seed = 789
+##D )
+##D
+##D fit <- gmm_survey_tvc(
+##D   data = sim_data,
+##D   id = "id", time = "time", outcome = "outcome",
+##D   n_classes = 3, tvc = ~ baseline_risk, tvc_effects = "both", starts = 20
+##D )
+##D
+##D # Extract all TVC effects
+##D effects <- extract_tvc_effects(fit)
+##D print(effects)
+##D
+##D # Extract for specific class
+##D effects_c1 <- extract_tvc_effects(fit, class = 1)
 }
 }

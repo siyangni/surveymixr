@@ -78,8 +78,7 @@ test_that("plot_trajectories handles custom color palettes", {
 
   for (pal in palettes) {
     expect_silent(
-      p <- plot_trajectories(fit, palette = pal),
-      info = paste("Palette:", pal)
+      p <- plot_trajectories(fit, palette = pal)
     )
     expect_s3_class(p, "ggplot")
   }

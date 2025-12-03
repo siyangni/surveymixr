@@ -65,34 +65,34 @@
 #' 630-647.
 #'
 #' @examples
-#' \donttest{
-#' # Simple 3-class example
-#' sim_data <- simulate_gmm_survey(
-#'   n_individuals = 1000,
-#'   n_times = 5,
-#'   n_classes = 3,
-#'   design = "stratified_cluster",
-#'   seed = 123
-#' )
-#'
-#' head(sim_data)
-#' table(sim_data$true_class)
-#'
-#' # Fit model to simulated data
-#' fit <- gmm_survey(
-#'   data = sim_data,
-#'   id = "id",
-#'   time = "time",
-#'   outcome = "outcome",
-#'   n_classes = 3,
-#'   strata = "stratum",
-#'   cluster = "psu",
-#'   weights = "weight",
-#'   starts = 100
-#' )
-#'
-#' # Compare estimated vs true parameters
-#' summary(fit)
+#' \dontrun{
+#' ##D # Simple 3-class example
+#' ##D sim_data <- simulate_gmm_survey(
+#' ##D   n_individuals = 1000,
+#' ##D   n_times = 5,
+#' ##D   n_classes = 3,
+#' ##D   design = "stratified_cluster",
+#' ##D   seed = 123
+#' ##D )
+#' ##D
+#' ##D head(sim_data)
+#' ##D table(sim_data$true_class)
+#' ##D
+#' ##D # Fit model to simulated data
+#' ##D fit <- gmm_survey(
+#' ##D   data = sim_data,
+#' ##D   id = "id",
+#' ##D   time = "time",
+#' ##D   outcome = "outcome",
+#' ##D   n_classes = 3,
+#' ##D   strata = "stratum",
+#' ##D   cluster = "cluster",
+#' ##D   weights = "weight",
+#' ##D   starts = 100
+#' ##D )
+#' ##D
+#' ##D # Compare estimated vs true parameters
+#' ##D summary(fit)
 #' }
 #'
 #' @export

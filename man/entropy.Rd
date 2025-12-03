@@ -43,11 +43,33 @@ separation.
 }
 \examples{
 \donttest{
-# From fitted model
+# From a fitted model
+set.seed(123)
+sim_data <- simulate_gmm_survey(
+  n_individuals = 100,
+  n_times = 4,
+  n_classes = 2,
+  design = "srs",
+  seed = 123
+)
+
+fit <- gmm_survey(
+  data = sim_data,
+  id = "id",
+  time = "time",
+  outcome = "outcome",
+  n_classes = 2,
+  starts = 5,
+  cores = 1,
+  verbose = FALSE
+)
+
 entropy(fit)
 
-# From posterior probability matrix
-post_probs <- matrix(c(0.9, 0.1, 0.2, 0.8), nrow = 2, byrow = TRUE)
+# Or directly from a posterior probability matrix
+post_probs <- matrix(c(0.9, 0.1,
+                       0.2, 0.8),
+                     nrow = 2, byrow = TRUE)
 entropy(post_probs)
 }
 

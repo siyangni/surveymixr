@@ -29,7 +29,7 @@ Supported Mplus features:
 }
 \examples{
 \donttest{
-# Create example Mplus file
+# Create example Mplus file in temporary directory
 mplus_code <- '
 VARIABLE:
   NAMES = id time y stratum psu weight;
@@ -48,9 +48,11 @@ MODEL:
   i s | y@0 y@1 y@2 y@3 y@4;
 '
 
-writeLines(mplus_code, "example.inp")
-r_code <- mplus_to_surveymixr("example.inp")
+tmp_file <- tempfile(fileext = ".inp")
+writeLines(mplus_code, tmp_file)
+r_code <- mplus_to_surveymixr(tmp_file)
 cat(r_code)
+unlink(tmp_file)  # Clean up
 }
 
 }

@@ -38,10 +38,13 @@
 #'
 #' @examples
 #' \donttest{
+#' data(mcs_simulated)
+#' set.seed(123)
 #' fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
-#'                   outcome = "selfcontrol", n_classes = 3, starts = 500)
+#'                   outcome = "selfcontrol", n_classes = 2, starts = 10,
+#'                   verbose = FALSE)
 #'
-#' diagnostics <- diagnose_convergence(fit)
+#' diagnostics <- diagnose_convergence(fit, plot = FALSE)
 #' print(diagnostics)
 #' }
 #'
@@ -282,8 +285,11 @@ class_proportions <- function(object, weighted = TRUE, ci_level = 0.95) {
 #'
 #' @examples
 #' \donttest{
+#' data(mcs_simulated)
+#' set.seed(123)
 #' fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
-#'                   outcome = "selfcontrol", n_classes = 3)
+#'                   outcome = "selfcontrol", n_classes = 2,
+#'                   starts = 5, verbose = FALSE)
 #'
 #' classification_quality(fit)
 #' }
@@ -424,15 +430,22 @@ extract_trajectories <- function(object, class = 1, time_range = NULL) {
 #'
 #' @examples
 #' \donttest{
+#' data(mcs_simulated)
+#' set.seed(123)
 #' fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
-#'                   outcome = "selfcontrol", n_classes = 3,
-#'                   keep_data = TRUE)
+#'                   outcome = "selfcontrol", n_classes = 2,
+#'                   auxiliary = "baseline_risk",
+#'                   keep_data = TRUE, starts = 5, verbose = FALSE)
 #'
 #' compare_classes(fit, var = "baseline_risk", test = "wald")
 #' }
 #'
 #' @export
 compare_classes <- function(object, var, test = "wald") {
+
+  if (!inherits(object, "SurveyMixr")) {
+    stop("object must be a SurveyMixr object")
+  }
 
   if (nrow(object@data) == 0) {
     stop("Data not available. Re-fit model with keep_data = TRUE")
@@ -442,14 +455,55 @@ compare_classes <- function(object, var, test = "wald") {
     stop(sprintf("Variable '%s' not found in data", var))
   }
 
-  x <- object@data[[var]]
+  # ---------------------------------------------------------------------------
+  # Align variable to person-level data used in the model
+  # ---------------------------------------------------------------------------
+
+  id_var <- object@model_info$id_var
+  if (is.null(id_var) || !id_var %in% names(object@data)) {
+    stop("ID variable not found in stored data; cannot align classes to data")
+  }
+
+  # One row per individual (take first occurrence per ID)
+  data_long <- object@data
+  id_and_var <- data_long[, c(id_var, var), drop = FALSE]
+  id_unique <- !duplicated(id_and_var[[id_var]])
+  person_data <- id_and_var[id_unique, , drop = FALSE]
+
+  # Determine the ID ordering used in the model (rows of posterior_probs /
+  # class_assignments). We try to use row names if available; otherwise we
+  # assume the original ordering matches the unique ID order.
+  id_model <- rownames(object@posterior_probs)
+  if (!is.null(id_model) && length(id_model) == nrow(person_data)) {
+    # Sanity check: ID sets should match
+    if (!setequal(id_model, as.character(person_data[[id_var]]))) {
+      stop("Mismatch between IDs in model and stored data; cannot compare classes")
+    }
+
+    match_idx <- match(id_model, as.character(person_data[[id_var]]))
+    if (any(is.na(match_idx))) {
+      stop("Failed to align IDs between model and stored data")
+    }
+
+    x <- person_data[[var]][match_idx]
+  } else {
+    # Fallback: rely on the person_data order (should match fitting order)
+    x <- person_data[[var]]
+  }
+
   class_assignments <- object@class_assignments
   n_classes <- object@model_info$n_classes
+
+  if (length(x) != length(class_assignments)) {
+    stop("Length mismatch between data and class assignments; ",
+         "ensure 'keep_data = TRUE' was used with consistent IDs")
+  }
 
   # Compute class-specific means
   class_means <- tapply(x, class_assignments, mean, na.rm = TRUE)
   class_sds <- tapply(x, class_assignments, sd, na.rm = TRUE)
-  class_ns <- table(class_assignments)
+  # Number of non-missing observations contributing to each class
+  class_ns <- tapply(!is.na(x), class_assignments, sum)
 
   # Overall test
   if (test == "wald") {

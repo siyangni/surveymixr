@@ -48,8 +48,11 @@ latent class with optional confidence intervals.
 }
 \examples{
 \donttest{
+data(mcs_simulated)
+set.seed(123)
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
-                  outcome = "selfcontrol", n_classes = 3)
+                  outcome = "selfcontrol", n_classes = 2,
+                  starts = 5, verbose = FALSE)
 plot_trajectories(fit)
 }
 

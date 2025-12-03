@@ -25,7 +25,7 @@ Extracts predicted random effects (BLUPs - Best Linear Unbiased Predictors)
 from a fitted growth mixture model with random effects.
 }
 \examples{
-\donttest{
+\dontrun{
 # Note: Random effects functionality is under development
 # Fit model with random effects
 fit <- gmm_survey_re(

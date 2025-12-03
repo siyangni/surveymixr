@@ -30,8 +30,11 @@ NULL
 #'
 #' @examples
 #' \donttest{
+#' data(mcs_simulated)
+#' set.seed(123)
 #' fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
-#'                   outcome = "selfcontrol", n_classes = 3)
+#'                   outcome = "selfcontrol", n_classes = 2,
+#'                   starts = 5, verbose = FALSE)
 #' plot_trajectories(fit)
 #' }
 #'
@@ -50,7 +53,7 @@ plot_trajectories <- function(object,
                               ...) {
 
   if (!inherits(object, "SurveyMixr")) {
-    stop("object must be a SurveyMixr object")
+    stop("argument must be a fitted SurveyMixr object")
   }
 
   n_classes <- object@model_info$n_classes

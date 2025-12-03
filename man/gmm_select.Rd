@@ -111,27 +111,32 @@ reliable test for class enumeration.
 }
 \examples{
 \donttest{
-# Compare 1-5 class models
+# Quick comparison of 1-2 class models (for example speed)
+# Use BIC only - BLRT is very slow
+data(mcs_simulated)
+set.seed(123)
+
 selection <- gmm_select(
   data = mcs_simulated,
   id = "id",
   time = "age",
   outcome = "selfcontrol",
-  classes = 1:5,
+  classes = 1:2,
   strata = "stratum",
-  cluster = "psu",
+  cluster = "cluster",
   weights = "weight",
-  criteria = c("BIC", "BLRT", "entropy"),
-  blrt_samples = 100,
-  starts = 200,
-  cores = 4
+  criteria = c("BIC", "entropy"),
+  starts = 10,
+  cores = 1,
+  verbose = FALSE
 )
 
 # View comparison table
 print(selection)
 
-# Extract best model
-best_fit <- selection@fitted_models[[3]]  # If 3 classes optimal
+# For production analysis, use:
+# classes = 1:5, criteria = c("BIC", "BLRT", "entropy"),
+# blrt_samples = 100, starts = 200, cores = parallel::detectCores() - 1
 }
 
 }

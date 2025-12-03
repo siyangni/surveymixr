@@ -130,7 +130,7 @@ from the same individual:
 \deqn{ICC_k = \frac{\psi^2_{0k}}{\psi^2_{0k} + \sigma^2_k}}
 }
 \examples{
-\donttest{
+\dontrun{
 # Note: Random effects functionality is under development
 # These examples will work once implementation is complete
 data(mcs_simulated)

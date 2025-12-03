@@ -44,10 +44,13 @@ assess whether the best solution is trustworthy by:
 }
 \examples{
 \donttest{
+data(mcs_simulated)
+set.seed(123)
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
-                  outcome = "selfcontrol", n_classes = 3, starts = 500)
+                  outcome = "selfcontrol", n_classes = 2, starts = 10,
+                  verbose = FALSE)
 
-diagnostics <- diagnose_convergence(fit)
+diagnostics <- diagnose_convergence(fit, plot = FALSE)
 print(diagnostics)
 }
 

@@ -79,27 +79,32 @@
 #'
 #' @examples
 #' \donttest{
-#' # Compare 1-5 class models
+#' # Quick comparison of 1-2 class models (for example speed)
+#' # Use BIC only - BLRT is very slow
+#' data(mcs_simulated)
+#' set.seed(123)
+#'
 #' selection <- gmm_select(
 #'   data = mcs_simulated,
 #'   id = "id",
 #'   time = "age",
 #'   outcome = "selfcontrol",
-#'   classes = 1:5,
+#'   classes = 1:2,
 #'   strata = "stratum",
-#'   cluster = "psu",
+#'   cluster = "cluster",
 #'   weights = "weight",
-#'   criteria = c("BIC", "BLRT", "entropy"),
-#'   blrt_samples = 100,
-#'   starts = 200,
-#'   cores = 4
+#'   criteria = c("BIC", "entropy"),
+#'   starts = 10,
+#'   cores = 1,
+#'   verbose = FALSE
 #' )
 #'
 #' # View comparison table
 #' print(selection)
 #'
-#' # Extract best model
-#' best_fit <- selection@fitted_models[[3]]  # If 3 classes optimal
+#' # For production analysis, use:
+#' # classes = 1:5, criteria = c("BIC", "BLRT", "entropy"),
+#' # blrt_samples = 100, starts = 200, cores = parallel::detectCores() - 1
 #' }
 #'
 #' @export
@@ -141,6 +146,16 @@ gmm_select <- function(data,
     if (verbose) {
       message("BLRT disabled via run_blrt=FALSE parameter")
     }
+  }
+
+  # Validate classes parameter
+  if (!is.numeric(classes) || any(is.na(classes)) || any(classes < 1)) {
+    stop("classes must be a numeric vector of positive integers")
+  }
+
+  # Check that classes are in ascending order
+  if (!all(classes == sort(classes))) {
+    stop("classes must be in ascending order")
   }
 
   if (verbose) {
@@ -335,7 +350,9 @@ compute_blrt <- function(fit_k, fit_k1, data, id, time, outcome,
     }
 
     # Generate data under k-1 class model
-    data_boot <- generate_data_from_fit(fit_k1, data, id, time, outcome)
+    data_boot <- generate_data_from_fit(fit_k1, data, id, time, outcome,
+                                        strata = strata, cluster = cluster, 
+                                        weights = weights)
 
     # Fit both k-1 and k class models to bootstrap data
     fit_boot_k1 <- tryCatch({
@@ -409,7 +426,8 @@ compute_blrt <- function(fit_k, fit_k1, data, id, time, outcome,
 #'
 #' @keywords internal
 #' @noRd
-generate_data_from_fit <- function(fit, original_data, id, time, outcome) {
+generate_data_from_fit <- function(fit, original_data, id, time, outcome,
+                                   strata = NULL, cluster = NULL, weights = NULL) {
 
   # Extract parameters
   params <- fit@parameters
@@ -417,9 +435,14 @@ generate_data_from_fit <- function(fit, original_data, id, time, outcome) {
   time_scores <- fit@model_info$time_scores
   growth_model <- fit@model_info$growth_model
 
-  # Get original data structure
-  data_template <- original_data[, c(id, time, outcome,
-                                     names(fit@survey_design))]
+  # Get survey design column names (these are actual column names in original_data)
+  # c() will automatically exclude NULLs, so we just filter out empty strings if any
+  survey_vars <- c(strata, cluster, weights)
+  if (length(survey_vars) > 0) {
+    survey_vars <- survey_vars[nzchar(survey_vars)]
+  }
+
+  data_template <- original_data[, c(id, time, outcome, survey_vars), drop = FALSE]
 
   # Generate class assignments based on class proportions
   n <- length(unique(data_template[[id]]))

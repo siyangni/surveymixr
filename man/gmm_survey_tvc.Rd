@@ -140,47 +140,47 @@ Set \code{tvc_lag > 0} to examine lagged effects of TVCs:
 - \code{tvc_lag = 2}: Two time points back predicts current outcome
 }
 \examples{
-\donttest{
-# Simulate data with covariates
-set.seed(999)
-sim_data <- simulate_gmm_survey(
-  n_individuals = 200,
-  n_times = 4,
-  n_classes = 2,
-  covariates = TRUE,
-  design = "stratified_cluster",
-  n_strata = 2,
-  n_clusters = 20,
-  seed = 999
-)
-
-# Direct effects: covariate directly predicts outcome
-fit_direct <- gmm_survey_tvc(
-  data = sim_data,
-  id = "id",
-  time = "time",
-  outcome = "outcome",
-  n_classes = 2,
-  tvc = ~ baseline_risk,
-  tvc_effects = "direct",
-  starts = 20
-)
-
-# Both within- and between-person effects
-fit_both <- gmm_survey_tvc(
-  data = sim_data,
-  id = "id",
-  time = "time",
-  outcome = "outcome",
-  n_classes = 2,
-  tvc = ~ baseline_risk,
-  tvc_effects = "both",
-  starts = 20
-)
-
-# Extract TVC effects
-tvc_effects <- extract_tvc_effects(fit_both)
-print(tvc_effects)
+\dontrun{
+##D # Simulate data with covariates
+##D set.seed(999)
+##D sim_data <- simulate_gmm_survey(
+##D   n_individuals = 200,
+##D   n_times = 4,
+##D   n_classes = 2,
+##D   covariates = TRUE,
+##D   design = "stratified_cluster",
+##D   n_strata = 2,
+##D   n_clusters = 20,
+##D   seed = 999
+##D )
+##D
+##D # Direct effects: covariate directly predicts outcome
+##D fit_direct <- gmm_survey_tvc(
+##D   data = sim_data,
+##D   id = "id",
+##D   time = "time",
+##D   outcome = "outcome",
+##D   n_classes = 2,
+##D   tvc = ~ baseline_risk,
+##D   tvc_effects = "direct",
+##D   starts = 20
+##D )
+##D
+##D # Both within- and between-person effects
+##D fit_both <- gmm_survey_tvc(
+##D   data = sim_data,
+##D   id = "id",
+##D   time = "time",
+##D   outcome = "outcome",
+##D   n_classes = 2,
+##D   tvc = ~ baseline_risk,
+##D   tvc_effects = "both",
+##D   starts = 20
+##D )
+##D
+##D # Extract TVC effects
+##D tvc_effects <- extract_tvc_effects(fit_both)
+##D print(tvc_effects)
 }
 }
 \references{

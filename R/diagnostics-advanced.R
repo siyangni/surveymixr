@@ -62,36 +62,20 @@
 #'
 #' @examples
 #' \donttest{
-#' # Full example (requires model fitted with keep_data = TRUE)
+#' # Quick example (reduced for speed)
+#' data(mcs_simulated)
 #' set.seed(123)
-#' mcs_simulated <- simulate_gmm_survey(
-#'   n_individuals = 500,
-#'   n_times = 6,
-#'   n_classes = 3,
-#'   time_scores = c(3, 5, 7, 11, 14, 17),
-#'   design = "stratified_cluster",
-#'   n_strata = 4,
-#'   n_clusters = 50,
-#'   missing_rate = 0.12,
-#'   seed = 123
-#' )
 #'
 #' fit <- gmm_survey(
 #'   data = mcs_simulated,
-#'   id = "id", time = "time", outcome = "outcome",
-#'   n_classes = 3, weights = "weight", starts = 20,
-#'   keep_data = TRUE
+#'   id = "id", time = "age", outcome = "selfcontrol",
+#'   n_classes = 2, weights = "weight", starts = 5,
+#'   keep_data = TRUE, verbose = FALSE
 #' )
 #'
 #' # Detect influential observations
-#' influence <- diagnose_influence(fit, measure = "all")
+#' influence <- diagnose_influence(fit, measure = "cooks")
 #' print(influence)
-#'
-#' # Get IDs of influential cases
-#' influential_ids <- influence@influential_ids
-#'
-#' # Examine influential cases
-#' mcs_simulated[mcs_simulated$id %in% influential_ids, ]
 #' }
 diagnose_influence <- function(object,
                                measure = c("cooks", "dfbetas", "leverage", "all"),
@@ -306,22 +290,14 @@ diagnose_influence <- function(object,
 #'
 #' @examples
 #' \donttest{
-#' # Simulate data
-#' set.seed(456)
-#' sim_data <- simulate_gmm_survey(
-#'   n_individuals = 300,
-#'   n_times = 4,
-#'   n_classes = 3,
-#'   design = "stratified_cluster",
-#'   n_strata = 3,
-#'   n_clusters = 30,
-#'   seed = 456
-#' )
+#' # Quick example
+#' data(mcs_simulated)
+#' set.seed(123)
 #'
 #' fit <- gmm_survey(
-#'   data = sim_data,
-#'   id = "id", time = "time", outcome = "outcome",
-#'   n_classes = 3, starts = 20
+#'   data = mcs_simulated,
+#'   id = "id", time = "age", outcome = "selfcontrol",
+#'   n_classes = 2, starts = 5, verbose = FALSE
 #' )
 #'
 #' sep_check <- diagnose_separation(fit)

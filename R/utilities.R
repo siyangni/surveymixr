@@ -32,7 +32,7 @@ NULL
 #'
 #' @examples
 #' \donttest{
-#' # Create example Mplus file
+#' # Create example Mplus file in temporary directory
 #' mplus_code <- '
 #' VARIABLE:
 #'   NAMES = id time y stratum psu weight;
@@ -51,9 +51,11 @@ NULL
 #'   i s | y@0 y@1 y@2 y@3 y@4;
 #' '
 #'
-#' writeLines(mplus_code, "example.inp")
-#' r_code <- mplus_to_surveymixr("example.inp")
+#' tmp_file <- tempfile(fileext = ".inp")
+#' writeLines(mplus_code, tmp_file)
+#' r_code <- mplus_to_surveymixr(tmp_file)
 #' cat(r_code)
+#' unlink(tmp_file)  # Clean up
 #' }
 #'
 #' @export
@@ -357,8 +359,11 @@ compare_with_mplus <- function(surveymixr_object, mplus_output) {
 #'
 #' @examples
 #' \donttest{
+#' data(mcs_simulated)
+#' set.seed(123)
 #' fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
-#'                   outcome = "selfcontrol", n_classes = 3)
+#'                   outcome = "selfcontrol", n_classes = 2,
+#'                   starts = 5, verbose = FALSE)
 #' extract_fit_indices(fit)
 #' }
 #'

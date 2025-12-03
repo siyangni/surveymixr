@@ -85,29 +85,29 @@ The output provides:
 }
 }
 \examples{
-\donttest{
-# Fit GMM
-fit <- gmm_survey(
-  data = mcs_simulated,
-  id = "id",
-  time = "age",
-  outcome = "selfcontrol",
-  n_classes = 3,
-  strata = "stratum",
-  cluster = "psu",
-  weights = "weight",
-  starts = 500
-)
-
-# Analyze distal outcomes
-r3step_results <- r3step(
-  gmm_object = fit,
-  distal_vars = c("academic_achievement", "delinquency"),
-  data = mcs_simulated,
-  method = "BCH"
-)
-
-summary(r3step_results)
+\dontrun{
+##D # Fit GMM
+##D fit <- gmm_survey(
+##D   data = mcs_simulated,
+##D   id = "id",
+##D   time = "age",
+##D   outcome = "selfcontrol",
+##D   n_classes = 3,
+##D   strata = "stratum",
+##D   cluster = "cluster",
+##D   weights = "weight",
+##D   starts = 500
+##D )
+##D
+##D # Analyze distal outcomes
+##D r3step_results <- r3step(
+##D   gmm_object = fit,
+##D   distal_vars = c("academic_achievement", "delinquency"),
+##D   data = mcs_simulated,
+##D   method = "BCH"
+##D )
+##D
+##D summary(r3step_results)
 }
 
 }

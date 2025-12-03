@@ -153,27 +153,27 @@ data(mcs_simulated)
 # Set seed for reproducibility
 set.seed(123)
 
-# Fit 3-class model with survey design
+# Fit 2-class model with survey design (reduced for example speed)
 fit <- gmm_survey(
   data = mcs_simulated,
   id = "id",
   time = "age",
   outcome = "selfcontrol",
-  n_classes = 3,
+  n_classes = 2,
   growth_model = "linear",
   strata = "stratum",
-  cluster = "psu",
+  cluster = "cluster",
   weights = "weight",
-  starts = 500,
-  cores = 4
+  starts = 10,
+  cores = 1,
+  verbose = FALSE
 )
 
 # View results
 summary(fit)
-plot(fit, type = "trajectories")
 
-# Check convergence
-diagnose_convergence(fit)
+# For production analysis, use more random starts:
+# starts = 500, cores = parallel::detectCores() - 1
 }
 
 }

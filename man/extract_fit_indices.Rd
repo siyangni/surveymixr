@@ -17,8 +17,11 @@ Extracts all information criteria from a fitted model or model selection object.
 }
 \examples{
 \donttest{
+data(mcs_simulated)
+set.seed(123)
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
-                  outcome = "selfcontrol", n_classes = 3)
+                  outcome = "selfcontrol", n_classes = 2,
+                  starts = 5, verbose = FALSE)
 extract_fit_indices(fit)
 }
 

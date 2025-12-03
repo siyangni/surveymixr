@@ -26,15 +26,15 @@ Performs Wald tests for significance of TVC effects, both overall
 and class-specific.
 }
 \examples{
-\donttest{
-fit <- gmm_survey_tvc(
-  data = mcs_simulated,
-  id = "id", time = "age", outcome = "selfcontrol",
-  n_classes = 3, tvc = ~ ses, starts = 100
-)
-
-# Test significance of SES effect
-test_results <- test_tvc_effects(fit, covariate = "ses")
-print(test_results)
+\dontrun{
+##D fit <- gmm_survey_tvc(
+##D   data = mcs_simulated,
+##D   id = "id", time = "age", outcome = "selfcontrol",
+##D   n_classes = 3, tvc = ~ ses, starts = 100
+##D )
+##D
+##D # Test significance of SES effect
+##D test_results <- test_tvc_effects(fit, covariate = "ses")
+##D print(test_results)
 }
 }

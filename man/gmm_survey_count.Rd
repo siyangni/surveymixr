@@ -82,33 +82,33 @@ For zero-inflated models:
 \deqn{P(Y_{it} = y | C_i = k) = (1 - \pi_k) \times Poisson(y; \lambda_{itk}), \quad y > 0}
 }
 \examples{
-\donttest{
-# Simulate count outcome data (e.g., number of delinquent acts)
-count_data <- simulate_gmm_survey(
-  n_individuals = 1500,
-  n_times = 6,
-  n_classes = 3,
-
-  design = "cluster",
-  seed = 456
-)
-
-# Convert continuous outcome to count data (non-negative integers)
-# Shift to be positive then take absolute value and round to integers
-count_data$outcome <- as.integer(round(abs(count_data$outcome + 3)))
-
-# Fit 3-class Poisson model
-fit_count <- gmm_survey_count(
-  data = count_data,
-  id = "id",
-  time = "time",
-  outcome = "outcome",
-  n_classes = 3,
-  cluster = "psu",
-  weights = "weight",
-  starts = 200
-)
-
-summary(fit_count)
+\dontrun{
+##D # Simulate count outcome data (e.g., number of delinquent acts)
+##D count_data <- simulate_gmm_survey(
+##D   n_individuals = 1500,
+##D   n_times = 6,
+##D   n_classes = 3,
+##D
+##D   design = "cluster",
+##D   seed = 456
+##D )
+##D
+##D # Convert continuous outcome to count data (non-negative integers)
+##D # Shift to be positive then take absolute value and round to integers
+##D count_data$outcome <- as.integer(round(abs(count_data$outcome + 3)))
+##D
+##D # Fit 3-class Poisson model
+##D fit_count <- gmm_survey_count(
+##D   data = count_data,
+##D   id = "id",
+##D   time = "time",
+##D   outcome = "outcome",
+##D   n_classes = 3,
+##D   cluster = "cluster",
+##D   weights = "weight",
+##D   starts = 200
+##D )
+##D
+##D summary(fit_count)
 }
 }

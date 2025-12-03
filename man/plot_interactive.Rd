@@ -64,26 +64,25 @@ Creates interactive visualizations with the following features:
 }
 \examples{
 \donttest{
-# Full example (requires plotly package)
+# Quick example (reduced for speed)
 data(mcs_simulated)
+set.seed(123)
 
 fit <- gmm_survey(
   data = mcs_simulated,
   id = "id", time = "age", outcome = "selfcontrol",
-  n_classes = 3, starts = 100
+  n_classes = 2, starts = 5, verbose = FALSE
 )
 
 if (requireNamespace("plotly", quietly = TRUE)) {
   # Interactive trajectory plot
-  plot_interactive(fit, type = "trajectories")
+  p <- plot_interactive(fit, type = "trajectories")
 
-  # Spaghetti plot showing individual trajectories
-  plot_interactive(fit, type = "spaghetti", n_individuals = 50)
-
-  # Save to HTML file (requires htmlwidgets)
+  # Save to HTML file (use tempfile to avoid leaving files)
   if (requireNamespace("htmlwidgets", quietly = TRUE)) {
-    p <- plot_interactive(fit)
-    htmlwidgets::saveWidget(p, "gmm_trajectories.html")
+    tmp_html <- tempfile(fileext = ".html")
+    htmlwidgets::saveWidget(p, tmp_html)
+    unlink(tmp_html)  # Clean up
   }
 }
 }

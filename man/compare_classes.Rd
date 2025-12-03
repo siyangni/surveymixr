@@ -21,9 +21,12 @@ Conducts statistical tests comparing latent classes on a specific variable.
 }
 \examples{
 \donttest{
+data(mcs_simulated)
+set.seed(123)
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
-                  outcome = "selfcontrol", n_classes = 3,
-                  keep_data = TRUE)
+                  outcome = "selfcontrol", n_classes = 2,
+                  auxiliary = "baseline_risk",
+                  keep_data = TRUE, starts = 5, verbose = FALSE)
 
 compare_classes(fit, var = "baseline_risk", test = "wald")
 }

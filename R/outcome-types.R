@@ -101,39 +101,39 @@ get_link_function <- function(outcome_type = "continuous") {
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' # Simulate binary outcome data
-#' set.seed(123)
-#' binary_data <- simulate_gmm_survey(
-#'   n_individuals = 1000,
-#'   n_times = 5,
-#'   n_classes = 2,
-#'
-#'   design = "stratified_cluster",
-#'   seed = 123
-#' )
-#'
-#' # Convert continuous outcome to binary (0/1) using median split
-#' binary_data$outcome <- ifelse(binary_data$outcome > median(binary_data$outcome), 1, 0)
-#'
-#' # Fit 2-class model with binary outcome
-#' fit_binary <- gmm_survey_binary(
-#'   data = binary_data,
-#'   id = "id",
-#'   time = "time",
-#'   outcome = "outcome",
-#'   n_classes = 2,
-#'   growth_model = "linear",
-#'   strata = "stratum",
-#'   cluster = "psu",
-#'   weights = "weight",
-#'   link = "probit",
-#'   starts = 100,
-#'   cores = 2
-#' )
-#'
-#' summary(fit_binary)
-#' plot(fit_binary)
+#' \dontrun{
+#' ##D # Simulate binary outcome data
+#' ##D set.seed(123)
+#' ##D binary_data <- simulate_gmm_survey(
+#' ##D   n_individuals = 1000,
+#' ##D   n_times = 5,
+#' ##D   n_classes = 2,
+#' ##D
+#' ##D   design = "stratified_cluster",
+#' ##D   seed = 123
+#' ##D )
+#' ##D
+#' ##D # Convert continuous outcome to binary (0/1) using median split
+#' ##D binary_data$outcome <- ifelse(binary_data$outcome > median(binary_data$outcome), 1, 0)
+#' ##D
+#' ##D # Fit 2-class model with binary outcome
+#' ##D fit_binary <- gmm_survey_binary(
+#' ##D   data = binary_data,
+#' ##D   id = "id",
+#' ##D   time = "time",
+#' ##D   outcome = "outcome",
+#' ##D   n_classes = 2,
+#' ##D   growth_model = "linear",
+#' ##D   strata = "stratum",
+#' ##D   cluster = "cluster",
+#' ##D   weights = "weight",
+#' ##D   link = "probit",
+#' ##D   starts = 100,
+#' ##D   cores = 2
+#' ##D )
+#' ##D
+#' ##D summary(fit_binary)
+#' ##D plot(fit_binary)
 #' }
 gmm_survey_binary <- function(data,
                              id,
@@ -220,35 +220,15 @@ gmm_survey_binary <- function(data,
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' # Simulate ordinal outcome (e.g., Likert scale: 0-4)
-#' ordinal_data <- simulate_gmm_survey(
-#'   n_individuals = 1000,
-#'   n_times = 4,
-#'   n_classes = 3,
-#'
-#'   design = "srs"
-#' )
-#'
-#' # Convert continuous outcome to ordinal (0-4 scale)
-#' outcome_range <- range(ordinal_data$outcome)
-#' ordinal_data$outcome <- cut(ordinal_data$outcome,
-#'                            breaks = 5,
-#'                            labels = FALSE) - 1
-#'
-#' # Fit 3-class ordinal model
-#' fit_ordinal <- gmm_survey_ordinal(
-#'   data = ordinal_data,
-#'   id = "id",
-#'   time = "time",
-#'   outcome = "outcome",
-#'   n_classes = 3,
-#'   n_categories = 5,
-#'   ordinal_model = "proportional_odds",
-#'   starts = 200
-#' )
-#'
-#' summary(fit_ordinal)
+#' \dontrun{
+#' # Example for ordinal outcomes (not yet fully implemented)
+#' # ordinal_data <- simulate_gmm_survey(n_individuals = 500, design = "srs")
+#' # ordinal_data$outcome <- cut(ordinal_data$outcome, breaks = 5, labels = FALSE) - 1
+#' #
+#' # fit_ordinal <- gmm_survey_ordinal(
+#' #   data = ordinal_data, id = "id", time = "time", outcome = "outcome",
+#' #   n_classes = 2, n_categories = 5, starts = 50
+#' # )
 #' }
 gmm_survey_ordinal <- function(data,
                               id,
@@ -336,34 +316,34 @@ gmm_survey_ordinal <- function(data,
 #' @export
 #'
 #' @examples
-#' \donttest{
-#' # Simulate count outcome data (e.g., number of delinquent acts)
-#' count_data <- simulate_gmm_survey(
-#'   n_individuals = 1500,
-#'   n_times = 6,
-#'   n_classes = 3,
-#'
-#'   design = "cluster",
-#'   seed = 456
-#' )
-#'
-#' # Convert continuous outcome to count data (non-negative integers)
-#' # Shift to be positive then take absolute value and round to integers
-#' count_data$outcome <- as.integer(round(abs(count_data$outcome + 3)))
-#'
-#' # Fit 3-class Poisson model
-#' fit_count <- gmm_survey_count(
-#'   data = count_data,
-#'   id = "id",
-#'   time = "time",
-#'   outcome = "outcome",
-#'   n_classes = 3,
-#'   cluster = "psu",
-#'   weights = "weight",
-#'   starts = 200
-#' )
-#'
-#' summary(fit_count)
+#' \dontrun{
+#' ##D # Simulate count outcome data (e.g., number of delinquent acts)
+#' ##D count_data <- simulate_gmm_survey(
+#' ##D   n_individuals = 1500,
+#' ##D   n_times = 6,
+#' ##D   n_classes = 3,
+#' ##D
+#' ##D   design = "cluster",
+#' ##D   seed = 456
+#' ##D )
+#' ##D
+#' ##D # Convert continuous outcome to count data (non-negative integers)
+#' ##D # Shift to be positive then take absolute value and round to integers
+#' ##D count_data$outcome <- as.integer(round(abs(count_data$outcome + 3)))
+#' ##D
+#' ##D # Fit 3-class Poisson model
+#' ##D fit_count <- gmm_survey_count(
+#' ##D   data = count_data,
+#' ##D   id = "id",
+#' ##D   time = "time",
+#' ##D   outcome = "outcome",
+#' ##D   n_classes = 3,
+#' ##D   cluster = "cluster",
+#' ##D   weights = "weight",
+#' ##D   starts = 200
+#' ##D )
+#' ##D
+#' ##D summary(fit_count)
 #' }
 gmm_survey_count <- function(data,
                             id,

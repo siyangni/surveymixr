@@ -24,7 +24,7 @@ ggplot2 object
 Visualizes the distribution of predicted random effects for each latent class.
 }
 \examples{
-\donttest{
+\dontrun{
 # Note: Random effects functionality is under development
 fit <- gmm_survey_re(
   data = mcs_simulated,

@@ -94,26 +94,30 @@ labels based on trajectory patterns.
 \examples{
 \donttest{
 data(mcs_simulated)
+set.seed(123)
 
-# 3-fold CV comparing 1-2 class models (lighter for examples)
+# Quick 2-fold CV comparing 1-2 class models (for example speed)
 cv_results <- gmm_cv(
   data = mcs_simulated,
   id = "id",
   time = "age",
   outcome = "selfcontrol",
   classes = 1:2,
-  k_folds = 3,
+  k_folds = 2,
   strata = "stratum",
   cluster = "cluster",
   weights = "weight",
   stratified_cv = TRUE,
-  starts = 20,  # Reduced for faster execution
-  cores = 1,    # Sequential for stability in examples
-  seed = 123
+  starts = 5,
+  cores = 1,
+  seed = 123,
+  verbose = FALSE
 )
 
 print(cv_results)
-plot(cv_results)
+
+# For production analysis, use:
+# k_folds = 10, starts = 200, classes = 1:5
 }
 }
 \references{

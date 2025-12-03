@@ -81,7 +81,7 @@ test_that("quadratic growth model works correctly", {
 
   # Parameters should include quadratic terms
   params <- coef(fit)
-  expect_true(any(grepl("quadratic", names(params))))
+  expect_true(any(grepl("Quadratic", names(params))))
 })
 
 test_that("free basis growth model works correctly", {

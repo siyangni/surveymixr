@@ -108,27 +108,27 @@
 #' # Set seed for reproducibility
 #' set.seed(123)
 #'
-#' # Fit 3-class model with survey design
+#' # Fit 2-class model with survey design (reduced for example speed)
 #' fit <- gmm_survey(
 #'   data = mcs_simulated,
 #'   id = "id",
 #'   time = "age",
 #'   outcome = "selfcontrol",
-#'   n_classes = 3,
+#'   n_classes = 2,
 #'   growth_model = "linear",
 #'   strata = "stratum",
-#'   cluster = "psu",
+#'   cluster = "cluster",
 #'   weights = "weight",
-#'   starts = 500,
-#'   cores = 4
+#'   starts = 10,
+#'   cores = 1,
+#'   verbose = FALSE
 #' )
 #'
 #' # View results
 #' summary(fit)
-#' plot(fit, type = "trajectories")
 #'
-#' # Check convergence
-#' diagnose_convergence(fit)
+#' # For production analysis, use more random starts:
+#' # starts = 500, cores = parallel::detectCores() - 1
 #' }
 #'
 #' @export
@@ -359,22 +359,37 @@ gmm_survey <- function(data,
   }
 
   # Parallel execution
+  use_parallel <- FALSE
   if (cores > 1 && starts > 1) {
-    if (verbose) message(sprintf("  Using %d cores for parallel processing", cores))
+    # Try to initialize parallel backend
+    cl <- tryCatch({
+      if (verbose) message(sprintf("  Using %d cores for parallel processing", cores))
+      cl <- makeCluster(cores)
+      on.exit(stopCluster(cl), add = TRUE)
 
-    cl <- makeCluster(cores)
-    on.exit(stopCluster(cl), add = TRUE)
+      # Export necessary functions and data
+      clusterExport(cl, c("em_algorithm_gmm", "e_step_gmm", "m_step_gmm",
+                         "initialize_parameters_gmm", "predict_trajectory",
+                         "compute_weighted_loglik", "log_sum_exp"),
+                   envir = environment())
+      cl
+    }, error = function(e) {
+      if (verbose) {
+        warning(sprintf("Failed to initialize parallel cluster: %s. Falling back to sequential processing.",
+                       e$message))
+      }
+      NULL
+    })
 
-    # Export necessary functions and data
-    clusterExport(cl, c("em_algorithm_gmm", "e_step_gmm", "m_step_gmm",
-                       "initialize_parameters_gmm", "predict_trajectory",
-                       "compute_weighted_loglik", "log_sum_exp"),
-                 envir = environment())
+    use_parallel <- !is.null(cl)
+  }
 
+  if (use_parallel) {
+    # Parallel execution
     results_all <- parLapply(cl, 1:starts, run_single_start)
-
   } else {
     # Sequential execution
+    if (verbose && cores > 1) message("  Running sequentially (parallel backend unavailable)")
     results_all <- lapply(1:starts, function(i) {
       if (verbose && i %% 50 == 0) {
         message(sprintf("  Completed %d/%d starts", i, starts))
