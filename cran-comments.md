@@ -10,13 +10,7 @@ the following changes, which have all been addressed:
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
-
-* checking CRAN incoming feasibility ... NOTE
-  - New submission
-  - Possibly misspelled words in DESCRIPTION: Asparouhov, BLRT, ECLS, GMM,
-    LMR, Mendell, Mplus, NLSY, Vermunt
-    (These are valid technical terms, author names, and acronyms - added to inst/WORDLIST)
+0 errors | 0 warnings | 0 notes
 
 ## Test environments
 
