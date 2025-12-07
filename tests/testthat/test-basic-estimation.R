@@ -1,6 +1,9 @@
 # Basic tests for gmm_survey estimation
+# NOTE: Most tests skipped on CRAN due to computational time.
+# Run locally with: devtools::test(filter = "basic")
 
 test_that("gmm_survey runs with minimal inputs", {
+  skip_on_cran()
 
   sim_data <- simulate_gmm_survey(
     n_individuals = 100,
@@ -57,6 +60,7 @@ test_that("gmm_survey output has expected structure", {
 })
 
 test_that("gmm_survey handles survey design", {
+  skip_on_cran()
 
   sim_data <- simulate_gmm_survey(
     n_individuals = 200,
@@ -85,6 +89,7 @@ test_that("gmm_survey handles survey design", {
 })
 
 test_that("S4 methods work correctly", {
+  skip_on_cran()
 
   sim_data <- simulate_gmm_survey(
     n_individuals = 100,
@@ -119,6 +124,7 @@ test_that("S4 methods work correctly", {
 })
 
 test_that("gmm_survey handles many time points without numerical underflow", {
+  skip_on_cran()
   # Test numerical stability fix for log-sum-exp implementation
   # With T=15 time points, old implementation would have underflow issues
 

@@ -2,6 +2,7 @@
 # Part of Week 2 testing expansion (ACTION-PLAN-PHASE1.md)
 
 test_that("r3step BCH method works with continuous distal outcome", {
+  skip_on_cran()
 
   set.seed(401)
   sim_data <- simulate_gmm_survey(
@@ -117,6 +118,7 @@ test_that("r3step manual 3-step method works", {
 })
 
 test_that("r3step handles survey design correctly", {
+  skip_on_cran()
 
   # Bug fixed - test enabled
 
@@ -159,6 +161,7 @@ test_that("r3step handles survey design correctly", {
 })
 
 test_that("r3step omnibus test detects differences", {
+  skip_on_cran()
 
   # Bug fixed - test enabled
 
@@ -199,6 +202,7 @@ test_that("r3step omnibus test detects differences", {
 })
 
 test_that("r3step pairwise comparisons work", {
+  skip_on_cran()
 
   # Bug fixed - test enabled
 
@@ -240,6 +244,7 @@ test_that("r3step pairwise comparisons work", {
 })
 
 test_that("r3step calculates effect sizes", {
+  skip_on_cran()
 
   # Bug fixed - test enabled
 
@@ -315,6 +320,7 @@ test_that("r3step can be plotted", {
 })
 
 test_that("r3step handles missing data in distal outcome", {
+  skip_on_cran()
 
   # Bug fixed - test enabled
 

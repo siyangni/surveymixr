@@ -10,6 +10,7 @@ test_that("entropy function works", {
 })
 
 test_that("class_proportions works", {
+  skip_on_cran()
 
   sim_data <- simulate_gmm_survey(
     n_individuals = 100,
@@ -39,6 +40,7 @@ test_that("class_proportions works", {
 })
 
 test_that("classification_quality works", {
+  skip_on_cran()
 
   sim_data <- simulate_gmm_survey(
     n_individuals = 100,

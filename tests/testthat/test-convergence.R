@@ -6,6 +6,7 @@
 # =============================================================================
 
 test_that("Basic convergence works with minimal data", {
+  skip_on_cran()
   # Lightweight test: small n, few starts, simple model
   sim_data <- simulate_gmm_survey(
     n_individuals = 50,
@@ -31,6 +32,7 @@ test_that("Basic convergence works with minimal data", {
 })
 
 test_that("diagnose_convergence returns valid ConvergenceDiagnostics object", {
+  skip_on_cran()
   # Lightweight test for convergence diagnostics
   sim_data <- simulate_gmm_survey(
     n_individuals = 60,

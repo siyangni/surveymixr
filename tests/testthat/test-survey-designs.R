@@ -2,6 +2,7 @@
 # Part of Week 2 testing expansion (ACTION-PLAN-PHASE1.md)
 
 test_that("Simple Random Sampling (SRS) works", {
+  skip_on_cran()
 
   set.seed(201)
   sim_data <- simulate_gmm_survey(
@@ -32,6 +33,7 @@ test_that("Simple Random Sampling (SRS) works", {
 })
 
 test_that("Stratified sampling works correctly", {
+  skip_on_cran()
 
   set.seed(202)
   sim_data <- simulate_gmm_survey(
@@ -61,6 +63,7 @@ test_that("Stratified sampling works correctly", {
 })
 
 test_that("Cluster sampling works correctly", {
+  skip_on_cran()
 
   set.seed(203)
   sim_data <- simulate_gmm_survey(
@@ -122,6 +125,7 @@ test_that("Stratified cluster sampling works correctly", {
 })
 
 test_that("Nested design works correctly", {
+  skip_on_cran()
 
   set.seed(205)
   sim_data <- simulate_gmm_survey(
@@ -154,6 +158,7 @@ test_that("Nested design works correctly", {
 })
 
 test_that("Probability weights are applied correctly", {
+  skip_on_cran()
 
   set.seed(206)
   sim_data <- simulate_gmm_survey(
@@ -237,6 +242,7 @@ test_that("Survey design with all components works", {
 })
 
 test_that("Survey design standard errors are adjusted", {
+  skip_on_cran()
 
   set.seed(208)
   sim_data <- simulate_gmm_survey(
@@ -281,6 +287,7 @@ test_that("Survey design standard errors are adjusted", {
 })
 
 test_that("Invalid survey design specifications are caught", {
+  skip_on_cran()
   set.seed(209)
   sim_data <- simulate_gmm_survey(
     n_individuals = 100,

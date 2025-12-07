@@ -20,6 +20,7 @@ test_that("plot_model_selection_interactive exists and has correct signature", {
 })
 
 test_that("plot_interactive handles missing plotly gracefully", {
+  skip_on_cran()
   # This test checks behavior when plotly is not available
   skip_if(requireNamespace("plotly", quietly = TRUE), "plotly is available")
 
@@ -48,6 +49,7 @@ test_that("plot_interactive handles missing plotly gracefully", {
 })
 
 test_that("plot_interactive creates plot when plotly available", {
+  skip_on_cran()
   skip_if_not_installed("plotly")
 
   sim_data <- simulate_gmm_survey(
@@ -74,6 +76,7 @@ test_that("plot_interactive creates plot when plotly available", {
 })
 
 test_that("plot_interactive supports different plot types", {
+  skip_on_cran()
   skip_if_not_installed("plotly")
 
   sim_data <- simulate_gmm_survey(

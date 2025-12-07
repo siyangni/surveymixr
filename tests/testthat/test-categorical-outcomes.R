@@ -109,6 +109,7 @@ test_that("Outcome validation works for count data", {
 })
 
 test_that("gmm_survey_binary validates input correctly", {
+  skip_on_cran()
   # Should accept valid binary data
   expect_silent({
     try(gmm_survey_binary(
@@ -139,6 +140,7 @@ test_that("gmm_survey_binary validates input correctly", {
 })
 
 test_that("gmm_survey_ordinal validates input correctly", {
+  skip_on_cran()
   expect_silent({
     try(gmm_survey_ordinal(
       data = test_data_ordinal,
@@ -197,6 +199,7 @@ test_that("gmm_survey_count validates input correctly", {
 })
 
 test_that("Link function specification works", {
+  skip_on_cran()
   # Probit link
   expect_silent({
     try(gmm_survey_binary(
@@ -271,6 +274,7 @@ test_that("Count model types work", {
 })
 
 test_that("Ordinal model types work", {
+  skip_on_cran()
   # Proportional odds
   expect_silent({
     try(gmm_survey_ordinal(

@@ -30,6 +30,7 @@ test_that("residual_diagnostics exists and has correct signature", {
 })
 
 test_that("diagnose_separation works with fitted model", {
+  skip_on_cran()
   # Create simple model
   sim_data <- simulate_gmm_survey(
     n_individuals = 100,
@@ -56,6 +57,7 @@ test_that("diagnose_separation works with fitted model", {
 })
 
 test_that("residual_diagnostics works with fitted model", {
+  skip_on_cran()
   sim_data <- simulate_gmm_survey(
     n_individuals = 100,
     n_times = 4,

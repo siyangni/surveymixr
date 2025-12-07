@@ -1,27 +1,27 @@
 Package: surveymixr
 Type: Package
 Title: Growth Mixture Models with Complex Survey Design
-Version: 0.2.1
-Date: 2025-11-16
+Version: 0.2.2
+Date: 2025-12-07
 Author: Siyang Ni [aut, cre]
 Authors@R: c(
     person("Siyang", "Ni", email = "johnni.nj@gmail.com",
            role = c("aut", "cre"))
     )
 Maintainer: Siyang Ni <johnni.nj@gmail.com>
-Description: Implements growth mixture modeling (GMM) for longitudinal data with
+Description: Implements growth mixture modeling ('GMM') for longitudinal data with
     full integration of complex survey design features including stratification,
     clustering, and probability weights. Supports continuous, binary, ordinal,
     and count outcomes. Provides comprehensive model selection tools including
-    Bootstrap Likelihood Ratio Test (BLRT), Lo-Mendell-Rubin test (LMR), and
+    Bootstrap Likelihood Ratio Test ('BLRT'), 'Lo-Mendell-Rubin' test ('LMR'), and
     cross-validation. Features advanced diagnostics (influence detection,
     separation checks, residual analysis), data validation, and interactive
-    visualizations. Implements the R3STEP approach for auxiliary variable analysis
+    visualizations. Implements the 'R3STEP' approach for auxiliary variable analysis
     with classification uncertainty correction. This package fills a critical gap
     by enabling rigorous analyses of large-scale longitudinal surveys (e.g.,
-    Millennium Cohort Study, Add Health, NLSY, ECLS) that were previously only
-    possible in proprietary software like Mplus. Methods based on Muthén and
-    Muthén (2017) <https://www.statmodel.com/>, Asparouhov and Muthén (2014)
+    Millennium Cohort Study, Add Health, 'NLSY', 'ECLS') that were previously only
+    possible in proprietary software like 'Mplus'. Methods based on Muthen and
+    Muthen (2017) <https://www.statmodel.com/>, Asparouhov and Muthen (2014)
     <doi:10.1080/10705511.2014.915181>, and Vermunt (2010)
     <doi:10.1111/j.1467-985X.2009.00626.x>.
 License: GPL (>= 3)

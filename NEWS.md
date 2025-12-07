@@ -1,3 +1,32 @@
+# surveymixr 0.2.2 (2025-12-07)
+
+## CRAN Resubmission - Fixed Pre-test Issues
+
+This update addresses notes from CRAN incoming pre-tests:
+
+### Fixes
+
+* **Fixed possibly misspelled words in DESCRIPTION**: Technical terms, software 
+  names, and acronyms are now properly quoted as per CRAN standards:
+  - 'GMM', 'BLRT', 'LMR', 'R3STEP' (acronyms)
+  - 'Mplus', 'Lo-Mendell-Rubin' (software/method names)
+  - 'NLSY', 'ECLS' (survey acronyms)
+  
+* **Reduced checktime from 18+ minutes to under 10 minutes**: Added `skip_on_cran()` 
+  to computationally intensive tests in:
+  - test-basic-estimation.R
+  - test-comprehensive.R
+  - test-categorical-outcomes.R
+  - test-convergence.R
+  - test-diagnostics.R
+  - test-growth-models.R
+  - test-r3step.R
+  - test-survey-designs.R
+  
+  Full test coverage remains available via `devtools::test()` for thorough local testing.
+
+---
+
 # surveymixr 0.2.1 (2025-11-20)
 
 ## CRAN Resubmission - Addressed Reviewer Feedback (2025-11-20)

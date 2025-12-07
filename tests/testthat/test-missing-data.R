@@ -2,6 +2,7 @@
 # Part of Week 2 testing expansion (ACTION-PLAN-PHASE1.md)
 
 test_that("FIML handles MCAR data correctly", {
+  skip_on_cran()
 
   set.seed(501)
   sim_data <- simulate_gmm_survey(
@@ -33,6 +34,7 @@ test_that("FIML handles MCAR data correctly", {
 })
 
 test_that("FIML handles MAR data correctly", {
+  skip_on_cran()
 
   set.seed(502)
   sim_data <- simulate_gmm_survey(
@@ -122,6 +124,7 @@ test_that("Different missing rates are handled", {
 })
 
 test_that("Missing data patterns are handled correctly", {
+  skip_on_cran()
 
   set.seed(505)
   sim_data <- simulate_gmm_survey(
@@ -157,6 +160,7 @@ test_that("Missing data patterns are handled correctly", {
 })
 
 test_that("Intermittent missing data is handled", {
+  skip_on_cran()
 
   set.seed(506)
   sim_data <- simulate_gmm_survey(
@@ -238,6 +242,7 @@ test_that("Complete cases vs FIML produces different results", {
 })
 
 test_that("All observations missing for some individuals", {
+  skip_on_cran()
 
   set.seed(508)
   sim_data <- simulate_gmm_survey(

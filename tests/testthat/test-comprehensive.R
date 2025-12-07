@@ -2,6 +2,9 @@
 # This file provides comprehensive coverage for all exported functions
 # and replaces the functionality of week1-setup.R
 #
+# NOTE: These tests are skipped on CRAN due to computational time constraints.
+# Run them locally with: devtools::test(filter = "comprehensive")
+#
 # NOTE: Some tests are skipped due to current bugs/limitations in the package:
 # - gmm_select: BLRT computation bug when run_blrt=FALSE
 # - class_proportions: Differing number of rows error
@@ -16,6 +19,7 @@
 # =============================================================================
 
 test_that("gmm_survey core functionality works", {
+  skip_on_cran()
 
   set.seed(1001)
   sim_data <- simulate_gmm_survey(
@@ -46,6 +50,7 @@ test_that("gmm_survey core functionality works", {
 })
 
 test_that("gmm_select works across class range", {
+  skip_on_cran()
 
   set.seed(1002)
   sim_data <- simulate_gmm_survey(
@@ -118,6 +123,7 @@ test_that("extract_fit_indices extracts all fit measures", {
 })
 
 test_that("extract_fit_indices handles multiple models", {
+  skip_on_cran()
 
   set.seed(1004)
   sim_data <- simulate_gmm_survey(
@@ -184,6 +190,7 @@ test_that("extract_trajectories produces predicted trajectories", {
 })
 
 test_that("extract_trajectories handles multiple classes", {
+  skip_on_cran()
 
   set.seed(1006)
   sim_data <- simulate_gmm_survey(
@@ -251,6 +258,7 @@ test_that("entropy calculation is accurate", {
 })
 
 test_that("class_proportions provides complete information", {
+  skip_on_cran()
 
   set.seed(1008)
   sim_data <- simulate_gmm_survey(
@@ -318,6 +326,7 @@ test_that("classification_quality provides comprehensive metrics", {
 })
 
 test_that("diagnose_convergence identifies convergence issues", {
+  skip_on_cran()
 
   set.seed(1010)
   sim_data <- simulate_gmm_survey(
@@ -459,6 +468,7 @@ test_that("compare_with_mplus validates model equivalence", {
 # =============================================================================
 
 test_that("plot_trajectories creates trajectory plot", {
+  skip_on_cran()
 
   set.seed(1014)
   sim_data <- simulate_gmm_survey(
@@ -540,6 +550,7 @@ test_that("plot_class_comparison creates comparison plot", {
 })
 
 test_that("plot_model_selection creates selection plot", {
+  skip_on_cran()
 
   set.seed(1017)
   sim_data <- simulate_gmm_survey(
@@ -650,6 +661,7 @@ test_that("All S4 methods work correctly", {
 # =============================================================================
 
 test_that("r3step works with all methods", {
+  skip_on_cran()
 
   set.seed(1019)
   sim_data <- simulate_gmm_survey(
@@ -715,6 +727,8 @@ test_that("wide_to_long reshaping works correctly", {
 })
 
 test_that("simulate_gmm_survey produces valid data", {
+  skip_on_cran()
+
   set.seed(1020)
 
   sim_data <- simulate_gmm_survey(
@@ -798,6 +812,7 @@ test_that("Survey designs are properly handled", {
 # =============================================================================
 
 test_that("Functions handle edge cases gracefully", {
+  skip_on_cran()
 
   set.seed(1023)
 
@@ -870,6 +885,7 @@ test_that("Invalid inputs are properly rejected", {
 # =============================================================================
 
 test_that("Full workflow completes successfully", {
+  skip_on_cran()
 
   set.seed(1025)
 
