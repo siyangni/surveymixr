@@ -110,12 +110,15 @@ setClass("SurveyMixrSelect",
   validity = function(object) {
     errors <- character()
 
-    # Validate recommended_classes is within range of fitted_models
-    if (length(object@recommended_classes) > 0 && length(object@fitted_models) > 0) {
-      max_classes <- length(object@fitted_models)
-      if (any(object@recommended_classes < 1 | object@recommended_classes > max_classes)) {
+    # Validate recommended_classes is one of the fitted class counts
+    if (length(object@recommended_classes) > 0 &&
+        nrow(object@comparison_table) > 0 &&
+        "n_classes" %in% names(object@comparison_table)) {
+      fitted_classes <- object@comparison_table$n_classes
+      if (!all(object@recommended_classes %in% fitted_classes)) {
         errors <- c(errors,
-          sprintf("recommended_classes must be between 1 and %d", max_classes))
+          sprintf("recommended_classes must be one of the fitted class counts: %s",
+                  paste(fitted_classes, collapse = ", ")))
       }
     }
 
