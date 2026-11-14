@@ -89,15 +89,15 @@ For zero-inflated models:
 # n_individuals = 1500,
 # n_times = 6,
 # n_classes = 3,
-$
+
 # design = "cluster",
 # seed = 456
 # )
-$
+
 # Convert continuous outcome to count data (non-negative integers)
 # Shift to be positive then take absolute value and round to integers
 # count_data$outcome <- as.integer(round(abs(count_data$outcome + 3)))
-$
+
 # Fit 3-class Poisson model
 # fit_count <- gmm_survey_count(
 # data = count_data,
@@ -109,6 +109,6 @@ $
 # weights = "weight",
 # starts = 200
 # )
-$
+
 # summary(fit_count)
 }

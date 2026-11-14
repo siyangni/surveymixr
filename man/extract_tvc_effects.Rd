@@ -31,17 +31,17 @@ Extracts estimated effects of time-varying covariates from a fitted model.
 # covariates = TRUE,
 # seed = 789
 # )
-$
+
 # fit <- gmm_survey_tvc(
 # data = sim_data,
 # id = "id", time = "time", outcome = "outcome",
 # n_classes = 3, tvc = ~ baseline_risk, tvc_effects = "both", starts = 20
 # )
-$
+
 # Extract all TVC effects
 # effects <- extract_tvc_effects(fit)
 # print(effects)
-$
+
 # Extract for specific class
 # effects_c1 <- extract_tvc_effects(fit, class = 1)
 }

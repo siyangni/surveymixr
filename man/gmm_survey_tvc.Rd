@@ -154,7 +154,7 @@ Set \code{tvc_lag > 0} to examine lagged effects of TVCs:
 # n_clusters = 20,
 # seed = 999
 # )
-$
+
 # Direct effects: covariate directly predicts outcome
 # fit_direct <- gmm_survey_tvc(
 # data = sim_data,
@@ -166,7 +166,7 @@ $
 # tvc_effects = "direct",
 # starts = 20
 # )
-$
+
 # Both within- and between-person effects
 # fit_both <- gmm_survey_tvc(
 # data = sim_data,
@@ -178,7 +178,7 @@ $
 # tvc_effects = "both",
 # starts = 20
 # )
-$
+
 # Extract TVC effects
 # tvc_effects <- extract_tvc_effects(fit_both)
 # print(tvc_effects)

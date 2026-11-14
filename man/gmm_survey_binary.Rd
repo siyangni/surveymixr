@@ -94,14 +94,14 @@ the EM algorithm and standard error calculation.
 # n_individuals = 1000,
 # n_times = 5,
 # n_classes = 2,
-$
+
 # design = "stratified_cluster",
 # seed = 123
 # )
-$
+
 # Convert continuous outcome to binary (0/1) using median split
 # binary_data$outcome <- ifelse(binary_data$outcome > median(binary_data$outcome), 1, 0)
-$
+
 # Fit 2-class model with binary outcome
 # fit_binary <- gmm_survey_binary(
 # data = binary_data,
@@ -117,7 +117,7 @@ $
 # starts = 100,
 # cores = 2
 # )
-$
+
 # summary(fit_binary)
 # plot(fit_binary)
 }

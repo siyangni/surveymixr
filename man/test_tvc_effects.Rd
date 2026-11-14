@@ -33,7 +33,7 @@ and class-specific.
 # id = "id", time = "age", outcome = "selfcontrol",
 # n_classes = 3, tvc = ~ ses, starts = 100
 # )
-$
+
 # Test significance of SES effect
 # test_results <- test_tvc_effects(fit, covariate = "ses")
 # print(test_results)
