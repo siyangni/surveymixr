@@ -433,16 +433,28 @@ setMethod("show", "R3StepResults", function(object) {
 
       if (!is.null(object@test_results$pairwise_tests)) {
         cat("\nPairwise Comparisons:\n")
-        pairwise_df <- do.call(rbind, lapply(object@test_results$pairwise_tests, function(p) {
-          data.frame(
-            Comparison = paste0("Class ", p$class1, " vs Class ", p$class2),
-            Diff = p$diff,
-            SE = p$se,
-            t = p$t,
-            p = p$p,
+        pt <- object@test_results$pairwise_tests
+        if (is.data.frame(pt)) {
+          pairwise_df <- data.frame(
+            Comparison = paste0("Class ", pt$class1, " vs Class ", pt$class2),
+            Diff = pt$diff,
+            SE = pt$se,
+            t = pt$t,
+            p = pt$p,
             stringsAsFactors = FALSE
           )
-        }))
+        } else {
+          pairwise_df <- do.call(rbind, lapply(pt, function(p) {
+            data.frame(
+              Comparison = paste0("Class ", p$class1, " vs Class ", p$class2),
+              Diff = p$diff,
+              SE = p$se,
+              t = p$t,
+              p = p$p,
+              stringsAsFactors = FALSE
+            )
+          }))
+        }
         print(pairwise_df, row.names = FALSE)
       }
     } else {
