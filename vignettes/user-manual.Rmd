@@ -613,50 +613,6 @@ fit_count <- gmm_survey_count(
 
 # Part VI: Advanced Features
 
-## Random Effects Models
-
-### Why Random Effects?
-
-Standard GMM assumes **no within-class variance** in growth parameters. Random effects add:
-
-- Individual-level deviations from class means
-- More realistic modeling of heterogeneity
-- Better fit for highly variable trajectories
-
-### Fitting RE Models
-
-```{r}
-fit_re <- gmm_survey_re(
-  data = mcs_simulated,
-  id = "id", time = "age", outcome = "selfcontrol",
-  n_classes = 3,
-  random = ~ 1 + age,        # Random intercept and slope
-  strata = "stratum",
-  cluster = "psu",
-  weights = "weight",
-  starts = 200,
-  cores = 4
-)
-```
-
-### Extracting Random Effects
-
-```{r}
-# Get BLUPs (Best Linear Unbiased Predictors)
-random_effects <- get_random_effects(fit_re)
-head(random_effects)
-
-# Variance components
-variance_components(fit_re)
-
-# Intraclass correlations
-calculate_icc(fit_re)
-
-# Visualize
-plot_random_effects(fit_re, type = "density")
-plot_random_effects(fit_re, type = "caterpillar")
-```
-
 ## Time-Varying Covariates
 
 ### Why TVCs?
@@ -935,11 +891,6 @@ saveWidget(p, "trajectories.html")
 ## Specialized Plots
 
 ```{r}
-# Random effects
-plot_random_effects(fit_re, type = "density")
-plot_random_effects(fit_re, type = "caterpillar")
-plot_random_effects(fit_re, type = "qq")
-
 # Time-varying covariates
 plot_tvc_effects(fit_tvc, covariate = "stress")
 
@@ -1401,7 +1352,6 @@ citation("surveymixr")
 - `gmm_survey_binary()` - Binary outcomes
 - `gmm_survey_ordinal()` - Ordinal outcomes
 - `gmm_survey_count()` - Count outcomes
-- `gmm_survey_re()` - Random effects
 - `gmm_survey_tvc()` - Time-varying covariates
 
 ## Model Selection
@@ -1425,12 +1375,10 @@ citation("surveymixr")
 - `plot_trajectories()` - Static trajectory plots
 - `plot_interactive()` - Interactive plots
 - `plot_model_selection()` - Model comparison plots
-- `plot_random_effects()` - Random effects plots
 - `plot_tvc_effects()` - TVC effect plots
 
 ## Utilities
 
-- `validate_survey_data()` - Data validation
 - `simulate_gmm_survey()` - Data simulation
 - `wide_to_long()` - Format conversion
 - `mplus_to_surveymixr()` - Mplus conversion

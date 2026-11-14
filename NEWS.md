@@ -1,3 +1,30 @@
+# surveymixr 0.2.3 (2026-11-14)
+
+## CRAN Resubmission - Removed \dontrun{} Examples
+
+This update addresses reviewer feedback (2025-12-11) requesting that
+\dontrun{} examples be changed to \donttest{} or justified.
+
+### Breaking changes
+
+* **Removed the random-effects placeholder API**: `gmm_survey_re()`,
+  `get_random_effects()`, `variance_components()`, `calculate_icc()`,
+  `plot_random_effects()` and the `SurveyMixrRE` class were development
+  stubs whose estimation routine errored by design ("Full implementation
+  pending"), so their documented examples could never run under
+  \donttest{}. They have been removed entirely and will return in a future
+  release once fully implemented and tested.
+
+### Fixes
+
+* **No \dontrun{} remains in any documentation**: examples now either run
+  directly, are wrapped in \donttest{} (verified to run without error), or
+  are shown as commented code for features still under development
+  (binary/ordinal/count outcomes, time-varying covariates).
+* **Improved EM random-start initialization**: class labels are now
+  shuffled across starts so parallel starts are not identical, improving
+  exploration of the likelihood surface.
+
 # surveymixr 0.2.2 (2025-12-07)
 
 ## CRAN Resubmission - Fixed Pre-test Issues

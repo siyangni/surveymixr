@@ -1,3 +1,27 @@
+## Resubmission (v0.2.3)
+
+This is a resubmission addressing reviewer feedback from Benjamin Altmann
+(2025-12-11) regarding \dontrun{} examples:
+
+1. **Removed the random-effects placeholder API** - The five flagged
+   documentation pages (calculate_icc, get_random_effects, gmm_survey_re,
+   plot_random_effects, variance_components) documented a feature that was
+   still under development: the underlying estimation routine errors by
+   design ("Full implementation pending"), so its examples could never run
+   under \donttest{}. We have removed the entire placeholder API (functions,
+   class, tests, and documentation). Random-effects support will return in a
+   future release once fully implemented and tested.
+
+2. **Removed all remaining \dontrun{} from documentation** - Examples now
+   either run directly, are wrapped in \donttest{} (verified to run without
+   error), or are shown as commented code for features still under development
+   (binary/ordinal/count outcomes, time-varying covariates). No \dontrun{}
+   remains anywhere in the package.
+
+3. **Improvements to EM initialization** - Random-start initialization now
+   shuffles class labels so parallel starts are not identical, improving
+   the exploration of the likelihood surface.
+
 ## Resubmission (v0.2.2)
 
 This is a resubmission addressing notes from the incoming pre-tests:

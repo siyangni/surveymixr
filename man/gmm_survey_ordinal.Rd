@@ -79,8 +79,7 @@ where \eqn{\tau_1 < \tau_2 < ... < \tau_{K-1}} are threshold parameters
 and \eqn{\eta_{itk}} is the linear predictor.
 }
 \examples{
-\dontrun{
-# Example for ordinal outcomes (not yet fully implemented)
+# Example for ordinal outcomes (under development; not yet runnable)
 # ordinal_data <- simulate_gmm_survey(n_individuals = 500, design = "srs")
 # ordinal_data$outcome <- cut(ordinal_data$outcome, breaks = 5, labels = FALSE) - 1
 #
@@ -88,5 +87,4 @@ and \eqn{\eta_{itk}} is the linear predictor.
 #   data = ordinal_data, id = "id", time = "time", outcome = "outcome",
 #   n_classes = 2, n_categories = 5, starts = 50
 # )
-}
 }

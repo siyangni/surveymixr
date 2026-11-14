@@ -44,7 +44,6 @@ reference:
   - gmm_survey_binary
   - gmm_survey_ordinal
   - gmm_survey_count
-  - gmm_survey_re
   - gmm_survey_tvc
 
 - title: Model Selection
@@ -81,7 +80,6 @@ reference:
   - plot_model_selection_interactive
   - plot_class_comparison
   - plot_posterior_dist
-  - plot_random_effects
   - plot_tvc_effects
 
 - title: Extractors & Accessors
@@ -90,9 +88,6 @@ reference:
   - extract_fit_indices
   - extract_trajectories
   - extract_tvc_effects
-  - get_random_effects
-  - variance_components
-  - calculate_icc
 
 - title: Data Preparation & Validation
   desc: Helper functions for data manipulation
@@ -122,7 +117,6 @@ reference:
   desc: Object-oriented class definitions
   contents:
   - SurveyMixr-class
-  - SurveyMixrRE-class
   - SurveyMixrTVC-class
   - SurveyMixrSelect-class
   - R3StepResults-class

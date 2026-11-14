@@ -85,29 +85,39 @@ The output provides:
 }
 }
 \examples{
-\dontrun{
-##D # Fit GMM
-##D fit <- gmm_survey(
-##D   data = mcs_simulated,
-##D   id = "id",
-##D   time = "age",
-##D   outcome = "selfcontrol",
-##D   n_classes = 3,
-##D   strata = "stratum",
-##D   cluster = "cluster",
-##D   weights = "weight",
-##D   starts = 500
-##D )
-##D
-##D # Analyze distal outcomes
-##D r3step_results <- r3step(
-##D   gmm_object = fit,
-##D   distal_vars = c("academic_achievement", "delinquency"),
-##D   data = mcs_simulated,
-##D   method = "BCH"
-##D )
-##D
-##D summary(r3step_results)
+\donttest{
+# Simulate data and fit GMM
+sim_data <- simulate_gmm_survey(
+  n_individuals = 300,
+  n_times = 4,
+  n_classes = 3,
+  covariates = TRUE,
+  design = "srs",
+  seed = 401
+)
+
+fit <- gmm_survey(
+  data = sim_data,
+  id = "id",
+  time = "time",
+  outcome = "outcome",
+  n_classes = 3,
+  starts = 10,
+  cores = 1
+)
+
+# R3STEP requires person-level data - aggregate
+person_data <- sim_data[!duplicated(sim_data$id), c("id", "ses")]
+
+# Analyze distal outcomes
+r3step_results <- r3step(
+  gmm_object = fit,
+  distal_vars = "ses",
+  data = person_data,
+  method = "BCH"
+)
+
+summary(r3step_results)
 }
 
 }

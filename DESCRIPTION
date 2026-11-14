@@ -1,8 +1,8 @@
 Package: surveymixr
 Type: Package
 Title: Growth Mixture Models with Complex Survey Design
-Version: 0.2.2
-Date: 2025-12-07
+Version: 0.2.3
+Date: 2026-11-14
 Author: Siyang Ni [aut, cre]
 Authors@R: c(
     person("Siyang", "Ni", email = "johnni.nj@gmail.com",
@@ -49,6 +49,6 @@ Suggests:
 VignetteBuilder: knitr
 URL: https://github.com/siyangni/surveymixr
 BugReports: https://github.com/siyangni/surveymixr/issues
-RoxygenNote: 7.3.3
 Config/roxygen/markdown: TRUE
 NeedsCompilation: no
+Config/roxygen2/version: 8.0.0

@@ -127,7 +127,7 @@ A comprehensive, unified guide covering:
 - Getting started with installation and quick examples
 - Core concepts of growth mixture models and survey design
 - Model fitting, selection, and diagnostics
-- Advanced features (random effects, time-varying covariates, R3STEP)
+- Advanced features (time-varying covariates, R3STEP)
 - Visualization, troubleshooting, and best practices
 
 ### Additional Vignettes
