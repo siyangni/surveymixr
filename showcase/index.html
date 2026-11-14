@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>surveymixr — three pathways from a complex survey</title>
+  <meta name="description" content="A short R script estimates a survey-weighted growth mixture model and draws the latent trajectories. Built with surveymixr." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,500;9..144,0,650;9..144,1,500&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,ital,wght@8..60,0,400;8..60,0,600;8..60,1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #f3eee4;
+      --paper-deep: #e7dfd1;
+      --ink: #1c1814;
+      --muted: #5c5348;
+      --faint: #8a7f70;
+      --rule: #cfc5b5;
+      --code-bg: #1c1915;
+      --code-fg: #e8e0d4;
+      --code-dim: #9a8f80;
+      --pine: #0f5c4c;
+      --ochre: #c47a22;
+      --brick: #9b2c2c;
+      --display: "Fraunces", "Bitstream Charter", Georgia, serif;
+      --serif: "Source Serif 4", "Bitstream Charter", Georgia, serif;
+      --mono: "IBM Plex Mono", "Source Code Pro", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background:
+        radial-gradient(1200px 600px at 12% -10%, rgba(196, 122, 34, 0.07), transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, rgba(15, 92, 76, 0.06), transparent 50%),
+        var(--paper);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-optical-sizing: auto;
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 2.25rem 1.4rem 3.5rem;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1.5rem 2rem;
+      align-items: end;
+      padding-bottom: 1.35rem;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 1.6rem;
+    }
+
+    .brand {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ochre);
+      margin: 0 0 0.55rem;
+    }
+
+    h1 {
+      font-family: var(--display);
+      font-weight: 500;
+      font-size: clamp(1.85rem, 4vw, 3.05rem);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      margin: 0;
+      max-width: 16ch;
+    }
+
+    h1 em {
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    .lede {
+      max-width: 38ch;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .lede strong { color: var(--ink); font-weight: 600; }
+
+    .spread {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.22fr);
+      align-items: stretch;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      min-height: 0;
+    }
+
+    .code-pane {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .code-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.55rem 0.9rem;
+      border-bottom: 1px solid rgba(232, 224, 212, 0.08);
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--code-dim);
+      flex: 0 0 auto;
+    }
+
+    .copy {
+      appearance: none;
+      background: transparent;
+      color: var(--code-fg);
+      border: 1px solid rgba(232, 224, 212, 0.22);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.55rem;
+      cursor: pointer;
+    }
+    .copy:hover { border-color: var(--ochre); color: var(--ochre); }
+
+    pre {
+      margin: 0;
+      padding: 0.75rem 0.55rem 0.9rem 0;
+      overflow: auto;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      line-height: 1.48;
+      tab-size: 2;
+      flex: 1 1 auto;
+    }
+
+    code { font-family: inherit; }
+
+    .ln {
+      display: grid;
+      grid-template-columns: 2.1rem 1fr;
+      column-gap: 0.7rem;
+    }
+    .n {
+      color: #5d554c;
+      text-align: right;
+      user-select: none;
+    }
+    .kw { color: #d9a85c; }
+    .fn { color: #e8e0d4; font-weight: 500; }
+    .st { color: #7dbaa0; }
+    .nm { color: #d37a6c; }
+    .cm { color: #8a7f70; font-style: italic; }
+    .op { color: #cbbba6; }
+
+    .figure-pane {
+      padding: 0.15rem 0.2rem 0.1rem;
+      background: var(--paper);
+      min-width: 0;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .figure-pane img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--rule);
+      border-top: 0;
+    }
+
+    .stat {
+      padding: 0.85rem 1rem 0.95rem;
+      border-right: 1px solid var(--rule);
+    }
+    .stat:last-child { border-right: 0; }
+    .stat dt {
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin: 0 0 0.25rem;
+    }
+    .stat dd {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 1.28rem;
+      font-weight: 500;
+    }
+    .stat dd small {
+      display: block;
+      font-family: var(--serif);
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 400;
+      margin-top: 0.12rem;
+    }
+
+    .classes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem 1.75rem;
+      margin: 1.35rem 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .classes li { display: flex; gap: 0.55rem; align-items: baseline; max-width: 42ch; }
+    .swatch {
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 99px;
+      flex: 0 0 auto;
+      transform: translateY(0.12rem);
+    }
+    .classes b { color: var(--ink); font-weight: 600; }
+
+    footer {
+      margin-top: 1.8rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.55rem;
+      color: var(--faint);
+      font-size: 0.88rem;
+    }
+    footer a { color: var(--ink); }
+
+    @media (max-width: 900px) {
+      header { grid-template-columns: 1fr; }
+      h1 { max-width: none; }
+      .spread { grid-template-columns: 1fr; }
+      .figure-pane { order: -1; }
+      pre { font-size: 0.66rem; line-height: 1.5; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .stat:nth-child(odd) { border-right: 1px solid var(--rule); }
+      .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px solid var(--rule); }
+      .stat:nth-child(2), .stat:nth-child(4) { border-right: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <p class="brand">surveymixr</p>
+        <h1>The sample is complex.<br /><em>The trajectories still resolve.</em></h1>
+      </div>
+      <p class="lede">
+        Growth mixture models used to need Mplus when the data came from a
+        stratified, clustered, weighted survey. Here it is in twenty lines of R:
+        <strong>one model, three latent pathways, survey-adjusted inference.</strong>
+      </p>
+    </header>
+
+    <div class="spread">
+      <section class="code-pane" aria-label="R code">
+        <div class="code-bar">
+          <span>R · gmm_survey()</span>
+          <button class="copy" type="button" data-copy>Copy</button>
+        </div>
+        <pre id="demo-code"><code><span class="ln"><span class="n">1</span><span><span class="kw">library</span>(surveymixr)</span></span>
+<span class="ln"><span class="n">2</span><span></span></span>
+<span class="ln"><span class="n">3</span><span><span class="cm"># Self-control, ages 3–17, survey design</span></span></span>
+<span class="ln"><span class="n">4</span><span>fit &lt;- <span class="fn">gmm_survey</span>(</span></span>
+<span class="ln"><span class="n">5</span><span>  data      = selfcontrol,</span></span>
+<span class="ln"><span class="n">6</span><span>  id        = <span class="st">"id"</span>,</span></span>
+<span class="ln"><span class="n">7</span><span>  time      = <span class="st">"age"</span>,</span></span>
+<span class="ln"><span class="n">8</span><span>  outcome   = <span class="st">"selfcontrol"</span>,</span></span>
+<span class="ln"><span class="n">9</span><span>  n_classes = <span class="nm">3</span>,</span></span>
+<span class="ln"><span class="n">10</span><span>  strata    = <span class="st">"stratum"</span>,</span></span>
+<span class="ln"><span class="n">11</span><span>  cluster   = <span class="st">"cluster"</span>,</span></span>
+<span class="ln"><span class="n">12</span><span>  weights   = <span class="st">"weight"</span></span></span>
+<span class="ln"><span class="n">13</span><span>)</span></span>
+<span class="ln"><span class="n">14</span><span></span></span>
+<span class="ln"><span class="n">15</span><span><span class="fn">plot_trajectories</span>(</span></span>
+<span class="ln"><span class="n">16</span><span>  fit,</span></span>
+<span class="ln"><span class="n">17</span><span>  xlab   = <span class="st">"Age (years)"</span>,</span></span>
+<span class="ln"><span class="n">18</span><span>  ylab   = <span class="st">"Self-control"</span>,</span></span>
+<span class="ln"><span class="n">19</span><span>  colors = <span class="kw">c</span>(<span class="st">"#0F5C4C"</span>, <span class="st">"#C47A22"</span>, <span class="st">"#9B2C2C"</span>)</span></span>
+<span class="ln"><span class="n">20</span><span>)</span></span></code></pre>
+      </section>
+
+      <figure class="figure-pane">
+        <picture>
+          <source srcset="trajectories.svg" type="image/svg+xml" />
+          <img src="trajectories.png" alt="Three survey-weighted self-control trajectories from ages 3 to 17: a high-stable class, a moderate-improving class, and a low-declining class, with faint individual series behind the class means." />
+        </picture>
+      </figure>
+    </div>
+
+    <dl class="stats">
+      <div class="stat">
+        <dt>Sample</dt>
+        <dd>1,600<small>children, 6 waves</small></dd>
+      </div>
+      <div class="stat">
+        <dt>Survey design</dt>
+        <dd>4 × 80<small>strata × PSUs, with weights</small></dd>
+      </div>
+      <div class="stat">
+        <dt>Entropy</dt>
+        <dd>0.999<small>classes are sharply separated</small></dd>
+      </div>
+      <div class="stat">
+        <dt>Weighted shares</dt>
+        <dd>49 / 33 / 17<small>high · improving · declining</small></dd>
+      </div>
+    </dl>
+
+    <ul class="classes">
+      <li><span class="swatch" style="background:#0F5C4C"></span><span><b>High, stable.</b> Starts high at age 3 and stays there — the modal pathway.</span></li>
+      <li><span class="swatch" style="background:#C47A22"></span><span><b>Improving.</b> A lower start, then a steady climb that nearly meets the high class by 17.</span></li>
+      <li><span class="swatch" style="background:#9B2C2C"></span><span><b>Declining.</b> The smallest class, and the only one whose mean falls across childhood.</span></li>
+    </ul>
+
+    <footer>
+      <span>Figure from a fitted <code>surveymixr</code> model. Individual series are sampled for the web figure; bold lines and ribbons are class means with 95% survey-adjusted CIs. Data are simulated with the package generator, MCS-inspired.</span>
+      <span><a href="https://github.com/siyangni/surveymixr">github.com/siyangni/surveymixr</a></span>
+    </footer>
+  </div>
+
+  <script>
+    const src = `library(surveymixr)
+
+# Self-control, ages 3–17, survey design
+fit <- gmm_survey(
+  data      = selfcontrol,
+  id        = "id",
+  time      = "age",
+  outcome   = "selfcontrol",
+  n_classes = 3,
+  strata    = "stratum",
+  cluster   = "cluster",
+  weights   = "weight"
+)
+
+plot_trajectories(
+  fit,
+  xlab   = "Age (years)",
+  ylab   = "Self-control",
+  colors = c("#0F5C4C", "#C47A22", "#9B2C2C")
+)
+`;
+    document.querySelector("[data-copy]").addEventListener("click", async (e) => {
+      const btn = e.currentTarget;
+      try {
+        await navigator.clipboard.writeText(src);
+        btn.textContent = "Copied";
+        setTimeout(() => { btn.textContent = "Copy"; }, 1600);
+      } catch (err) {
+        btn.textContent = "Copy failed";
+      }
+    });
+  </script>
+</body>
+</html>

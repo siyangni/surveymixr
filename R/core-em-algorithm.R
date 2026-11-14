@@ -164,51 +164,53 @@ initialize_parameters_gmm <- function(y_wide, time_scores, n_classes,
   n <- nrow(y_wide)
   n_times <- ncol(y_wide)
 
-  # Use k-means on available data for initial class assignment
   y_mean_per_person <- rowMeans(y_wide, na.rm = TRUE)
+  set.seed(sample.int(1e6, 1))
 
-  # Weighted k-means approximation via sampling
-  set.seed(sample.int(1e6, 1))  # Random seed for this start
-  kmeans_result <- kmeans(y_mean_per_person[!is.na(y_mean_per_person)],
-                         centers = n_classes,
-                         nstart = 20)
+  ok <- which(is.finite(y_mean_per_person))
+  km <- kmeans(y_mean_per_person[ok], centers = n_classes, nstart = 10)
+  assign <- rep(NA_integer_, n)
+  # Shuffle labels so parallel starts are not identical
+  remap <- sample.int(n_classes)
+  assign[ok] <- remap[km$cluster]
 
-  # Initialize class proportions (uniform with small perturbation)
-  class_props <- rep(1/n_classes, n_classes) + rnorm(n_classes, 0, 0.01)
-  class_props <- pmax(class_props, 0.01)  # Ensure positive
+  class_props <- as.numeric(table(factor(assign, levels = seq_len(n_classes))))
+  class_props <- class_props + runif(n_classes, 0.02, 0.08)
+  class_props <- pmax(class_props, 0.05)
   class_props <- class_props / sum(class_props)
 
-  # Initialize growth parameters by class
   growth_params <- list()
+  residual_variance <- numeric(n_classes)
 
   for (k in 1:n_classes) {
-    # Simple linear regression for each class
-    if (growth_model == "linear") {
-      # Intercept and slope
-      growth_params[[k]] <- list(
-        intercept = rnorm(1, mean(y_mean_per_person, na.rm = TRUE),
-                         sd(y_mean_per_person, na.rm = TRUE) * 0.5),
-        slope = rnorm(1, 0, 0.1)
-      )
-    } else if (growth_model == "quadratic") {
-      growth_params[[k]] <- list(
-        intercept = rnorm(1, mean(y_mean_per_person, na.rm = TRUE),
-                         sd(y_mean_per_person, na.rm = TRUE) * 0.5),
-        slope = rnorm(1, 0, 0.1),
-        quadratic = rnorm(1, 0, 0.01)
-      )
-    } else if (growth_model == "free_basis") {
-      growth_params[[k]] <- list(
-        intercept = rnorm(1, mean(y_mean_per_person, na.rm = TRUE),
-                         sd(y_mean_per_person, na.rm = TRUE) * 0.5),
-        slope = rnorm(1, 0, 0.1)
-      )
+    idx <- which(assign == k)
+    if (length(idx) < 5) {
+      idx <- ok
     }
-  }
+    y_k <- y_wide[idx, , drop = FALSE]
+    y_vec <- as.vector(y_k)
+    time_vec <- rep(time_scores, each = length(idx))
+    keep <- is.finite(y_vec)
+    X <- cbind(1, time_vec[keep])
+    beta <- tryCatch(
+      as.numeric(qr.coef(qr(X), y_vec[keep])),
+      error = function(e) c(mean(y_vec, na.rm = TRUE), 0)
+    )
+    if (any(!is.finite(beta))) {
+      beta <- c(mean(y_vec, na.rm = TRUE), 0)
+    }
 
-  # Initialize residual variance(s)
-  overall_var <- var(as.vector(y_wide), na.rm = TRUE)
-  residual_variance <- rep(overall_var * 0.5, n_classes)
+    intercept <- beta[1] + rnorm(1, 0, 0.15)
+    slope <- beta[2] + rnorm(1, 0, 0.05)
+    growth_params[[k]] <- if (growth_model == "quadratic") {
+      list(intercept = intercept, slope = slope, quadratic = rnorm(1, 0, 0.01))
+    } else {
+      list(intercept = intercept, slope = slope)
+    }
+
+    fitted <- intercept + slope * time_vec[keep]
+    residual_variance[k] <- max(mean((y_vec[keep] - fitted)^2), 0.05)
+  }
 
   list(
     class_proportions = class_props,
@@ -313,11 +315,12 @@ m_step_gmm <- function(y_wide, time_scores, weighted_posterior, posterior_probs,
     # Weighted least squares for class k
     w_k <- weighted_posterior[, k]
 
-    # Stack all observations
-    y_vec <- as.vector(t(y_wide))
+    # Stack in column-major order so person i at time t stays aligned:
+    # as.vector(N x T) is all people at t1, then all at t2, ...
+    y_vec <- as.vector(y_wide)
     time_vec <- rep(time_scores, each = n)
     w_vec <- rep(w_k, times = n_times)
-    r_vec <- as.vector(t(r_matrix))
+    r_vec <- as.vector(r_matrix)
 
     # Keep only observed data
     keep <- r_vec == 1

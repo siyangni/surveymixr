@@ -172,3 +172,47 @@ test_that("gmm_survey handles many time points without numerical underflow", {
   # Entropy should be in valid range
   expect_true(fit@fit_indices$entropy >= 0 && fit@fit_indices$entropy <= 1)
 })
+
+test_that("gmm_survey recovers well-separated linear trajectories", {
+  skip_on_cran()
+
+  true_gp <- list(
+    list(intercept = 12, slope = 0.2),
+    list(intercept = 8, slope = 0.8),
+    list(intercept = 4, slope = -0.6)
+  )
+
+  sim_data <- simulate_gmm_survey(
+    n_individuals = 500,
+    n_times = 5,
+    n_classes = 3,
+    time_scores = 0:4,
+    class_proportions = c(0.5, 0.3, 0.2),
+    growth_parameters = true_gp,
+    residual_sds = c(0.6, 0.6, 0.6),
+    design = "srs",
+    missing_rate = 0,
+    covariates = FALSE,
+    seed = 2026
+  )
+
+  fit <- gmm_survey(
+    data = sim_data,
+    id = "id",
+    time = "time",
+    outcome = "outcome",
+    n_classes = 3,
+    starts = 20,
+    cores = 1,
+    verbose = FALSE
+  )
+
+  est_int <- sort(vapply(fit@parameters$growth_parameters, `[[`, numeric(1), "intercept"))
+  true_int <- sort(vapply(true_gp, `[[`, numeric(1), "intercept"))
+  est_slope <- sort(vapply(fit@parameters$growth_parameters, `[[`, numeric(1), "slope"))
+  true_slope <- sort(vapply(true_gp, `[[`, numeric(1), "slope"))
+
+  expect_equal(est_int, true_int, tolerance = 0.8)
+  expect_equal(est_slope, true_slope, tolerance = 0.35)
+  expect_gt(fit@fit_indices$entropy, 0.70)
+})

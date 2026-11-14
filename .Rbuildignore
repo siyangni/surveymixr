@@ -25,3 +25,4 @@
 ^v0\..*\.md$
 ^VIGNETTE_FIXES_NEEDED\.md$
 ^CRAN-SUBMISSION$
+^showcase$
