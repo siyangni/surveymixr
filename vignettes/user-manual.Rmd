@@ -69,17 +69,21 @@ This comprehensive manual covers all aspects of the **surveymixr** package, from
 ### From CRAN (Recommended)
 
 ```{r}
-install.packages("surveymixr")
+if (FALSE) {
+  install.packages("surveymixr")
+}
 ```
 
 ### Development Version from GitHub
 
 ```{r}
-# Install devtools if needed
-install.packages("devtools")
+if (FALSE) {
+  # Install devtools if needed
+  install.packages("devtools")
 
-# Install surveymixr
-devtools::install_github("siyangni/surveymixr")
+  # Install surveymixr
+  devtools::install_github("siyangni/surveymixr")
+}
 ```
 
 ### System Requirements

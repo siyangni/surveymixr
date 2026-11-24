@@ -54,12 +54,14 @@ Growth mixture models are essential for studying heterogeneous developmental tra
 ## Installation
 
 ```{r, eval=FALSE}
-# From CRAN (once published)
-install.packages("surveymixr")
+if (FALSE) {
+  # From CRAN (once published)
+  install.packages("surveymixr")
 
-# Development version from GitHub
-# install.packages("devtools")
-devtools::install_github("siyangni/surveymixr")
+  # Development version from GitHub
+  # install.packages("devtools")
+  devtools::install_github("siyangni/surveymixr")
+}
 ```
 
 ## Quick Start
