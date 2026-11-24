@@ -28,7 +28,7 @@ intervals account for survey design (clustering, stratification).
 \donttest{
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
                   outcome = "selfcontrol", n_classes = 3,
-                  weights = "weight")
+                  weights = "weight", starts = 10)
 
 class_proportions(fit)
 }

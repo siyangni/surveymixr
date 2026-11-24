@@ -98,8 +98,8 @@ fit <- gmm_survey(
   strata = "stratum",
   cluster = "cluster",
   weights = "weight",
-  starts = 100,  # Use more for final analysis
-  cores = 4
+  starts = 10,  # Use more for final analysis
+  cores = 2
 )
 
 summary(fit)

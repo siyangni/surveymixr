@@ -22,7 +22,7 @@ Extracts predicted trajectories for a specific latent class.
 \examples{
 \donttest{
 fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
-                  outcome = "selfcontrol", n_classes = 3)
+                  outcome = "selfcontrol", n_classes = 3, starts = 10)
 
 traj_class1 <- extract_trajectories(fit, class = 1)
 }

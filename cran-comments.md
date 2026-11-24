@@ -16,7 +16,11 @@ This is a resubmission addressing reviewer feedback from Benjamin Altmann
    either run directly, are wrapped in \donttest{} (verified to run without
    error), or are shown as commented code for features still under development
    (binary/ordinal/count outcomes, time-varying covariates). No \dontrun{}
-   remains anywhere in the package.
+   remains anywhere in the package. Additionally, long-running \donttest{}
+   examples were sped up (fewer random starts) so the full example suite now
+   runs in minutes rather than over an hour, and vignette installation
+   snippets are now guarded with if (FALSE) so they cannot execute during
+   package checks.
 
 3. **Improvements to EM initialization** - Random-start initialization now
    shuffles class labels so parallel starts are not identical, improving

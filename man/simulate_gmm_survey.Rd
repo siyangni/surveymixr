@@ -121,7 +121,7 @@ fit <- gmm_survey(
   outcome = "outcome",
   n_classes = 3,
   strata = "stratum",
-  cluster = "cluster",
+  cluster = "psu",
   weights = "weight",
   starts = 10,
   cores = 1
