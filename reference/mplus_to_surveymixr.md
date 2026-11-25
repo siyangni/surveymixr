@@ -62,7 +62,7 @@ r_code <- mplus_to_surveymixr(tmp_file)
 cat(r_code)
 #> 
 #> # Translated from Mplus to surveymixr
-#> # Original file: /tmp/RtmpfpNIMt/file192d21ff48ec.inp
+#> # Original file: /tmp/RtmpzwvBsH/file18dd4e6ccda.inp
 #> # Manual review and adjustment recommended
 #> 
 #> library(surveymixr)

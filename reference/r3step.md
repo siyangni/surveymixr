@@ -166,7 +166,7 @@ fit <- gmm_survey(
 #> Computing survey-adjusted standard errors...
 #> Computing fit indices...
 #> 
-#> Completed in 0.7 seconds
+#> Completed in 1.2 seconds
 
 # R3STEP requires person-level data - aggregate
 person_data <- sim_data[!duplicated(sim_data$id), c("id", "ses")]

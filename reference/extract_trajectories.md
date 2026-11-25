@@ -49,7 +49,7 @@ fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
 #> Computing survey-adjusted standard errors...
 #> Computing fit indices...
 #> 
-#> Completed in 33.4 seconds
+#> Completed in 51.4 seconds
 
 traj_class1 <- extract_trajectories(fit, class = 1)
 # }

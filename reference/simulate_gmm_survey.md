@@ -238,7 +238,7 @@ fit <- gmm_survey(
 #> Computing survey-adjusted standard errors...
 #> Computing fit indices...
 #> 
-#> Completed in 3.5 seconds
+#> Completed in 5.7 seconds
 
 # Compare estimated vs true parameters
 summary(fit)
@@ -311,7 +311,7 @@ summary(fit)
 #> Best logLik: -1519.20
 #> Replications: 10
 #> 
-#> Computation time: 3.5 seconds
+#> Computation time: 5.7 seconds
 #> 
 #> ========================================
 # }

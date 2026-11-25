@@ -190,7 +190,7 @@ fit <- gmm_survey(
 #>   Using 2 cores for parallel processing
 #> 
 #> Selecting best solution...
-#>   Best logLik: -48800.8482
+#>   Best logLik: -48800.8548
 #>   Replicated 1 times
 #>   10/10 starts converged
 #> Warning: Best log-likelihood not replicated. Consider increasing 'starts'.
@@ -198,7 +198,7 @@ fit <- gmm_survey(
 #> Computing survey-adjusted standard errors...
 #> Computing fit indices...
 #> 
-#> Completed in 102.5 seconds
+#> Completed in 166.1 seconds
 
 summary(fit)
 #> ========================================
@@ -223,56 +223,56 @@ summary(fit)
 #> GROWTH PARAMETERS
 #> -----------------
 #> 
-#> Class 1 (n = 2888.0, 54.7%):
-#>   Intercept: 8.470 (SE = 0.034)
-#>   Slope: 0.054 (SE = 0.003)
-#>   Residual SD: 1.223 (SE = 0.416)
-#> 
-#> Class 2 (n = 1378.0, 30.6%):
-#>   Intercept: 6.046 (SE = 0.064)
+#> Class 1 (n = 1376.0, 30.7%):
+#>   Intercept: 6.047 (SE = 0.064)
 #>   Slope: 0.195 (SE = 0.005)
-#>   Residual SD: 1.495 (SE = 0.341)
+#>   Residual SD: 1.496 (SE = 0.341)
 #> 
-#> Class 3 (n = 734.0, 14.6%):
+#> Class 2 (n = 734.0, 14.6%):
 #>   Intercept: 4.025 (SE = 0.069)
 #>   Slope: -0.145 (SE = 0.006)
 #>   Residual SD: 1.795 (SE = 0.285)
 #> 
+#> Class 3 (n = 2890.0, 54.7%):
+#>   Intercept: 8.471 (SE = 0.034)
+#>   Slope: 0.053 (SE = 0.003)
+#>   Residual SD: 1.223 (SE = 0.416)
+#> 
 #> CLASS PROPORTIONS
 #> -----------------
 #> Class          Weighted   Unweighted
-#> 1                 0.547        0.549
-#> 2                 0.306        0.304
-#> 3                 0.146        0.147
+#> 1                 0.307        0.304
+#> 2                 0.146        0.147
+#> 3                 0.547        0.549
 #> 
 #> FIT INDICES
 #> -----------
 #> Log-likelihood: -48800.85
 #> Parameters: 11
-#> AIC: 97623.70
-#> BIC: 97695.39
-#> aBIC: 97660.43
-#> Entropy: 0.784
+#> AIC: 97623.71
+#> BIC: 97695.40
+#> aBIC: 97660.44
+#> Entropy: 0.783
 #> Average posterior prob: 0.921
 #> 
 #> CLASSIFICATION QUALITY
 #> ----------------------
 #> Class             AvePP          OCC
-#> 1                 0.891         8.13
-#> 2                 0.873         6.85
-#> 3                 0.999      1947.47
+#> 1                 0.873         6.88
+#> 2                 0.999      1945.84
+#> 3                 0.890         8.06
 #> 
 #> CONVERGENCE
 #> -----------
 #> Status: Converged
-#> Iterations: 5
+#> Iterations: 7
 #> Random starts: 10
 #> Best logLik: -48800.85
 #> Replications: 1
 #> 
 #> WARNING: Best solution not replicated. Consider increasing 'starts'.
 #> 
-#> Computation time: 102.5 seconds
+#> Computation time: 166.1 seconds
 #> 
 #> ========================================
 plot(fit, type = "trajectories")
@@ -283,9 +283,9 @@ table(Estimated = fit@class_assignments,
       True = mcs_simulated$true_class[!duplicated(mcs_simulated$id)])
 #>          True
 #> Estimated    1    2    3
-#>         1 2615  273    0
-#>         2  156 1222    0
-#>         3    0    0  734
+#>         1  154 1222    0
+#>         2    0    0  734
+#>         3 2617  273    0
 
 # R3STEP analysis with distal outcomes
 r3step_results <- r3step(
@@ -303,18 +303,18 @@ summary(r3step_results)
 #> 
 #> Class-Specific Means:
 #>                      Class_1 Class_2 Class_3
-#> delinquency            2.868   3.172   4.989
-#> academic_achievement 100.467  98.121 100.898
+#> delinquency            3.172   4.990   2.869
+#> academic_achievement  98.116 100.903 100.472
 #> 
 #> Standard Errors:
 #>                      Class_1 Class_2 Class_3
-#> delinquency            0.039   0.042   0.031
-#> academic_achievement   0.290   0.343   0.180
+#> delinquency            0.042   0.031   0.039
+#> academic_achievement   0.342   0.180   0.290
 #> 
 #> Omnibus Tests:
-#>              variable    F_stat df1      df2      p_value
-#>           delinquency 911.90395   2 17191.32 0.000000e+00
-#>  academic_achievement  14.47518   2 17191.32 5.233576e-07
+#>              variable    F_stat df1      df2       p_value
+#>           delinquency 616.82335   2 17191.69 1.959060e-259
+#>  academic_achievement  39.75193   2 17191.69  5.966969e-18
 #> 
 #> (Pairwise comparisons available, view with: r3step_result@test_results[['var']]$pairwise)
 #> 
@@ -325,7 +325,7 @@ summary(r3step_results)
 #> Effect Sizes (Cohen's d):
 #> -------------------------
 #>                      Class1_vs_Class2 Class1_vs_Class3 Class2_vs_Class3
-#> delinquency                     -0.16            -1.17            -0.97
-#> academic_achievement             0.16            -0.04            -0.21
+#> delinquency                     -0.97             0.16             1.17
+#> academic_achievement            -0.21            -0.16             0.04
 # }
 ```

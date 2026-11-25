@@ -63,7 +63,7 @@ fit <- gmm_survey(data = mcs_simulated, id = "id", time = "age",
 #> Computing survey-adjusted standard errors...
 #> Computing fit indices...
 #> 
-#> Completed in 114.8 seconds
+#> Completed in 186.8 seconds
 
 class_proportions(fit)
 #>   class proportion          se  lower_ci  upper_ci n_assigned  percent

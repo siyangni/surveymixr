@@ -329,7 +329,7 @@ summary(fit)
 #> Best logLik: -49673.19
 #> Replications: 10
 #> 
-#> Computation time: 33.2 seconds
+#> Computation time: 55.3 seconds
 #> 
 #> ========================================
 
