@@ -1,0 +1,173 @@
+# Growth Mixture Model for Binary Outcomes
+
+Fits growth mixture models with binary outcomes (0/1) using probit
+regression within each latent class, incorporating complex survey design
+features.
+
+## Usage
+
+``` r
+gmm_survey_binary(
+  data,
+  id,
+  time,
+  outcome,
+  n_classes,
+  growth_model = "linear",
+  strata = NULL,
+  cluster = NULL,
+  weights = NULL,
+  covariates = NULL,
+  link = c("probit", "logit"),
+  starts = 500,
+  cores = parallel::detectCores() - 1,
+  convergence_threshold = 1e-06,
+  max_iterations = 1000,
+  seed = NULL,
+  verbose = TRUE
+)
+```
+
+## Arguments
+
+- data:
+
+  Data frame in long format containing repeated measurements
+
+- id:
+
+  Character string specifying the individual ID variable name
+
+- time:
+
+  Character string specifying the time variable name
+
+- outcome:
+
+  Character string specifying the outcome variable name
+
+- n_classes:
+
+  Integer number of latent classes (default: 2)
+
+- growth_model:
+
+  Character string specifying growth model type: `"linear"` (default),
+  `"quadratic"`, `"nonlinear"`, or `"free_basis"`
+
+- strata:
+
+  Character string specifying stratification variable (optional)
+
+- cluster:
+
+  Character string specifying cluster/PSU variable (optional)
+
+- weights:
+
+  Character string specifying sampling weights variable (optional)
+
+- covariates:
+
+  Character vector of time-varying covariate names (not yet implemented)
+
+- link:
+
+  Character string specifying link function: "probit" (default) or
+  "logit"
+
+- starts:
+
+  Integer number of random starts (default: 500)
+
+- cores:
+
+  Integer number of CPU cores for parallel processing (default: 1)
+
+- convergence_threshold:
+
+  Numeric convergence criterion for EM algorithm (default: 1e-6)
+
+- max_iterations:
+
+  Integer maximum number of EM iterations (default: 1000)
+
+- seed:
+
+  Integer random seed for reproducibility (optional)
+
+- verbose:
+
+  Logical, print progress messages? (default: TRUE)
+
+## Value
+
+An S4 object of class `SurveyMixr` with additional slots:
+
+- outcome_type:
+
+  "binary"
+
+- link:
+
+  Link function used
+
+- threshold_params:
+
+  For ordinal outcomes only
+
+## Details
+
+This function extends
+[`gmm_survey`](https://siyangni.github.io/surveymixr/reference/gmm_survey.md)
+to handle binary outcomes (e.g., presence/absence of behavior, yes/no
+responses). The model uses probit or logistic regression for the
+conditional distribution within each latent class, with growth
+parameters on the latent continuous scale.
+
+The model is: \$\$P(Y\_{it} = 1 \| C_i = k) = \Phi(\eta\_{itk})\$\$
+where \\\Phi\\ is the standard normal CDF (probit) or logistic CDF
+(logit), and \$\$\eta\_{itk} = \beta\_{0k} + \beta\_{1k} \times
+time\_{it} + ...\$\$
+
+Survey weights, clustering, and stratification are incorporated in both
+the EM algorithm and standard error calculation.
+
+## Examples
+
+``` r
+# Note: Binary outcome modeling is under development; this example will
+# become runnable once the implementation is complete.
+# Simulate binary outcome data
+# set.seed(123)
+# binary_data <- simulate_gmm_survey(
+# n_individuals = 1000,
+# n_times = 5,
+# n_classes = 2,
+
+# design = "stratified_cluster",
+# seed = 123
+# )
+
+# Convert continuous outcome to binary (0/1) using median split
+# binary_data$outcome <- ifelse(binary_data$outcome > median(binary_data$outcome), 1, 0)
+
+# Fit 2-class model with binary outcome
+# fit_binary <- gmm_survey_binary(
+# data = binary_data,
+# id = "id",
+# time = "time",
+# outcome = "outcome",
+# n_classes = 2,
+# growth_model = "linear",
+# strata = "stratum",
+# cluster = "cluster",
+# weights = "weight",
+# link = "probit",
+# starts = 100,
+# cores = 2
+# )
+
+# summary(fit_binary)
+# plot(fit_binary)
+```

@@ -1,0 +1,595 @@
+# Changelog
+
+## surveymixr 0.2.3 (2026-11-14)
+
+### CRAN Resubmission - Removed Examples
+
+This update addresses reviewer feedback (2025-12-11) requesting that
+examples be changed to or justified.
+
+#### Breaking changes
+
+- **Removed the random-effects placeholder API**: `gmm_survey_re()`,
+  `get_random_effects()`, `variance_components()`, `calculate_icc()`,
+  `plot_random_effects()` and the `SurveyMixrRE` class were development
+  stubs whose estimation routine errored by design (“Full implementation
+  pending”), so their documented examples could never run under . They
+  have been removed entirely and will return in a future release once
+  fully implemented and tested.
+
+#### Fixes
+
+- **No remains in any documentation**: examples now either run directly,
+  are wrapped in (verified to run without error), or are shown as
+  commented code for features still under development
+  (binary/ordinal/count outcomes, time-varying covariates).
+- **Improved EM random-start initialization**: class labels are now
+  shuffled across starts so parallel starts are not identical, improving
+  exploration of the likelihood surface.
+
+## surveymixr 0.2.2 (2025-12-07)
+
+### CRAN Resubmission - Fixed Pre-test Issues
+
+This update addresses notes from CRAN incoming pre-tests:
+
+#### Fixes
+
+- **Fixed possibly misspelled words in DESCRIPTION**: Technical terms,
+  software names, and acronyms are now properly quoted as per CRAN
+  standards:
+  - ‘GMM’, ‘BLRT’, ‘LMR’, ‘R3STEP’ (acronyms)
+  - ‘Mplus’, ‘Lo-Mendell-Rubin’ (software/method names)
+  - ‘NLSY’, ‘ECLS’ (survey acronyms)
+- **Reduced checktime from 18+ minutes to under 10 minutes**: Added
+  `skip_on_cran()` to computationally intensive tests in:
+  - test-basic-estimation.R
+  - test-comprehensive.R
+  - test-categorical-outcomes.R
+  - test-convergence.R
+  - test-diagnostics.R
+  - test-growth-models.R
+  - test-r3step.R
+  - test-survey-designs.R
+
+  Full test coverage remains available via `devtools::test()` for
+  thorough local testing.
+
+------------------------------------------------------------------------
+
+## surveymixr 0.2.1 (2025-11-20)
+
+### CRAN Resubmission - Addressed Reviewer Feedback (2025-11-20)
+
+This update addresses all feedback from CRAN reviewers to comply with
+CRAN policies:
+
+#### Documentation Fixes for CRAN Compliance
+
+- **Added missing tags in .Rd files** (per CRAN requirements):
+  - Added to `show-DataValidation-method.Rd`
+  - Added to `show-InfluenceDiagnostics-method.Rd`
+  - Added comprehensive section to `surveymixr-methods.Rd` documenting
+    all method return values
+  - All methods now properly document their return values and output
+    structure
+- **Replaced with** (per CRAN guidelines):
+  - Changed all instances of `\dontrun{}` to `\donttest{}` in
+    documentation examples
+  - Examples that cannot run or take \>5 seconds now use proper wrapping
+  - Follows CRAN recommendation for indicating non-executable examples
+- **Fixed invalid file URIs in README.md**:
+  - Changed GitHub URLs for CONTRIBUTING.md and CODE_OF_CONDUCT.md to
+    plain text references
+  - These files are excluded from the package build (in .Rbuildignore)
+  - Now uses “CONTRIBUTING.md (available in the GitHub repository)”
+    format
+  - Prevents CRAN warnings about invalid URIs pointing to excluded files
+- **Verified cat()/print() usage** (per CRAN best practices):
+  - All [`cat()`](https://rdrr.io/r/base/cat.html) calls are within
+    legitimate print/show methods (show.SurveyMixr, print.lmr_test,
+    etc.)
+  - No inappropriate console output from non-print functions
+  - Follows R best practices for method output
+
+### Test Coverage Improvements (Major Achievement)
+
+### Pre-CRAN Release Improvements (2025-11-16)
+
+This update addresses critical issues found during final pre-CRAN review
+and improves package robustness:
+
+#### Critical Fixes
+
+- **Fixed vignette build error**: Corrected mplus-validation.Rmd to use
+  proper r3step() parameters (line 282)
+- **Improved numerical stability**: Replaced `prod(dnorm())` with
+  log-space calculations in E-step and likelihood computation to prevent
+  underflow with many time points (T ≥ 10)
+- **Added automatic survey validation**: gmm_survey() now automatically
+  validates survey design (nested clusters, singleton strata, etc.)
+  before estimation. Use `skip_validation=TRUE` to bypass if needed.
+- **Fixed S4 slot access bug**: Corrected validation code to use `@`
+  operator for S4 objects instead of `$` (caused test failures)
+
+#### New Features
+
+- **Reproducibility documentation**: Added comprehensive documentation
+  on random seed behavior and reproducibility to gmm_survey()
+- **Test for numerical stability**: Added test with T=15 time points to
+  ensure numerical stability with many waves
+
+#### Documentation Improvements
+
+- **Random seed behavior**: Documented how set.seed() ensures
+  reproducibility across multiple random starts
+- **FIML status**: Clarified that FIML is implemented (was incorrectly
+  listed as future feature in roadmap)
+- **Survey validation**: New skip_validation parameter documented with
+  clear guidance
+
+#### Technical Improvements
+
+- **E-step numerical stability**: Changed from product of normal
+  densities to sum of log-densities for better numerical properties
+- **Automatic validation**: Survey design validation now runs by default
+  to catch common errors (non-nested clusters, singleton strata, invalid
+  weights)
+
+### Test Coverage Improvements - v0.2.1 Target (2025-11-16)
+
+**Progress toward 60-65% coverage target:**
+
+- **Phase 1 Complete**: Added comprehensive tests for utilities.R
+  functions
+  - Added 11 new tests covering mplus_to_surveymixr(),
+    surveymixr_to_mplus(), extract_fit_indices(), compare_with_mplus(),
+    and wide_to_long()
+  - Expected improvement: utilities.R from 17.68% to ~50%+ coverage
+  - Overall package coverage: 56.74% → ~58-59% (estimated)
+- **Phase 2 Complete**: Added comprehensive tests for lmr-test.R
+  functions
+  - Added 11 new tests covering lmr_test() (adjusted and unadjusted),
+    lmr_sequential(), error handling, print methods, and survey design
+    integration
+  - All tests use real fitted GMM models with small datasets (n=100-150,
+    starts=5-10) for fast execution
+  - Expected improvement: lmr-test.R from 31.85% to ~60%+ coverage
+  - Overall package coverage: 56.74% → **63.91%** (**VERIFIED**,
+    **TARGET EXCEEDED**)
+
+**Coverage milestone achieved**: Verified 63.91% coverage via
+[`covr::package_coverage()`](https://covr.r-lib.org/reference/package_coverage.html) -
+**target of 60-65% met and exceeded**
+
+**Next targets for future releases (stretch to 70%+):** \* gmm-select.R
+(currently 43.03%) - add error handling tests \* plotting.R (currently
+46.79%) - add plot type coverage tests
+
+### Test Coverage Improvements - Initial Fix (2025-11-16)
+
+- **Dramatically improved test coverage**: Removed 76 of 114 unnecessary
+  `skip_on_cran()` calls from test suite
+- **Previous coverage**: 6.83% (almost all tests skipped during coverage
+  runs)
+- **Current coverage**: 56.74% (most tests now run on CRAN and in
+  coverage analysis)
+- **Strategy**: Removed skips from lightweight tests (n=100-300,
+  starts=10-50) that run in seconds
+- **Retained skips**: Kept 38 skips for genuinely expensive tests (BLRT
+  bootstrap, high-start convergence tests, extreme edge cases)
+- All tests now provide meaningful validation while maintaining
+  reasonable computation time
+
+### Documentation Fixes (2025-11-15)
+
+- **Fixed r3step-analysis.Rmd vignette**: Corrected all r3step()
+  function calls to use proper parameters (`distal_vars` instead of
+  `distal`, added `data` parameter, added person-level data extraction).
+  All 13 r3step() calls now use correct function signatures.
+- **Fixed model-selection-enhanced.Rmd vignette**: Removed “LMR” from
+  gmm_select() criteria (not implemented in gmm_select). Added
+  clarification that LMR tests are available via standalone lmr_test()
+  and lmr_sequential() functions.
+- All vignette code now uses correct function signatures and will build
+  successfully
+
+### Critical Bug Fixes (2025-11-13)
+
+Fixed 4 critical bugs that were blocking CRAN submission and preventing
+core features from working:
+
+- **class_proportions dimension mismatch**: Fixed error when not all
+  classes have assignments by using
+  [`factor()`](https://rdrr.io/r/base/factor.html) with explicit levels
+- **r3step subscript out of bounds**: Added validation requiring
+  person-level data (one row per individual); updated all tests and
+  provided clear error messages
+- **gmm_select parameter compatibility**: Added support for
+  `min_classes`/`max_classes` and `run_blrt` parameters for backward
+  compatibility
+- **residuals() non-conformable arrays**: Fixed residuals method to
+  properly reshape long-format data to wide format before computing
+  residuals
+
+These fixes enabled 9 previously skipped tests, reducing total skipped
+tests from 32 to 23.
+
+### Known Limitations
+
+This release has some known limitations that users should be aware of:
+
+#### Features Not Yet Implemented
+
+- **ML method for R3STEP**: The Maximum Likelihood method for r3step is
+  not yet implemented. Use `method = "BCH"` (recommended) or
+  `method = "manual"` instead.
+- **Time-varying covariates**: Partial implementation exists
+  ([`gmm_survey_tvc()`](https://siyangni.github.io/surveymixr/reference/gmm_survey_tvc.md))
+  but needs further testing and validation
+- **Random effects**: Partial implementation exists (`gmm_survey_re()`)
+  but requires additional development
+- **Multiple imputation**: Missing data is currently handled via FIML
+  (Full Information Maximum Likelihood). Multiple imputation methods are
+  planned for future releases.
+
+#### Data Requirements
+
+- **r3step requires person-level data**: The
+  [`r3step()`](https://siyangni.github.io/surveymixr/reference/r3step.md)
+  function requires one row per individual (person-level data). If your
+  data is in long format, aggregate to person-level before calling
+  r3step:
+
+  ``` r
+
+  person_data <- my_data[!duplicated(my_data$id), ]
+  r3step(fit, distal_vars = "outcome", data = person_data)
+  ```
+
+#### Missing Data Handling
+
+- **FIML assumes MAR**: Full Information Maximum Likelihood assumes data
+  are Missing At Random (MAR). If you suspect Missing Not At Random
+  (MNAR), conduct sensitivity analyses.
+- **Monotone vs non-monotone patterns**: The
+  [`validate_survey_data()`](https://siyangni.github.io/surveymixr/reference/validate_survey_data.md)
+  function identifies missing data patterns, but currently all patterns
+  are handled the same way via FIML.
+
+#### Testing Status
+
+- **23 tests currently skipped**: Most skipped tests are for
+  unimplemented features (ML method, external dependencies like Mplus).
+  See test files for details.
+- **All vignettes now up-to-date**: All vignette code examples have been
+  updated to use current function signatures and parameters.
+
+#### Platform Notes
+
+- **Parallel processing on Windows**: Some users may experience issues
+  with parallel processing on Windows. If you encounter errors, set
+  `cores = 1` for sequential processing.
+- **Memory requirements**: Models with many random starts (500-1000+)
+  and large datasets may require substantial RAM. Use
+  `store_data = FALSE` to reduce memory footprint.
+
+#### Performance Considerations
+
+- **BLRT is computationally intensive**: Bootstrap Likelihood Ratio Test
+  can take hours for complex models. Consider using the faster LMR test
+  for initial exploration.
+- **Convergence with complex designs**: Models with many strata and
+  clusters may require more random starts or adjusted convergence
+  criteria.
+
+See GitHub issues (<https://github.com/siyangni/surveymixr/issues>) for
+currently tracked bugs and feature requests.
+
+### Major Enhancements
+
+This release significantly expands surveymixr’s capabilities with new
+outcome types, enhanced model selection methods, advanced diagnostics,
+and interactive visualizations.
+
+#### New Outcome Types (Phase 2.1.1)
+
+- **Categorical Outcomes Support**
+  - [`gmm_survey_binary()`](https://siyangni.github.io/surveymixr/reference/gmm_survey_binary.md):
+    Binary outcomes (0/1) with probit or logit link functions
+  - [`gmm_survey_ordinal()`](https://siyangni.github.io/surveymixr/reference/gmm_survey_ordinal.md):
+    Ordinal outcomes with proportional odds models
+  - [`gmm_survey_count()`](https://siyangni.github.io/surveymixr/reference/gmm_survey_count.md):
+    Count outcomes with Poisson, negative binomial, and zero-inflated
+    models
+  - Full integration with complex survey designs
+  - Proper likelihood computation and parameter estimation for
+    non-continuous data
+- **Link Functions**
+  - [`get_link_function()`](https://siyangni.github.io/surveymixr/reference/get_link_function.md):
+    Flexible link function system
+  - Support for probit, logit, log, and beta links
+  - Automatic outcome type validation
+
+#### Enhanced Model Selection (Phase 2.2)
+
+- **Lo-Mendell-Rubin Test (LMR)**
+  - [`lmr_test()`](https://siyangni.github.io/surveymixr/reference/lmr_test.md):
+    Asymptotic likelihood ratio test for class enumeration
+  - Much faster than BLRT (no bootstrap resampling)
+  - Adjusted LMR (aLMR) for improved finite-sample performance
+  - [`lmr_sequential()`](https://siyangni.github.io/surveymixr/reference/lmr_sequential.md):
+    Automated testing across multiple models
+  - Integration with
+    [`gmm_select()`](https://siyangni.github.io/surveymixr/reference/gmm_select.md)
+    for comprehensive model comparison
+- **Cross-Validation**
+  - [`gmm_cv()`](https://siyangni.github.io/surveymixr/reference/gmm_cv.md):
+    K-fold cross-validation for model selection
+  - Proper handling of survey weights in fold creation
+  - Stratified CV to maintain survey design structure
+  - Individual-level splitting (keeps all time points together)
+  - Multiple prediction metrics (log-likelihood, MSPE)
+  - One-standard-error rule for parsimony
+
+#### Advanced Diagnostics (Phase 2.3)
+
+- **Influence Diagnostics**
+  - [`diagnose_influence()`](https://siyangni.github.io/surveymixr/reference/diagnose_influence.md):
+    Survey-weighted influence detection
+  - Cook’s distance for complex survey data
+  - DFBETAS for parameter-specific influence
+  - Leverage statistics
+  - Automatic flagging of influential cases
+- **Separation Detection**
+  - [`diagnose_separation()`](https://siyangni.github.io/surveymixr/reference/diagnose_separation.md):
+    Detect perfect or quasi-perfect class separation
+  - Entropy-based checks
+  - Empty class detection
+  - Recommendations for addressing separation issues
+- **Residual Analysis**
+  - [`residual_diagnostics()`](https://siyangni.github.io/surveymixr/reference/residual_diagnostics.md):
+    Comprehensive residual analysis
+  - Standardized residuals
+  - Normality tests (Shapiro-Wilk)
+  - Skewness and kurtosis
+  - By-class residual diagnostics
+  - Q-Q plots and autocorrelation checks
+
+#### Data Validation (Phase 2.5)
+
+- **Comprehensive Data Validation**
+  - [`validate_survey_data()`](https://siyangni.github.io/surveymixr/reference/validate_survey_data.md):
+    Pre-analysis data quality checks
+  - Structure validation (duplicates, missing variables, data types)
+  - Survey design verification (nested clusters, weight diagnostics)
+  - Missing data pattern analysis (monotone vs non-monotone)
+  - Outcome distribution checks (outliers, normality)
+  - Covariate multicollinearity detection
+  - Design effect calculation
+  - Detailed diagnostic reports with actionable recommendations
+- **S4 Class for Validation Results**
+  - `DataValidation`: Structured validation results
+  - Separate tracking of errors, warnings, and recommendations
+  - Informative print methods
+
+#### Interactive Visualization (Phase 2.4)
+
+- **Plotly Integration**
+  - [`plot_interactive()`](https://siyangni.github.io/surveymixr/reference/plot_interactive.md):
+    Interactive trajectory plots with hover information
+  - Zoom, pan, and toggle capabilities
+  - Three plot types: trajectories, individual, spaghetti
+  - Customizable color palettes
+  - Export to HTML for presentations
+- **Enhanced Plot Types**
+  - [`plot_model_selection_interactive()`](https://siyangni.github.io/surveymixr/reference/plot_model_selection_interactive.md):
+    Interactive model comparison
+  - [`plot_posterior_dist()`](https://siyangni.github.io/surveymixr/reference/plot_posterior_dist.md):
+    Posterior probability distributions
+  - Individual trajectory sampling
+  - Confidence interval ribbons
+  - Professional themes and layouts
+
+#### Documentation & Package Infrastructure
+
+- **New Documentation Files**
+  - `CONTRIBUTING.md`: Comprehensive contribution guidelines
+  - `CODE_OF_CONDUCT.md`: Contributor Covenant Code of Conduct
+  - Enhanced `cran-comments.md` for CRAN submission
+- **Improved Dependencies**
+  - Added `plotly` to Suggests for interactive plots
+  - Added `scales` for color palette handling
+  - Maintained minimal hard dependencies
+
+#### Bug Fixes
+
+- Fixed test suite issues with design parameter capitalization
+- Improved error messages and input validation
+- Enhanced handling of edge cases in estimation
+
+#### Performance Improvements
+
+- Optimized influence diagnostic calculations
+- Improved memory efficiency in cross-validation
+- Better handling of large datasets in validation
+
+#### Breaking Changes
+
+- None - all changes are additive and backward compatible
+
+#### Deprecations
+
+- None in this release
+
+#### Random Effects Support (Phase 2.1.2)
+
+- **Random Effects in Growth Parameters**
+  - `gmm_survey_re()`: Growth mixture models with random intercepts
+    and/or slopes
+  - Individual-level variance in growth parameters within each class
+  - `get_random_effects()`: Extract predicted random effects (BLUPs)
+  - `variance_components()`: Extract variance-covariance matrices
+  - `calculate_icc()`: Intraclass correlation coefficients
+  - `plot_random_effects()`: Visualize random effects distributions
+  - Full integration with survey weights
+  - S4 class `SurveyMixrRE` for random effects models
+
+#### Time-Varying Covariates Enhancement (Phase 2.1.3)
+
+- **Enhanced TVC Support**
+  - [`gmm_survey_tvc()`](https://siyangni.github.io/surveymixr/reference/gmm_survey_tvc.md):
+    Comprehensive time-varying covariate modeling
+  - Four effect types: direct, indirect, both (within/between
+    decomposition), interaction
+  - Automatic detection of time-varying vs time-invariant variables
+  - Person-mean centering for within-between effects separation
+  - Lagged effects support (lag 1, 2, …)
+  - Class-specific TVC effects option
+  - [`extract_tvc_effects()`](https://siyangni.github.io/surveymixr/reference/extract_tvc_effects.md):
+    Extract TVC parameter estimates
+  - [`test_tvc_effects()`](https://siyangni.github.io/surveymixr/reference/test_tvc_effects.md):
+    Wald tests for TVC significance
+  - [`plot_tvc_effects()`](https://siyangni.github.io/surveymixr/reference/plot_tvc_effects.md):
+    Visualize TVC influences on trajectories
+  - S4 class `SurveyMixrTVC` for TVC models
+
+#### New Vignettes
+
+- **Categorical Outcomes Vignette**
+  (`vignettes/categorical-outcomes.Rmd`)
+  - Comprehensive guide to binary, ordinal, and count outcomes
+  - Link function selection and interpretation
+  - Real-world examples (smoking, health ratings, delinquency)
+  - Comparison with continuous outcome approaches
+  - Model selection for categorical data
+- **Enhanced Model Selection Vignette**
+  (`vignettes/model-selection-enhanced.Rmd`)
+  - Complete workflow for determining optimal number of classes
+  - LMR test vs BLRT comparison
+  - Cross-validation strategies
+  - Handling disagreement among criteria
+  - Comprehensive reporting guidelines
+
+#### Coming in Version 0.3.0
+
+- Bayes factor approximation for model selection
+- Posterior predictive checks
+- Additional growth model specifications (piecewise, free basis)
+- Performance optimization with Rcpp
+- Parallel process models
+- Complete integration of placeholder implementations
+
+------------------------------------------------------------------------
+
+## surveymixr 0.1.0
+
+### Initial Release
+
+This is the first public release of surveymixr, providing growth mixture
+modeling with complex survey design integration.
+
+#### Major Features
+
+- **Core Estimation**
+  - [`gmm_survey()`](https://siyangni.github.io/surveymixr/reference/gmm_survey.md):
+    Growth mixture models with survey weights, clustering, and
+    stratification
+  - EM algorithm with survey-adjusted standard errors
+  - Support for linear and quadratic growth models
+  - Multiple random starts (500-1000+) with parallel processing
+  - Convergence diagnostics and tracking
+- **Model Selection**
+  - [`gmm_select()`](https://siyangni.github.io/surveymixr/reference/gmm_select.md):
+    Compare models across 1-K classes
+  - Bootstrap Likelihood Ratio Test (BLRT) implementation
+  - Information criteria (AIC, BIC, aBIC)
+  - Entropy and classification quality metrics
+- **Auxiliary Variables**
+  - [`r3step()`](https://siyangni.github.io/surveymixr/reference/r3step.md):
+    R3STEP analysis with classification uncertainty correction
+  - BCH method for distal outcomes
+  - Survey-adjusted tests and effect sizes
+- **Diagnostics**
+  - [`diagnose_convergence()`](https://siyangni.github.io/surveymixr/reference/diagnose_convergence.md):
+    Detailed convergence analysis
+  - [`classification_quality()`](https://siyangni.github.io/surveymixr/reference/classification_quality.md):
+    Entropy, AvePP, OCC metrics
+  - [`class_proportions()`](https://siyangni.github.io/surveymixr/reference/class_proportions.md):
+    Weighted and unweighted estimates
+- **Visualization**
+  - [`plot_trajectories()`](https://siyangni.github.io/surveymixr/reference/plot_trajectories.md):
+    Publication-ready trajectory plots
+  - [`plot_model_selection()`](https://siyangni.github.io/surveymixr/reference/plot_model_selection.md):
+    Fit indices comparison
+  - Class-specific diagnostics plots
+- **Utilities**
+  - [`simulate_gmm_survey()`](https://siyangni.github.io/surveymixr/reference/simulate_gmm_survey.md):
+    Data simulation with survey designs
+  - [`mplus_to_surveymixr()`](https://siyangni.github.io/surveymixr/reference/mplus_to_surveymixr.md):
+    Convert Mplus syntax to R code
+  - [`wide_to_long()`](https://siyangni.github.io/surveymixr/reference/wide_to_long.md):
+    Data reshaping helper
+
+#### Documentation
+
+- Comprehensive introductory vignette
+- Example dataset: `mcs_simulated` (Millennium Cohort Study-like data)
+- Academic paper draft with validation studies
+- Full function documentation with examples
+
+#### Technical Details
+
+- S4 class system for formal object definitions
+- Sandwich standard errors for complex survey designs
+- FIML for missing data
+- Parallel processing via `parallel` package
+- Extensive input validation and error handling
+
+#### Known Limitations
+
+- Categorical outcomes (ordinal, binary) not yet fully implemented
+- Random effects (individual-level variance) not yet available
+- Time-varying covariates supported but not extensively tested
+- Second-order models (parallel processes) not yet implemented
+
+#### Coming in Version 0.2.0
+
+- Enhanced support for categorical outcomes
+- Time-varying covariate integration
+- Additional growth model specifications
+- Performance optimizations
+- Extended validation studies
+
+------------------------------------------------------------------------
+
+### Installation
+
+``` r
+
+# From CRAN (once published)
+install.packages("surveymixr")
+
+# Development version
+devtools::install_github("siyangni/surveymixr")
+```
+
+### Getting Help
+
+- Documentation:
+  [`help(package = "surveymixr")`](https://rdrr.io/pkg/surveymixr/man)
+- Vignettes: `browseVignettes("surveymixr")`
+- Issues: <https://github.com/siyangni/surveymixr/issues>
+
+### Citation
+
+If you use surveymixr in your research, please cite:
+
+> Ni, S. (2025). surveymixr: An Open-Source R Package for Growth Mixture
+> Modeling with Complex Survey Design. *Journal of Statistical
+> Software*, XX(X), 1-XX.
+
+------------------------------------------------------------------------
+
+For complete documentation and examples, see:
+<https://siyangni.github.io/surveymixr>

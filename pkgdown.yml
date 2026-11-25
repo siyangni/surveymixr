@@ -1,0 +1,19 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  categorical-outcomes: categorical-outcomes.html
+  model-selection-enhanced: model-selection-enhanced.html
+  mplus-validation: mplus-validation.html
+  performance-optimization: performance-optimization.html
+  quick-reference: quick-reference.html
+  r3step-analysis: r3step-analysis.html
+  real-mcs-analysis: real-mcs-analysis.html
+  survey-design-best-practices: survey-design-best-practices.html
+  surveymixr-intro: surveymixr-intro.html
+  technical-details: technical-details.html
+  user-manual: user-manual.html
+last_built: 2026-11-25T18:31Z
+urls:
+  reference: https://siyangni.github.io/surveymixr/reference
+  article: https://siyangni.github.io/surveymixr/articles
