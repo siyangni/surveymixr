@@ -3,7 +3,6 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/siyangni/surveymixr/workflows/R-CMD-check/badge.svg)](https://github.com/siyangni/surveymixr/actions)
 <!-- [![CRAN status](https://www.r-pkg.org/badges/version/surveymixr)](https://CRAN.R-project.org/package=surveymixr) -->
-[![codecov](https://codecov.io/gh/siyangni/surveymixr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/siyangni/surveymixr)
 <!-- badges: end -->
 
 ## Overview

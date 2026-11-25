@@ -26,13 +26,16 @@ jobs:
           extra-packages: any::covr
           needs: coverage
 
+      # Report coverage in the log. Do not upload to Codecov: tokenless
+      # uploads are rejected, and this repo has no CODECOV_TOKEN.
       - name: Test coverage
         run: |
-          covr::codecov(
+          cov <- covr::package_coverage(
             quiet = FALSE,
             clean = FALSE,
             install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
           )
+          print(cov)
         shell: Rscript {0}
 
       - name: Show testthat output
