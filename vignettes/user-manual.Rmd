@@ -12,7 +12,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
+```{r setup, include = FALSE, purl = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -68,7 +68,7 @@ This comprehensive manual covers all aspects of the **surveymixr** package, from
 
 ### From CRAN (Recommended)
 
-```{r}
+```{r, purl=FALSE}
 if (FALSE) {
   install.packages("surveymixr")
 }
@@ -76,7 +76,7 @@ if (FALSE) {
 
 ### Development Version from GitHub
 
-```{r}
+```{r, purl=FALSE}
 if (FALSE) {
   # Install devtools if needed
   install.packages("devtools")
@@ -93,7 +93,7 @@ if (FALSE) {
 
 ## Loading the Package
 
-```{r}
+```{r, purl=FALSE}
 library(surveymixr)
 
 # Check version
@@ -104,7 +104,7 @@ packageVersion("surveymixr")
 
 ### Load Example Data
 
-```{r}
+```{r, purl=FALSE}
 # Load simulated Millennium Cohort Study data
 data(mcs_simulated)
 
@@ -122,7 +122,7 @@ The data contains:
 
 ### Fit a Basic 3-Class Model
 
-```{r}
+```{r, purl=FALSE}
 fit <- gmm_survey(
   data = mcs_simulated,
   id = "id",
@@ -141,7 +141,7 @@ fit <- gmm_survey(
 
 ### View Results
 
-```{r}
+```{r, purl=FALSE}
 # Comprehensive summary
 summary(fit)
 
@@ -154,7 +154,7 @@ classification_quality(fit)
 
 ### Visualize Trajectories
 
-```{r}
+```{r, purl=FALSE}
 # Static plot
 plot(fit, type = "trajectories")
 
@@ -229,7 +229,7 @@ Ignoring survey design features leads to:
 
 ### Specifying Survey Design
 
-```{r}
+```{r, purl=FALSE}
 fit <- gmm_survey(
   data = your_data,
   id = "id",
@@ -253,7 +253,7 @@ fit <- gmm_survey(
 
 ### Required Arguments
 
-```{r}
+```{r, purl=FALSE}
 fit <- gmm_survey(
   data = your_data,           # Long-format data frame
   id = "id_variable",         # Individual ID
@@ -266,32 +266,32 @@ fit <- gmm_survey(
 ### Growth Model Types
 
 **1. Linear Growth (Default)**
-```{r}
+```{r, purl=FALSE}
 fit <- gmm_survey(..., growth_model = "linear")
 # Y_it = β0 + β1*time + ε
 ```
 
 **2. Quadratic Growth**
-```{r}
+```{r, purl=FALSE}
 fit <- gmm_survey(..., growth_model = "quadratic")
 # Y_it = β0 + β1*time + β2*time² + ε
 ```
 
 **3. Nonlinear Growth**
-```{r}
+```{r, purl=FALSE}
 fit <- gmm_survey(..., growth_model = "nonlinear")
 # Flexible spline-based trajectories
 ```
 
 **4. Free Basis (Time Scores)**
-```{r}
+```{r, purl=FALSE}
 fit <- gmm_survey(..., growth_model = "free_basis")
 # Estimates time loadings freely
 ```
 
 ### Estimation Options
 
-```{r}
+```{r, purl=FALSE}
 fit <- gmm_survey(
   ...,
   starts = 500,              # Number of random starts (higher = better)
@@ -312,7 +312,7 @@ fit <- gmm_survey(
 
 ### Summary Output
 
-```{r}
+```{r, purl=FALSE}
 summary(fit)
 ```
 
@@ -326,7 +326,7 @@ Shows:
 
 ### Extracting Components
 
-```{r}
+```{r, purl=FALSE}
 # Coefficients
 coef(fit)
 
@@ -349,7 +349,7 @@ trajectories <- extract_trajectories(fit, class = 1)
 
 ### Classification
 
-```{r}
+```{r, purl=FALSE}
 # Posterior probabilities
 post_probs <- fit@posterior_probs
 head(post_probs)
@@ -380,7 +380,7 @@ Model selection is **critical** in GMM. Use multiple criteria:
 
 **Lower is better** for IC measures:
 
-```{r}
+```{r, purl=FALSE}
 # Compare models with different class counts
 selection <- gmm_select(
   data = mcs_simulated,
@@ -415,7 +415,7 @@ plot_model_selection(selection)
 
 **Gold standard** for class enumeration:
 
-```{r}
+```{r, purl=FALSE}
 selection <- gmm_select(
   ...,
   criteria = c("BIC", "BLRT"),
@@ -433,7 +433,7 @@ selection <- gmm_select(
 
 **Faster alternative** to BLRT (no bootstrap):
 
-```{r}
+```{r, purl=FALSE}
 # Fit two models
 fit2 <- gmm_survey(..., n_classes = 2, ...)
 fit3 <- gmm_survey(..., n_classes = 3, ...)
@@ -455,7 +455,7 @@ print(lmr_result)
 
 **Predictive performance** approach:
 
-```{r}
+```{r, purl=FALSE}
 cv_results <- gmm_cv(
   data = mcs_simulated,
   id = "id",
@@ -482,7 +482,7 @@ plot(cv_results)
 
 ### 5. Classification Quality
 
-```{r}
+```{r, purl=FALSE}
 # For each candidate model
 classification_quality(fit)
 ```
@@ -502,7 +502,7 @@ classification_quality(fit)
 
 **Example Workflow:**
 
-```{r}
+```{r, purl=FALSE}
 # Step 1: Comprehensive selection
 selection <- gmm_select(
   data = mcs_simulated,
@@ -540,7 +540,7 @@ classification_quality(fit_final)
 
 ## Continuous Outcomes (Default)
 
-```{r}
+```{r, purl=FALSE}
 fit <- gmm_survey(
   data = your_data,
   id = "id", time = "time", outcome = "continuous_var",
@@ -555,7 +555,7 @@ fit <- gmm_survey(
 
 ## Binary Outcomes
 
-```{r}
+```{r, purl=FALSE}
 fit_binary <- gmm_survey_binary(
   data = your_data,
   id = "id", time = "time", outcome = "binary_var",  # 0/1
@@ -575,7 +575,7 @@ fit_binary <- gmm_survey_binary(
 
 ## Ordinal Outcomes
 
-```{r}
+```{r, purl=FALSE}
 fit_ordinal <- gmm_survey_ordinal(
   data = your_data,
   id = "id", time = "time", outcome = "ordinal_var",  # 1,2,3,4,5
@@ -594,7 +594,7 @@ fit_ordinal <- gmm_survey_ordinal(
 
 ## Count Outcomes
 
-```{r}
+```{r, purl=FALSE}
 fit_count <- gmm_survey_count(
   data = your_data,
   id = "id", time = "time", outcome = "count_var",  # 0,1,2,3,...
@@ -627,7 +627,7 @@ Model how **within-person changes** in predictors affect outcomes.
 
 ### Fitting TVC Models
 
-```{r}
+```{r, purl=FALSE}
 fit_tvc <- gmm_survey_tvc(
   data = your_data,
   id = "id", time = "time", outcome = "outcome",
@@ -649,7 +649,7 @@ fit_tvc <- gmm_survey_tvc(
 
 ### Interpreting TVC Results
 
-```{r}
+```{r, purl=FALSE}
 # Extract effects
 tvc_effects <- extract_tvc_effects(fit_tvc)
 print(tvc_effects)
@@ -686,7 +686,7 @@ Use R3STEP to:
 
 ### Fitting R3STEP Models
 
-```{r}
+```{r, purl=FALSE}
 # Step 1: Fit GMM (without auxiliary variables)
 fit <- gmm_survey(
   data = mcs_simulated,
@@ -725,7 +725,7 @@ r3step_results <- r3step(
 
 ### Interpreting R3STEP Results
 
-```{r}
+```{r, purl=FALSE}
 # Comprehensive summary
 summary(r3step_results)
 
@@ -756,7 +756,7 @@ GMM estimation can find **local maxima**. Multiple random starts help find the g
 
 ### Diagnose Convergence
 
-```{r}
+```{r, purl=FALSE}
 conv_diag <- diagnose_convergence(fit)
 print(conv_diag)
 
@@ -778,7 +778,7 @@ plot(conv_diag)
 
 ### Detecting Influential Cases
 
-```{r}
+```{r, purl=FALSE}
 # Requires keep_data = TRUE in original fit
 fit <- gmm_survey(..., keep_data = TRUE)
 
@@ -807,7 +807,7 @@ mcs_simulated[mcs_simulated$id %in% influential_ids, ]
 
 ### Detecting Perfect Separation
 
-```{r}
+```{r, purl=FALSE}
 sep_diag <- diagnose_separation(fit)
 print(sep_diag)
 ```
@@ -824,7 +824,7 @@ print(sep_diag)
 
 ## Residual Diagnostics
 
-```{r}
+```{r, purl=FALSE}
 resid_diag <- residual_diagnostics(fit)
 print(resid_diag)
 ```
@@ -843,7 +843,7 @@ print(resid_diag)
 
 ### Trajectory Plots
 
-```{r}
+```{r, purl=FALSE}
 # Class-specific mean trajectories
 plot(fit, type = "trajectories")
 
@@ -859,7 +859,7 @@ plot_trajectories(fit,
 
 ### Model Selection Plots
 
-```{r}
+```{r, purl=FALSE}
 # Compare fit indices
 plot_model_selection(selection)
 
@@ -869,7 +869,7 @@ plot_model_selection(selection, criteria = c("BIC", "entropy"))
 
 ### Classification Plots
 
-```{r}
+```{r, purl=FALSE}
 # Posterior probability distributions
 plot_posterior_dist(fit)
 
@@ -879,7 +879,7 @@ plot_class_comparison(fit)
 
 ## Interactive Plots (plotly)
 
-```{r}
+```{r, purl=FALSE}
 # Interactive trajectories (hover, zoom, pan)
 plot_interactive(fit, type = "trajectories")
 
@@ -894,7 +894,7 @@ saveWidget(p, "trajectories.html")
 
 ## Specialized Plots
 
-```{r}
+```{r, purl=FALSE}
 # Time-varying covariates
 plot_tvc_effects(fit_tvc, covariate = "stress")
 
@@ -910,7 +910,7 @@ plot(cv_results)
 
 ### Pre-Analysis Checks
 
-```{r}
+```{r, purl=FALSE}
 validation <- validate_survey_data(
   data = mcs_simulated,
   id = "id",
@@ -943,7 +943,7 @@ print(validation)
 
 ### Wide to Long Format
 
-```{r}
+```{r, purl=FALSE}
 # Wide format data
 wide_data <- data.frame(
   id = 1:100,
@@ -969,7 +969,7 @@ surveymixr uses **Full Information Maximum Likelihood (FIML)** by default:
 - Valid under MAR (Missing At Random) assumption
 
 **Patterns:**
-```{r}
+```{r, purl=FALSE}
 # Check missing patterns in validation
 validation@info$missing_patterns
 ```
@@ -982,7 +982,7 @@ validation@info$missing_patterns
 
 ### Convert Mplus Syntax to R
 
-```{r}
+```{r, purl=FALSE}
 # Read Mplus .inp file
 r_code <- mplus_to_surveymixr("my_analysis.inp")
 
@@ -992,14 +992,14 @@ cat(r_code)
 
 ### Generate Mplus-Style Output
 
-```{r}
+```{r, purl=FALSE}
 # Create Mplus-formatted output
 surveymixr_to_mplus(fit, file = "surveymixr_results.txt")
 ```
 
 ### Validate Against Mplus
 
-```{r}
+```{r, purl=FALSE}
 # Compare results (manual)
 compare_with_mplus(fit, "mplus_output.out")
 ```
@@ -1017,7 +1017,7 @@ compare_with_mplus(fit, "mplus_output.out")
 
 ### Basic Simulation
 
-```{r}
+```{r, purl=FALSE}
 sim_data <- simulate_gmm_survey(
   n_individuals = 1000,
   n_times = 5,
@@ -1048,7 +1048,7 @@ sim_data <- simulate_gmm_survey(
 
 ### Power Analysis
 
-```{r}
+```{r, purl=FALSE}
 # Simulate multiple datasets to assess power
 results <- replicate(100, {
   sim <- simulate_gmm_survey(...)
@@ -1068,7 +1068,7 @@ mean(sapply(results, function(x) x > 0.80))
 
 ### 1. Exploratory Phase
 
-```{r}
+```{r, purl=FALSE}
 # Quick exploration with fewer starts
 fit_explore <- gmm_survey(
   ...,
@@ -1079,7 +1079,7 @@ fit_explore <- gmm_survey(
 
 ### 2. Model Selection Phase
 
-```{r}
+```{r, purl=FALSE}
 # Comprehensive comparison
 selection <- gmm_select(
   ...,
@@ -1093,7 +1093,7 @@ selection <- gmm_select(
 
 ### 3. Final Model Phase
 
-```{r}
+```{r, purl=FALSE}
 # Best model with more starts
 fit_final <- gmm_survey(
   ...,
@@ -1125,7 +1125,7 @@ Include in publications:
 
 ### Example Results Table
 
-```{r}
+```{r, purl=FALSE}
 # Create comparison table
 comparison <- data.frame(
   Classes = 1:5,
@@ -1142,7 +1142,7 @@ print(comparison)
 
 ### Parallel Processing
 
-```{r}
+```{r, purl=FALSE}
 # Use all available cores
 fit <- gmm_survey(
   ...,
@@ -1152,7 +1152,7 @@ fit <- gmm_survey(
 
 ### Memory Management
 
-```{r}
+```{r, purl=FALSE}
 # Don't store data unless needed
 fit <- gmm_survey(..., keep_data = FALSE)
 
@@ -1249,7 +1249,7 @@ Warning: Hessian is not positive definite
 
 ### Piecewise Linear Growth
 
-```{r}
+```{r, purl=FALSE}
 # Create piecewise time variable
 data$time1 <- ifelse(data$time <= 5, data$time, 5)
 data$time2 <- ifelse(data$time > 5, data$time - 5, 0)
@@ -1260,7 +1260,7 @@ data$time2 <- ifelse(data$time > 5, data$time - 5, 0)
 
 ### Cohort Effects
 
-```{r}
+```{r, purl=FALSE}
 # Include cohort as time-invariant predictor in R3STEP
 r3step_results <- r3step(
   gmm_object = fit,
@@ -1273,7 +1273,7 @@ r3step_results <- r3step(
 
 ### By Gender
 
-```{r}
+```{r, purl=FALSE}
 # Fit separate models
 fit_male <- gmm_survey(data_male, ...)
 fit_female <- gmm_survey(data_female, ...)
@@ -1322,7 +1322,7 @@ compare_classes(fit_male, fit_female)
 
 ### Documentation
 
-```{r}
+```{r, purl=FALSE}
 # Package help
 help(package = "surveymixr")
 
@@ -1342,7 +1342,7 @@ browseVignettes("surveymixr")
 
 ### Citing surveymixr
 
-```{r}
+```{r, purl=FALSE}
 citation("surveymixr")
 ```
 
